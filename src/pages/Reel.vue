@@ -9,20 +9,25 @@ import router from '@/router'
 export default {
 
   setup(props) {
-
+    let traitReroll = ref(0);
     let initialSlots = ref([]);
     let spinLoading = ref(false);
     let prepNextFrame = ref(false);
     let slots = ref([]);
     let nftId = ref(0);
     let step = ref(1);
+    let modalActive = ref(false);
     let anim = ref();
     let loading = ref(true);
     let resultItems = ref([])
+    let rerollLoading = ref(false)
+    let rerollLoadingMessage = ref("");
+    let rerollStep = ref(1)
+    let rerollValue = ref(0)
 
     const route = useRoute()
 
-    let collections = ref(["body", "helmets", "gear", "extra", "back", "background"])
+    let collections = ref(["body", "helmets", "gear", "extra", "back", "background", "-", "-", "-", "-", "body", "helmets", "gear", "extra", "back", "background",])
 
     function loadInitialSlots(collectionName) {
       initialSlots.value = [];
@@ -35,8 +40,68 @@ export default {
       slots.value = initialSlots.value;
     }
 
+    async function prepReroll(trait) {
+      try {
+          const data = await readContract({
+          address: GLOBALS.NFT_ADDRESS,
+          abi: ERC721,
+          functionName: 'getTraits',
+          args: [nftId.value]
+          })
+          if(data) {
+              const rerollArray = []
+              data.forEach(dp => {
+                rerollArray.push(parseInt(dp))
+              })
+
+              rerollValue.value = rerollArray[trait]
+              console.log("prepreroll", rerollValue.value)
+          } else {
+            console.log("Sth went wrong")
+          }
+      } catch (e) {
+          console.log(e)
+      }   
+    }
+
+    async function reroll(trait) {
+      rerollLoadingMessage.value = ''
+      const { hash } = await writeContract({
+        address: GLOBALS.NFT_ADDRESS,
+        abi: ERC721,
+        functionName: 'reroll',
+        chainId: 137,
+        args: [trait, nftId.value]
+      })
+      rerollLoading.value = true
+      await waitForTransaction({ hash })
+      rerollLoading.value = false
+
+      rerollStep.value = 2;
+      let timer = 20; 
+      rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in 20 seconds!`;
+      const countdown = setInterval(() => {
+       timer--; // Decrement the timer
+       rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in ${timer} seconds!`;
+
+       if (timer <= 0) {
+            clearInterval(countdown);
+            rerollStep.value = 3;
+            rerollLoadingMessage.value = ''
+            // getRerollValue
+            prepReroll(trait)
+            step.value = parseInt(trait) + 10;
+            console.log(step.value)
+            loadNextFrame()
+        }
+      }, 1000);
+
+    }
+
     function loadAllProperties() {
       step.value = 7;
+      // change this 
+      // loadNextFrame()
       for(let i = 1; i < 7; i++) {
           const resultElement = document.getElementById('result' + i);
           let url = `src/assets/${collections.value[i - 1]}/${resultItems.value[i - 1]}.png`
@@ -67,7 +132,7 @@ export default {
 
 
   function returnToOverview() {
-   step.value = 7;
+  //  step.value = 7;
    loadAllProperties()
   }
   async function getTraits(id) {
@@ -90,6 +155,15 @@ export default {
       }   
     }
 
+    function resetRespin() {
+      rerollStep.value = 1;
+      returnToOverview()
+    }
+
+    function toggleModal(reset) {
+      modalActive.value = !modalActive.value
+    }
+
     function loadNextFrame() {
       let lastStep = step.value
       step.value = lastStep + 1;
@@ -101,7 +175,12 @@ export default {
       resultElement.style.animation = '';
       resultElement.classList.remove('active');
 
-      const currentResultElement = document.getElementById('result' + step.value);
+
+      let currentResultElement = document.getElementById('result' + step.value);
+      if(step.value > 10) {
+        let realStep = parseInt(step.value) - 10
+        currentResultElement = document.getElementById('result' + realStep);
+      }
       currentResultElement.classList.add('active')
     }
 
@@ -147,6 +226,7 @@ export default {
     // collection name is name of type eg body, helmet
     // result is the result of the spin eg 5 is id 5 (or /helmet/5.png)
     function spinReels(collectionName, result) {
+      console.log(result, "resultSpinReels")
       spinLoading.value = true
       prepNextFrame.value = true
       let winSlot = document.getElementById('slot42');
@@ -204,25 +284,48 @@ export default {
         winSlot.style.animation = 'blinker 2s linear infinite';
         spinLoading.value = false
 
-        const resultElement = document.getElementById('result' + step.value);
+        let resultElement = document.getElementById('result' + step.value);
+
+        if(step.value > 10) {
+          let realStep = parseInt(step.value) - 10
+          resultElement = document.getElementById('result' + realStep.toString());
+        } 
+
         let url = `src/assets/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.png`
+        if(step.value > 10) {
+          let realStep = parseInt(step.value) - 11
+          url = `src/assets/${collections.value[realStep]}/${result}.png`
+        }
+
+        if(step.value > 10) {
+          // update local values
+          resultItems.value[step.value - 11] = result
+        }
+
+        
         if(step.value == 6) {
           // wallpapers are jpg format
           url = `src/assets/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.jpg`
           localStorage.setItem(route.query.tokenId + '/' + GLOBALS.NFT_ADDRESS, 'true')
         }
 
+        if(step.value == 16) {
+          // wallpapers are jpg format
+          let realStep = 5
+          url = `src/assets/${collections.value[realStep]}/${result}.jpg`
+          localStorage.setItem(route.query.tokenId + '/' + GLOBALS.NFT_ADDRESS, 'true')
+        }
+
         resultElement.style.backgroundImage = "url(" + url + ")"
         resultElement.style.backgroundSize = "cover"
         resultElement.style.animation = 'blinker 2s linear infinite';
-
+        
         const resultLabel = document.getElementById(`result${step.value}label`);
         resultLabel.style.display = "none";
 
       }, 10300)
     }
 
-    
 
     return {
       resultItems,
@@ -230,20 +333,64 @@ export default {
       loadNextFrame,
       prepNextFrame,
       slots,
+      toggleModal,
+      modalActive,
       spinLoading,
       spinReels,
       step,
       loading,
       returnToOverview,
-      nftId
+      nftId,
+      traitReroll,
+      reroll,
+      rerollLoading,
+      rerollStep,
+      rerollLoadingMessage,
+      rerollValue,
+      resetRespin
     };
   },
 };
 </script>
 
 <template>
+  <div class="backdrop" v-if="modalActive">
+      <!-- loading -->
+      <div class="modal" v-if="rerollLoading == true">
+        <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
+        <h3>Waiting for tx to confirm</h3>
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+      <!-- step 1 -->
+      <div class="modal" v-if="rerollStep == 1 && rerollLoading == false">
+        <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
+        <h3>Rerolling a body part</h3>
+        <p>Choose which part you want to roll again</p>
+        <select v-model="traitReroll" class="trait-selector">
+          <option :value="0">body</option>
+          <option :value="1">helmet</option>
+          <option :value="2">gear</option>
+          <option :value="3">extra</option>
+          <option :value="4">back</option>
+          <option :value="5">background</option>
+        </select>
+        <button id="spinButton" @click="reroll(traitReroll)" style="margin-top: 2px;">Respin Now</button>
+      </div>
+      <!-- step 2 -->
+      <div class="modal" v-if="rerollStep == 2 && rerollLoading == false">
+        <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
+        <h3>{{rerollLoadingMessage}}</h3>
+      </div>
+      <!-- step 3 -->
+      <div class="modal" v-if="rerollStep == 3 && rerollLoading == false">
+        <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
+        <h3>Transaction Finished</h3>
+        <button id="spinButton" @click="toggleModal(reset);" style="margin-top: 2px;">Respin Now</button>
+      </div>
+  </div>
+
   <div class="results">
-    <div class="result active" id="result1">
+    <div class="result" id="result1">
       <h3 id="result1label">body</h3>
     </div>
     <!-- <button v-if="!spinLoading && !prepNextFrame" id="spinButtonSmall">reroll</button> -->
@@ -267,13 +414,13 @@ export default {
   <!-- loading -->
   <div class="page-holder" v-if="loading">
     <div class="spin" >
-            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-         </div>
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>
   </div>
 
   <!-- finished character -->
   <div class="page-holder" v-if="step == 7 && !loading">
-    <h1>Character #{{nftId}}</h1>
+    <h1>Character #{{nftId}} </h1>
     <div class="char">
       <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="width: 100%; position: absolute; left: 0"/>
       <img :src="`src/assets/back/${resultItems[4]}.png`" style="width: 100%; position: absolute; left: 0"/> 
@@ -283,7 +430,7 @@ export default {
       <img :src="`src/assets/extra/${resultItems[3]}.png`" style="width: 100%; position: absolute; left: 0"/>  
     </div>
     <div>
-      <button id="spinButton" style="position: relative;">Respin a trait</button>
+      <button id="spinButton" @click="toggleModal()" style="position: relative;">Respin a trait</button>
       <div>
         <p class="smalltext"><small><i class="fa-solid fa-gift"></i> first respin is free!</small></p>
       </div>
@@ -293,7 +440,8 @@ export default {
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
     <h1>NFT Character Creation</h1>
-    <h2>Spin {{step}}: {{collections[step - 1]}}</h2>
+    <h2 v-if="step < 10">Spin {{step}}: {{collections[step - 1]}}</h2>
+    <h2 v-if="step > 9">Respin: {{collections[step - 11]}}</h2>
     <div class="reel-holder">
       <div class="glass-holder"></div>
       <div id="reel">
@@ -351,19 +499,157 @@ export default {
             <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
             <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
+
+          <!-- rerolls -->
+          <!-- reroll body -->
+          <template v-if="step == 11">
+            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+          </template>
+          <!-- reroll helmet -->
+          <template v-if="step == 12">
+            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+          </template>
+          <!-- reroll gear -->
+          <template v-if="step == 13">
+            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+          </template>
+          <!-- reroll extra -->
+          <template v-if="step == 14">
+            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+          </template>
+          <!-- reroll back -->
+          <template v-if="step == 15">
+            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+          </template>
+          <!-- reroll background -->
+          <template v-if="step == 16">
+            <img :src="`src/assets/${slot.collection}/${slot.image}.jpg`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+          </template>
+
         </div>
         </div>
       </div>
     </div>
-    <button v-if="!spinLoading && !prepNextFrame" id="spinButton" @click="spinReels(collections[step - 1], resultItems[step - 1])">Spin ({{step}}/6)</button>
+
+    <div v-if="step > 10"> 
+      <button v-if="!spinLoading && !prepNextFrame" id="spinButton" @click="spinReels(collections[step - 11], rerollValue)">Respin {{collections[step - 11]}}</button>
+      <button v-if="prepNextFrame && !spinLoading" id="spinButton" @click="resetRespin()" >Finish</button>
+    </div>
+
+    <div v-if="step < 7">
+      <button v-if="!spinLoading && !prepNextFrame" id="spinButton" @click="spinReels(collections[step - 1], resultItems[step - 1])">Spin ({{step}}/6)</button>
       <button v-if="spinLoading" id="spinButton">Spinning...</button>
       <button v-if="prepNextFrame && !spinLoading && step != 6" id="spinButton" @click="loadNextFrame()">Next</button>
       <button v-if="prepNextFrame && !spinLoading && step == 6" id="spinButton" @click="returnToOverview()" >Finish</button>
-
+    </div>
   </div>
 </template>
 
 <style lang="scss">
+.trait-selector {
+  -webkit-appearance: none;
+  height: 32px;
+  margin-right: 5px;
+  font-size: 15px;
+  color: black;
+  font-weight: 500;
+  color: white;
+  background-color: #2e2c3c;
+  width: 250px;
+  text-align: center;
+  margin-bottom: 10px;
+  outline: none;
+  border: none;
+  border-radius: 25px;
+}
+.backdrop {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #4343438f;
+    z-index: 20;
+
+    .modal {
+      position: relative;
+      text-align: center;
+        @media(max-width: 880px) {
+            position: absolute;
+            width: 90%;
+            left: 0;
+            padding: 5%;
+        }
+
+
+        @media(max-height: 800px) {
+          top: 100px;
+        }
+
+        @media(max-height: 600px) {
+          top: 55px!important;
+        }
+
+
+        box-shadow: 0 0 20px rgba(17, 17, 29, 0.7);
+        width: 450px;
+        position: absolute;
+        left: calc(50% - 225px);
+        top: 150px;
+
+        background-color: #1c1b21;
+        border-radius: 5px;
+        padding: 30px;
+        h3 {
+            margin-top: 0;
+            color: white;
+        }
+        p {
+            color: white;
+        }
+        p.iholder {
+            text-align:right;
+            margin-top: 0;
+            margin-right: 5px;
+            margin-bottom: 0;
+            color: white;
+            i {
+                cursor: pointer;
+            }
+        }
+    }
+  }
+
 .smalltext {
   margin-top: 10px;
 
