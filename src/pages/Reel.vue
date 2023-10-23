@@ -390,7 +390,7 @@ export default {
   </div>
 
   <div class="results">
-    <div class="result" id="result1">
+    <div class="result active" id="result1">
       <h3 id="result1label">body</h3>
     </div>
     <!-- <button v-if="!spinLoading && !prepNextFrame" id="spinButtonSmall">reroll</button> -->
