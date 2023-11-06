@@ -1,5 +1,5 @@
 <script>
-import { getAccount, waitForTransaction, readContract, writeContract, watchAccount, watchNetwork } from '@wagmi/core'
+import { getAccount, waitForTransaction, switchNetwork, readContract, writeContract, watchAccount, watchNetwork } from '@wagmi/core'
 import { useWeb3Modal, createWeb3Modal } from '@web3modal/wagmi/vue'
 import { ref } from 'vue';
 import ERC20ABI from '../abi/ERC20.json'
@@ -33,6 +33,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     let buyStep = ref(0) // 0
     let giftTicket = ref(false); // false
     let showTimer = ref(false)
+    let singleTransactionApproval = ref(false)
     
     let ticketInputAddress = ref("")
     let ticketInputValid = ref(true)
@@ -50,8 +51,11 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     function openBuy() {
         modalActive.value = false;
         buyModal.value = true;
-        setTimeout(() => {
-            deBridge.widget({"v":"1","element":"debridgeWidget","title":"Verse","description":"Get Verse on Polygon","width":"200%","height":"630","r":null,"affiliateFeePercent":"1","affiliateFeeRecipient":"0xA02351E83625c5185908835846B26719Fcd3d53F","supportedChains":"{\"inputChains\":{\"1\":\"all\",\"10\":\"all\",\"56\":\"all\",\"137\":\"all\",\"8453\":\"all\",\"42161\":\"all\",\"43114\":\"all\",\"59144\":\"all\",\"7565164\":\"all\"},\"outputChains\":{\"1\":\"all\",\"10\":\"all\",\"56\":\"all\",\"137\":[\"0xc708d6f2153933daa50b2d0758955be0a93a8fec\"],\"8453\":\"all\",\"42161\":\"all\",\"43114\":\"all\",\"59144\":\"all\",\"7565164\":\"all\"}}","inputChain":1,"outputChain":137,"inputCurrency":"","outputCurrency":"","address":"","showSwapTransfer":false,"amount":"10","lang":"en","mode":"deswap","isEnableBundle":false,"styles":"eyJhcHBCYWNrZ3JvdW5kIjoiIzFjMWIyMSIsImFwcEFjY2VudEJnIjoiIzFjMWIyMSIsImJvcmRlclJhZGl1cyI6OCwicHJpbWFyeSI6IiNmZmQyMDAiLCJzZWNvbmRhcnkiOiIjMjM0YzZjIiwic3VjY2VzcyI6IiNkYWNmMDIiLCJlcnJvciI6IiNmZmJkMDAiLCJpY29uQ29sb3IiOiIjNDk0OTQ5IiwiZm9udEZhbWlseSI6Ik1vbnRzZXJyYXQifQ==","theme":"dark","isHideLogo":true})        }, 100)
+    }
+
+
+    async function requestNetworkChange() {
+        await switchNetwork({ chainId: 137 })
     }
 
     async function onTicketInputChange() {
@@ -105,11 +109,12 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         modalActive.value = !modalActive.value;
     }
 
-    async function approve(infiniteApproval) {
-        let approvalAmount = 3000000000000000000000
-        if(infiniteApproval) {
-            approvalAmount = 30000000000000000000000000000
-        } 
+    async function approve() {
+        let approvalAmount = 30000000000000000000000000000
+        if(singleTransactionApproval.value == true) {
+            approvalAmount = 3000000000000000000000
+        }
+        
         loadingMessage.value = "waiting for wallet approval.."
         modalLoading.value = true;
         const { hash } = await writeContract({
@@ -124,6 +129,17 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         await waitForTransaction({ hash })
         getAllowance()
     }    
+
+    function toggleModal() {
+        if(buyStep.value == 4 && modalActive.value == true) {
+            loadingMessage.value = ""
+            buyStep.value = 0;
+            giftTicket.value = false;
+            giftAddress.value == ""
+            getBalance()
+        }
+        modalActive.value = !modalActive.value;
+    }
 
     async function purchaseTicket(_giftAddress) {
         try {
@@ -216,11 +232,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                     buyStep.value = 2;
                     /// step 2, check allowance       
                     getAllowance()
-                 } else {
-                    setTimeout(() => {
-
-                        deBridge.widget({"v":"1","element":"debridgeWidget","title":"Verse","description":"","width":"600","height":"800","r":null,"affiliateFeePercent":"1","affiliateFeeRecipient":"0xA02351E83625c5185908835846B26719Fcd3d53F","supportedChains":"{\"inputChains\":{\"1\":\"all\",\"10\":\"all\",\"56\":\"all\",\"137\":\"all\",\"8453\":\"all\",\"42161\":\"all\",\"43114\":\"all\",\"59144\":\"all\",\"7565164\":\"all\"},\"outputChains\":{\"1\":\"all\",\"10\":\"all\",\"56\":\"all\",\"137\":[\"0xc708d6f2153933daa50b2d0758955be0a93a8fec\"],\"8453\":\"all\",\"42161\":\"all\",\"43114\":\"all\",\"59144\":\"all\",\"7565164\":\"all\"}}","inputChain":1,"outputChain":137,"inputCurrency":"","outputCurrency":"","address":"","showSwapTransfer":false,"amount":"10","lang":"en","mode":"deswap","isEnableBundle":false,"styles":"eyJhcHBCYWNrZ3JvdW5kIjoiIzFjMWIyMSIsImFwcEFjY2VudEJnIjoiIzFjMWIyMSIsImJvcmRlclJhZGl1cyI6OCwicHJpbWFyeSI6IiNmZmQyMDAiLCJzZWNvbmRhcnkiOiIjMjM0YzZjIiwic3VjY2VzcyI6IiNkYWNmMDIiLCJlcnJvciI6IiNmZjkyOTIiLCJpY29uQ29sb3IiOiIjNDk0OTQ5IiwiZm9udEZhbWlseSI6Ik1vbnRzZXJyYXQifQ==","theme":"dark","isHideLogo":true})                    }, 500)
-                 }
+                 } 
             }
             } catch (e) {
                 console.log(e)
@@ -315,8 +327,11 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         copyText,
         toggleGift,
         onTicketInputChange,
+        toggleModal,
         ticketInputValid,
+        requestNetworkChange,
         ensLoaded,
+        singleTransactionApproval,
         giftInputLoad
     }
   }
@@ -359,8 +374,24 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 </div>
             </div>
         </div>
+        <!-- modal for switching network -->
+        <div class="modal" v-if="correctNetwork == false">
+            <div>
+                <div class="modal-head">
+                    <h3 class="title">Switch Network</h3>
+                    <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
+                </div>
+                <div class="modal-body">
+                    <div class="change-network"></div>
+                    <h3 class="title">Wrong Network Selected</h3>
+                    <p class="subtext">Verse Scratch uses the Polygon network. Please change the network in your connected wallet or click the button below to switch automatically.</p>
+                    <a class="" target="_blank" @click="requestNetworkChange()"><button class="btn verse-wide">Switch Wallet to Polygon</button></a>
+                </div>
+            </div>
+        </div>
+
         <!-- modal for connecting account -->
-        <div class="modal" v-if="buyStep == 0 && !modalLoading">
+        <div class="modal" v-if="buyStep == 0 && !modalLoading && correctNetwork">
             <div>
             <div class="modal-head">
                 <h3 class="title">Buy Astronaut</h3>
@@ -379,7 +410,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             </div>
         </div>
         <!-- // modal for purchasing verse -->
-        <div class="modal" v-if="buyStep == 1 && !modalLoading">
+        <div class="modal" v-if="buyStep == 1 && !modalLoading && correctNetwork">
             <div>
                 <div class="modal-head">
                     <h3 class="title">Buy Astronaut</h3>
@@ -406,10 +437,10 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         
             </div>
         </div>
-        <!-- allowance modal -->
-        <div class="modal" v-if="buyStep == 2 && !modalLoading">
+        <!-- alllowance modal -->
+        <div class="modal" v-if="buyStep == 2 && !modalLoading && correctNetwork">
             <div class="modal-head">
-                <h3 class="title">Buy Astronaut</h3>
+                <h3 class="title">Buy Ticket</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider">
@@ -418,21 +449,20 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             <div class="modal-body">
                 <div class="img-approve"></div>
                 <h3 class="title">Approve the use of VERSE</h3>
-                <p class="subtext">You need to approve the use of at least <span>3000 VERSE</span>. This is used to pay for your ticket. </p>
-                    
-                <div class="helper">
-                    <div class="bulb-icn"></div>
-                    <p>Alternatively you can choose to set an unlimited allowance, this way you can skip this step on your next purchase</p>
-                </div>
-                
-                <a class="" target="_blank" @click="approve()"><button class="btn verse-wide half">Approve 3000 VERSE</button></a>
-                <a class="" target="_blank" @click="approve(true)"><button class="btn verse-wide half secondary">Set Infinite Approval</button></a>
-
+                <p class="subtext">You need to enable the use of at least <span>3000 VERSE</span>. This is used to pay for your ticket. </p>
+                <div class="gift-toggle-holder">
+                            <h3 class="title">Allow for one transaction only</h3>
+                            <label class="switch">
+                            <input type="checkbox" v-on:change="toggleSingleApproval">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                <a class="" target="_blank" @click="approve()"><button class="btn verse-wide">Allow the use of VERSE</button></a>
                 <p class="modal-footer">All tokens on the Polygon network require an approval transaction before they can be spent. <a target="blank" href="https://revoke.cash/learn/approvals/what-are-token-approvals">learn more here.</a></p>
             </div>
         </div>
         <!-- purchase modal -->
-        <div class="modal" v-if="buyStep == 3 && !modalLoading">
+        <div class="modal" v-if="buyStep == 3 && !modalLoading && correctNetwork">
             <div class="modal-head">
                 <h3 class="title">Buy Astronaut</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
@@ -474,7 +504,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             </div>
         </div>
         <!-- normal finish -->
-        <div class="modal" v-if="buyStep == 4 && !modalLoading">
+        <div class="modal" v-if="buyStep == 4 && !modalLoading && correctNetwork">
             <div class="modal-head">
                 <h3 class="title">Buy Astronaut</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
@@ -508,9 +538,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             </div>
         </div>
     </div>
-    <div class="wrongNetworkWarning" v-if="correctNetwork == false"><i class="fa fa-warning" style="margin-right: 10px; margin-left: 5px;"></i>Wallet connected to the wrong network, please switch your wallet to Polygon</div>
     <div class="page">
-
 
         <div class="float-holder clearfix">
             <div class="card-info">

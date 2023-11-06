@@ -31,6 +31,7 @@ export default {
         let claimNFT = ref(0)
         let step = ref(0);
         let nfts = ref([])
+        let correctNetwork = ref(true)
         let claimActive = ref(false)
         let modalLoading = ref(false)
 
@@ -122,6 +123,14 @@ export default {
                
         }
 
+        watchNetwork((network) => {
+            if(network.chain && network.chain.id != 137) {
+                correctNetwork.value = false
+            } else {
+                correctNetwork.value = true
+            }
+        })
+
         function openReel(item, finished) {
             if(finished) {
                 router.push({ name: 'reel', query: { tokenId: item.id, overview: true }})
@@ -182,7 +191,7 @@ export default {
         }   
 
         return {
-            list, nfts, account, nftContract, closeGiftModal, step, loading, giftModal, giftAccount, claimNFT, claimActive, modalLoading, toggleModal, accountActive, getTicketIds, characterList, openDetail, openDetailScreen, closeDetailScreen, detailNFT, openReel
+            list, nfts, account, nftContract, correctNetwork, closeGiftModal, step, loading, giftModal, giftAccount, claimNFT, claimActive, modalLoading, toggleModal, accountActive, getTicketIds, characterList, openDetail, openDetailScreen, closeDetailScreen, detailNFT, openReel
         }   
     }
 }
@@ -213,6 +222,8 @@ export default {
 
 
 <Reel v-if="openDetail" :detailNFT="detailNFT"/>
+
+<div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div>
 <div class="page" v-if="!openDetail">
     <div class="head">
         <h2 class="tickhead">My Characters</h2>
@@ -255,6 +266,26 @@ export default {
 
 
 <style lang="scss">
+.wrongNetworkWarning {
+    @media(max-width: 880px) {
+        font-size: 13px;
+        width: calc(100% - 10px);
+        padding-left: 15px;
+        color: white;
+        font-weight: 600;
+        padding-bottom: 15px;
+        padding-top: 12px;
+    }
+    z-index: 5;
+    position: relative;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 30px;
+    font-weight: 600;
+    background-color: #4a42aa;
+    color: #fff;
+}
 
 .char {
     width: 260px;
