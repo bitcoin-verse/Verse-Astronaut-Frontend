@@ -670,6 +670,9 @@ export default {
   position: fixed;
   right: 50px;
   top: 100px;
+  @media(max-width: 880px) {
+    display: none;
+  }
   h3 {
     position: absolute;
     top: 17px;
@@ -686,6 +689,7 @@ export default {
     height: 80px;
     margin: 10px;
     background-color: #030c14;
+
     &.active {
       border: 1px solid #68284a;
     }
