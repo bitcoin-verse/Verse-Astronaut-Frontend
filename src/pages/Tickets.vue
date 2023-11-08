@@ -244,15 +244,15 @@ export default {
             <h3 class="title">#{{item.id}} </h3>
             <!-- <img :src="`src/assets/gift.jpg`" v-if="!item.opened"> -->
             <div v-if="!item.opened" class="char">
-                <img :src="`src/assets/question.png`" style="position: absolute; left: 0"/>
+                <img src="../assets/question.png" style="position: absolute; left: 0"/>
             </div>
             <div v-if="item.opened" class="char">
-                <img :src="`src/assets/background/${item.traits[5]}.jpg`" style="position: absolute; left: 0"/>
-                <img :src="`src/assets/back/${item.traits[4]}.png`" style="position: absolute; left: 0"/> 
-                <img :src="`src/assets/body/${item.traits[0]}.png`" style="position: absolute; left: 0"> 
-                <img :src="`src/assets/helmets/${item.traits[1]}.png`" style="position: absolute; left: 0"/> 
-                <img :src="`src/assets/gear/${item.traits[2]}.png`" style="position: absolute; left: 0"/> 
-                <img :src="`src/assets/extra/${item.traits[3]}.png`" style="position: absolute; left: 0"/>  
+                <img :src="`/traits/background/${item.traits[5]}.jpg`" style="position: absolute; left: 0"/>
+                <img :src="`/traits/back/${item.traits[4]}.png`" style="position: absolute; left: 0"/> 
+                <img :src="`/traits/body/${item.traits[0]}.png`" style="position: absolute; left: 0"> 
+                <img :src="`/traits/helmets/${item.traits[1]}.png`" style="position: absolute; left: 0"/> 
+                <img :src="`/traits/gear/${item.traits[2]}.png`" style="position: absolute; left: 0"/> 
+                <img :src="`/traits/extra/${item.traits[3]}.png`" style="position: absolute; left: 0"/>  
             </div>
 
             <button v-if="item.opened" class="btn-action main" @click="openReel(item, true)">View Character</button>

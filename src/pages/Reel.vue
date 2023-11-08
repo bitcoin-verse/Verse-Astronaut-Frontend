@@ -75,6 +75,7 @@ export default {
       })
       rerollLoading.value = true
       await waitForTransaction({ hash })
+
       rerollLoading.value = false
 
       rerollStep.value = 2;
@@ -104,10 +105,10 @@ export default {
       // loadNextFrame()
       for(let i = 1; i < 7; i++) {
           const resultElement = document.getElementById('result' + i);
-          let url = `src/assets/${collections.value[i - 1]}/${resultItems.value[i - 1]}.png`
+          let url = `traits/${collections.value[i - 1]}/${resultItems.value[i - 1]}.png`
           if(i == 6) {
             // wallpapers are jpg format
-            url = `src/assets/${collections.value[i - 1]}/${resultItems.value[i - 1]}.jpg`
+            url = `traits/${collections.value[i - 1]}/${resultItems.value[i - 1]}.jpg`
           }
           resultElement.style.backgroundImage = "url(" + url + ")"
           resultElement.style.backgroundSize = "cover"
@@ -291,10 +292,10 @@ export default {
           resultElement = document.getElementById('result' + realStep.toString());
         } 
 
-        let url = `src/assets/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.png`
+        let url = `traits/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.png`
         if(step.value > 10) {
           let realStep = parseInt(step.value) - 11
-          url = `src/assets/${collections.value[realStep]}/${result}.png`
+          url = `traits/${collections.value[realStep]}/${result}.png`
         }
 
         if(step.value > 10) {
@@ -305,14 +306,14 @@ export default {
         
         if(step.value == 6) {
           // wallpapers are jpg format
-          url = `src/assets/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.jpg`
+          url = `traits/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.jpg`
           localStorage.setItem(route.query.tokenId + '/' + GLOBALS.NFT_ADDRESS, 'true')
         }
 
         if(step.value == 16) {
           // wallpapers are jpg format
           let realStep = 5
-          url = `src/assets/${collections.value[realStep]}/${result}.jpg`
+          url = `traits/${collections.value[realStep]}/${result}.jpg`
           localStorage.setItem(route.query.tokenId + '/' + GLOBALS.NFT_ADDRESS, 'true')
         }
 
@@ -422,12 +423,12 @@ export default {
   <div class="page-holder" v-if="step == 7 && !loading">
     <h1>Character #{{nftId}} </h1>
     <div class="char">
-      <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="width: 100%; position: absolute; left: 0"/>
-      <img :src="`src/assets/back/${resultItems[4]}.png`" style="width: 100%; position: absolute; left: 0"/> 
-      <img :src="`src/assets/body/${resultItems[0]}.png`" style="width: 100%; position: absolute; left: 0"> 
-      <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="width: 100%; position: absolute; left: 0"/> 
-      <img :src="`src/assets/gear/${resultItems[2]}.png`" style="width: 100%; position: absolute; left: 0"/> 
-      <img :src="`src/assets/extra/${resultItems[3]}.png`" style="width: 100%; position: absolute; left: 0"/>  
+      <img :src="`traits/background/${resultItems[5]}.jpg`" style="width: 100%; position: absolute; left: 0"/>
+      <img :src="`traits/back/${resultItems[4]}.png`" style="width: 100%; position: absolute; left: 0"/> 
+      <img :src="`traits/body/${resultItems[0]}.png`" style="width: 100%; position: absolute; left: 0"> 
+      <img :src="`traits/helmets/${resultItems[1]}.png`" style="width: 100%; position: absolute; left: 0"/> 
+      <img :src="`traits/gear/${resultItems[2]}.png`" style="width: 100%; position: absolute; left: 0"/> 
+      <img :src="`traits/extra/${resultItems[3]}.png`" style="width: 100%; position: absolute; left: 0"/>  
     </div>
     <div>
       <button id="spinButton" @click="toggleModal()" style="position: relative;">Respin a trait</button>
@@ -459,101 +460,101 @@ export default {
           <!-- <img src="../assets/helmets/1.png" /> -->
           <!-- body -->
           <template v-if="step == 1">
-          <img :src="`src/assets/${slot.collection}/${slot.image}.png`"/>
+          <img :src="`traits/${slot.collection}/${slot.image}.png`"/>
           </template>
 
           <!-- helmets -->
           <template v-if="step == 2">
-            <img :src="`src/assets/body/${resultItems[0]}.png`"> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`"> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/> 
           </template>
 
           <!-- gear -->
           <template v-if="step == 3">
-            <img :src="`src/assets/body/${resultItems[0]}.png`"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/> 
           </template>
           <!-- extra needs to move up -->
           <template v-if="step == 4">
-            <img :src="`src/assets/body/${resultItems[0]}.png`"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/body/${resultItems[0]}.png`"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/>  
           </template>
           <!-- back -->
           <template v-if="step == 5">
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/> 
 
           </template>
           <!-- background -->
           <template v-if="step == 6">
-            <img :src="`src/assets/${slot.collection}/${slot.image}.jpg`" style="position: absolute; left: 0"/>
-            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/${slot.collection}/${slot.image}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`traits/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
 
           <!-- rerolls -->
           <!-- reroll body -->
           <template v-if="step == 11">
-            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
-            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`traits/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
           <!-- reroll helmet -->
           <template v-if="step == 12">
-            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
-            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`traits/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
           <!-- reroll gear -->
           <template v-if="step == 13">
-            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
-            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`traits/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
           <!-- reroll extra -->
           <template v-if="step == 14">
-            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
-            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`traits/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
           </template>
           <!-- reroll back -->
           <template v-if="step == 15">
-            <img :src="`src/assets/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
-            <img :src="`src/assets/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/background/${resultItems[5]}.jpg`" style="position: absolute; left: 0"/>
+            <img :src="`traits/${slot.collection}/${slot.image}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
           <!-- reroll background -->
           <template v-if="step == 16">
-            <img :src="`src/assets/${slot.collection}/${slot.image}.jpg`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
-            <img :src="`src/assets/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
-            <img :src="`src/assets/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
+            <img :src="`traits/${slot.collection}/${slot.image}.jpg`" style="position: absolute; left: 0"> 
+            <img :src="`traits/back/${resultItems[4]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/body/${resultItems[0]}.png`" style="position: absolute; left: 0"> 
+            <img :src="`traits/helmets/${resultItems[1]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/gear/${resultItems[2]}.png`" style="position: absolute; left: 0"/> 
+            <img :src="`traits/extra/${resultItems[3]}.png`" style="position: absolute; left: 0"/>  
           </template>
 
         </div>
