@@ -244,10 +244,10 @@ export default {
             <h3 class="title">#{{item.id}} </h3>
             <!-- <img :src="`src/assets/gift.jpg`" v-if="!item.opened"> -->
             <div v-if="!item.opened" class="char">
-                <img src="../assets/question.png" style="position: absolute; left: 0"/>
+                <img src="../assets/question.png"/>
             </div>
             <div v-if="item.opened" class="char">
-                <img :src="`/traits/background/${item.traits[5]}.jpg`" style="position: absolute; left: 0"/>
+                <img :src="`/traits/background/${item.traits[5]}.jpg`" style="position: relative; left: 0"/>
                 <img :src="`/traits/back/${item.traits[4]}.png`" style="position: absolute; left: 0"/> 
                 <img :src="`/traits/body/${item.traits[0]}.png`" style="position: absolute; left: 0"> 
                 <img :src="`/traits/helmets/${item.traits[1]}.png`" style="position: absolute; left: 0"/> 
@@ -291,6 +291,16 @@ export default {
     width: 260px;
     height: 260px;
     position: relative;
+    @media(max-width: 880px) {
+        width: unset;
+        height: unset;
+    }
+    .img {
+        @media(max-width: 880px) {
+            width: 100%;
+            position: unset;
+        }
+    }
 }
 .mobreset {
     @media(max-width: 880px) {

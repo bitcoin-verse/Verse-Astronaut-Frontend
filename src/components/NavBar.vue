@@ -24,14 +24,14 @@ export default {
         };
 
         watchAccount(async (account) => {
-        connectedProvider.value = account.connector.name.toLowerCase()
-
          
         if(account.isConnected == true) {
             accountActive.value = true;
         } else {
             accountActive.value = false
         }
+        if(account.connector.name) connectedProvider.value = account.connector.name.toLowerCase()
+
     })
 
         return { account, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
