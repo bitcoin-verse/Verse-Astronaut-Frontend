@@ -593,7 +593,7 @@ function updateResultElement(stepNumber, result) {
 }
 
 .trait-selector {
-  -webkit-appearance: none;
+  appearance: none;
   height: 32px;
   margin-right: 5px;
   font-size: 15px;
