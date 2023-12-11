@@ -582,10 +582,9 @@ function updateResultElement(stepNumber, result) {
 
 <style lang="scss" scoped>
   @keyframes reel-spin {
-      0% { transform: none; filter: blur(0); }
+      0% { -webkit-transform: translate3d(0, 0, 0); filter: blur(0); }
       50% { filter: blur(2px); }
       100% { 
-        transform: translate3d(-800%, 0, 0); 
         -ms-transform: translate3d(-800%, 0, 0); 
         -webkit-transform: translate3d(-800%, 0, 0); 
         -moz-transform: translate3d(-800%, 0, 0); 
@@ -594,8 +593,14 @@ function updateResultElement(stepNumber, result) {
   }
 
 
+
+
+
+
 .trgt-enter-active {
   animation: reel-spin 10s;
+  -webkit-backface-visibility: hidden;
+	-webkit-perspective: 1000;
 }
 
 .trait-selector {
