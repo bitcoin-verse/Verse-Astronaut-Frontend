@@ -226,7 +226,6 @@ export default {
     // collection name is name of type eg body, helmet
     // result is the result of the spin eg 5 is id 5 (or /helmet/5.png)
     function spinReels(collectionName, result) {
-      console.log(result, "resultSpinReels")
       spinLoading.value = true
       prepNextFrame.value = true
       let winSlot = document.getElementById('slot25');
@@ -267,7 +266,7 @@ export default {
             { transform: 'none', filter: 'blur(0)' },
             { filter: 'blur(2px)', offset: 0.5 },
             {
-                transform: `translateX(-${newTranslateXValue}%)`,
+                transform: `translate3d(-${newTranslateXValue}%, 0,0)`,
                 filter: 'blur(0)',
             },
         ],
