@@ -597,6 +597,7 @@ function updateResultElement(stepNumber, result) {
 
 
 .trgt-enter-active {
+  will-change: transform;
   animation: reel-spin 10s;
   -webkit-backface-visibility: hidden;
 	-webkit-perspective: 1000;
@@ -846,6 +847,7 @@ function updateResultElement(stepNumber, result) {
       }
     }
     #slot-holder {
+      will-change: transform;
       display: flex;
     }
     .slot {
