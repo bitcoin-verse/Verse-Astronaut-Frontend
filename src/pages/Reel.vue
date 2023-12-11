@@ -453,6 +453,7 @@ function updateResultElement(stepNumber, result) {
           <div class="squaretop"></div>
           <div class="squarebottom"></div>
         </div>
+        <Transition>
         <div id="slot-holder">
           <div
             v-for="(slot, index) in slots"
@@ -562,6 +563,7 @@ function updateResultElement(stepNumber, result) {
 
         </div>
         </div>
+        </Transition>
       </div>
     </div>
 
