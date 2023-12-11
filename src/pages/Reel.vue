@@ -55,7 +55,6 @@ export default {
               })
 
               rerollValue.value = rerollArray[trait]
-              console.log("prepreroll", rerollValue.value)
           } else {
             console.log("Sth went wrong")
           }
@@ -230,7 +229,7 @@ export default {
       console.log(result, "resultSpinReels")
       spinLoading.value = true
       prepNextFrame.value = true
-      let winSlot = document.getElementById('slot42');
+      let winSlot = document.getElementById('slot25');
       if (winSlot) {
           winSlot.style.border = '2px solid white';
           winSlot.style.animation = '';
@@ -242,7 +241,7 @@ export default {
       }
       
       for (let i = 0; i < 36; i++) {
-        if(i == 32) {
+        if(i == 15) {
           slots.value.push({ collection: collectionName, image: result });
         } else {
           slots.value.push({ collection: collectionName, image: getRandomIndex(collectionName) });
@@ -768,17 +767,17 @@ export default {
     width: 200px;
  }
  .reel-holder {
-    margin-left: calc(50% - 480px);
     margin-top: 20px;
     position: relative;
 
  }
  #reel {
-    width: 940px;
+    margin-left: calc(50% - 284px);
+    width: 538px;
+    border-radius: 10px;
     height: 185px;
-    padding: 10px;
-    border: 2px solid #313e57;
-    background-color: #030c14;
+    padding: 30px 0px;
+    background-color: #000000;
     position: relative;
     overflow: hidden;
     
@@ -805,7 +804,7 @@ export default {
         background-color: #ff0286;
         transform: rotate(45deg);
         position: relative;
-        top: 180px;
+        top: 218px;
         left: -8.3px;
       }
     }
@@ -814,10 +813,9 @@ export default {
     }
     .slot {
         position: relative;
-        border: 2px solid white;
         z-index: 2;
         width: 176px;
-        margin-right: 10px;
+        margin-right: 5px;
         flex-shrink: 0;
         height: 176px;
         background-color: white;

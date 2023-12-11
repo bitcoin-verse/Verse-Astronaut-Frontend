@@ -352,7 +352,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         <!-- modal for loading -->
         <div class="modal" v-if="modalLoading">
             <div class="modal-head">
-                <h3 class="title">Buy Astronaut</h3>
+                <h3 class="title">Buy Character</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider" v-if="buyStep < 3">
@@ -384,7 +384,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 <div class="modal-body">
                     <div class="change-network"></div>
                     <h3 class="title">Wrong Network Selected</h3>
-                    <p class="subtext">Verse Scratch uses the Polygon network. Please change the network in your connected wallet or click the button below to switch automatically.</p>
+                    <p class="subtext">Verse Voyager uses the Polygon network. Please change the network in your connected wallet or click the button below to switch automatically.</p>
                     <a class="" target="_blank" @click="requestNetworkChange()"><button class="btn verse-wide">Switch Wallet to Polygon</button></a>
                 </div>
             </div>
@@ -394,7 +394,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         <div class="modal" v-if="buyStep == 0 && !modalLoading && correctNetwork">
             <div>
             <div class="modal-head">
-                <h3 class="title">Buy Astronaut</h3>
+                <h3 class="title">Buy Character</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider">
@@ -413,7 +413,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         <div class="modal" v-if="buyStep == 1 && !modalLoading && correctNetwork">
             <div>
                 <div class="modal-head">
-                    <h3 class="title">Buy Astronaut</h3>
+                    <h3 class="title">Buy Character</h3>
                     <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
                 </div>
                 <div class="modal-divider">
@@ -422,7 +422,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 <div class="modal-body">
                     <div class="img-verse"></div>
                     <h3 class="title">Not Enough Verse</h3>
-                    <p class="subtext short">You need <span>3000 VERSE</span> on Polygon in order to purchase a lottery ticket</p>
+                    <p class="subtext short">You need <span>3000 VERSE</span> on Polygon in order to purchase a character</p>
 
                     <div class="wallet-balance">
                         <p class="balance-title">WALLET BALANCE</p>
@@ -464,7 +464,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         <!-- purchase modal -->
         <div class="modal" v-if="buyStep == 3 && !modalLoading && correctNetwork">
             <div class="modal-head">
-                <h3 class="title">Buy Astronaut</h3>
+                <h3 class="title">Buy Character</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider">
@@ -472,7 +472,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             </div>  
             <div class="modal-body">
                 <div class="img-purchase"></div>
-                <h3 class="title">Buy Astronaut</h3>
+                <h3 class="title">Buy Character</h3>
                 <p class="subtext">It seems you have <span>3000 VERSE</span> in your wallet and contract approval has been set!</p>
                 <div class="gift-toggle-holder" :class="{ opened: giftTicket }">
                     <h3 class="title">Send character as gift?</h3>
@@ -506,7 +506,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         <!-- normal finish -->
         <div class="modal" v-if="buyStep == 4 && !modalLoading && correctNetwork">
             <div class="modal-head">
-                <h3 class="title">Buy Astronaut</h3>
+                <h3 class="title">Buy Character</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider">
@@ -530,9 +530,9 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                     </div>
                     <div v-if="!giftTicket">
                         <h3 class="title">Character Bought!</h3>
-                        <p class="subtext short" style="margin-bottom: 0;">Time to scratch your ticket and test your luck!</p>
+                        <p class="subtext short" style="margin-bottom: 0;">Time to spin the reel and create your Voyager!</p>
                         <!-- change this text for gifted tickets -->
-                        <a class="" href="/tickets"><button class="btn verse-wide">View your characters!</button></a>
+                        <a class="" href="/tickets"><button class="btn verse-wide">View your Characters!</button></a>
                     </div>
                 </div>
             </div>
@@ -540,22 +540,20 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     </div>
     <div class="page">
 
+        <div class="jumbo-mob"></div>
+
         <div class="float-holder clearfix">
             <div class="card-info">
-                <h2>Verse Astronauts</h2>
+                <h2>Verse Voyagers</h2>
                 <h3 class="tit" style="margin-top: 10px; margin-bottom: 20px; ">On-Chain NFT Builder</h3>
 
 
             <p class="subtitle" style="font-weight: 300; margin-bottom: 20px; padding-left: 0;">
-                Are you ready to embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations, the possibilities are endless!            </p>
+                Are you ready to embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations!            </p>
 
-            <button class="btn verse-wide half" @click="toggleModal()"><i class="fa-solid fa-plus-circle"></i> New Astronaut</button>
-            <a href="/tickets"><button class="btn verse-wide half secondary" ><i class="fa-solid fa-list"></i> My Astronauts</button></a>
+            <button class="btn verse-wide" @click="toggleModal()">Create New Character</button>
+            <a href="/tickets"><button class="btn verse-wide secondary" style="margin-top: 10px;" >My Characters</button></a>
         
-        </div>
-
-        <div class="card-holder">
-            <!-- <img class="animate__animated animate__rotateInUpLeft"  src="screenshot.png"> -->
         </div>
         </div>
     </div>
@@ -563,6 +561,24 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
 
 
 <style lang="scss" scoped>
+.jumbo-mob {
+    background-image: url("../assets/bg-mobile.png")!important;
+    width: 100%;
+    height: 500px;
+    position: absolute;
+    background-size: cover;
+    background-repeat: no-repeat;
+    // justify-content: center;
+    // display: flex;
+    img {
+        max-width: 100%;
+        margin-top: 20px;
+        background-size: cover;
+    }
+    @media(min-width: 500px) {
+        display: none;
+    }
+}
 .closeBuy {
     right: calc(50% - 300px);
     position: absolute; top: 25px; 
@@ -612,6 +628,7 @@ iframe {
     width: 100%!important;
 }
 .subtitle {
+    color: #C5CEDB;
     width: 100%;
 }
 .p-gift {
@@ -811,13 +828,19 @@ iframe {
     padding-top: 80px;
     padding-left: 0;
     float: left;
-    width: 50%;
-    margin-left: 25%;
+    width: 27%;
+    margin-left: 15%;
     color: white;
     padding-right: 0;
     @media(max-width: 880px) {
-        width: 70%;
-        margin-left: 15%;
+        width: calc(100% - 40px);
+        margin-left: 0;
+        padding: 20px;
+    }
+    @media(max-width: 500px) {
+        z-index: 2;
+        margin-top: 50vh;
+        position: relative;
     }
 
     h2 {
@@ -832,54 +855,24 @@ iframe {
         font-weight: 500;
     }
 }
-
-
-.card-holder {
-    @media(max-width: 880px) {
-        display: none;
-    }
-    left: 40%;
-    float: right;
-    width: 43%;
-    min-width: 240px;
-    margin-right: 2%;
-    margin-top: 90px;
-    border-radius: 6px;
-    padding-left: 0px;
-    background-color: transparent;
-
-
-    img {
-        border-radius: 8px;
-        width: 100%;
-            //  box-shadow: 5px 6px 5px 1px rgba(255,255,255,0.1);
-        // -webkit-box-shadow: 5px 8px 5px 1px rgba(255,255,255,0.2);
-        // -moz-box-shadow: 5px 8px 5px 1px rgba(255,255,255,0.2);
-        }
-    
-    h2 {
-        text-align: center;
-    }
-
-    .info {
-        color: white;
-        text-align: center;
-        font-size: 14px;
-        width: 100%;
-    }
-}
 .page {
+
     text-align: center;
     @media(max-width: 880px) {
         width: 100%;
+        padding-top: 80px;
+        height: calc(100vh - 50px);
+        height: calc(100dvh - 50px);
+    }
+    @media(max-width: 500px) {
         padding-top: 0;
-        height: calc(100vh - 100px);
-        
     }
     height: unset;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 120px);
+    min-height: calc(100dvh - 120px);
     width: 100%;
-    padding-top: 50px;
+    padding-top: 150px;
+    overflow: unset;
 }
 
 h2 {

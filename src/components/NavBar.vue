@@ -1,16 +1,22 @@
 <script>
-import { getAccount, watchAccount, disconnect } from '@wagmi/core'
+import { getAccount, watchAccount, disconnect, getNetwork } from '@wagmi/core'
 import { useWeb3Modal } from '@web3modal/wagmi/vue'
 import { ref } from 'vue';
+import { createPublicClient, http } from 'viem'
+import { mainnet } from 'viem/chains'
 
 export default {
     setup() {
         let account = getAccount()
         let modal = useWeb3Modal()
+        let isWallet = ref(false)
         let accountActive = ref(false)
         let connectedProvider = ref("")
+        let ensUserName = ref("");
 
-        function openWalletModal(refresh) {
+        sessionStorage.getItem('isWallet') === "true" ? isWallet.value = true : isWallet.value = false
+
+        function openWalletModal(refresh) {            
             if(refresh) disconnect()
             modal.open()
         }
@@ -23,18 +29,28 @@ export default {
             return `${match[1]}…${match[2]}`;
         };
 
-        watchAccount(async (account) => {
-         
+        watchAccount(async (account) => { 
         if(account.isConnected == true) {
             accountActive.value = true;
+            let { chain  } = getNetwork()
+            
+            const publicClient = createPublicClient({ 
+                chain: mainnet,
+                transport: http()
+            })
+
+            const ensName = await publicClient.getEnsName({
+                address: getAccount().address
+            })
+            if(ensName) ensUserName.value = ensName
+
         } else {
             accountActive.value = false
         }
-        if(account.connector.name) connectedProvider.value = account.connector.name.toLowerCase()
-
+        connectedProvider.value = account.connector.name.toLowerCase()
     })
 
-        return { account, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
+        return { account, isWallet, ensUserName, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
     }
     
 }
@@ -42,33 +58,63 @@ export default {
 
 <template>
     <div class="navbar-mobile">
-        <a href="verse.bitcoin.com" target="_blank">
+        <a v-if="!isWallet" href="https://verse.bitcoin.com" target="_blank">
             <div class="nav-chev"></div>
             <div class="nav-verse"></div>
         </a>
-        <h3 class="title-nav">Verse Labs</h3>
+        <a v-if="isWallet" href="https://verse.bitcoin.com">
+            <div class="nav-chev"></div>
+            <div class="nav-verse"></div>
+        </a>
+        <h3 class="title-nav">Verse Voyagers</h3>
         
         <button class="btn verse-nav" v-if="!accountActive" @click="openWalletModal(true)">Connect</button>
-        <button class="btn verse-nav mobile connected" v-if="accountActive" @click="openWalletModal(false)"><div :class="'provider-logo ' + connectedProvider"></div></button>
+        <button class="btn verse-nav mobile connected" v-if="accountActive && !isWallet" @click="openWalletModal(false)"><div :class="'provider-logo ' + connectedProvider"></div></button>
+        <button class="btn verse-nav mobile connected" v-if="accountActive && isWallet" @click="openWalletModal(false)"><div :class="'provider-logo bitcoin'"></div></button>
+
     </div>
     <div class="navbar">
-        <a style="cursor: pointer;" href="/"><div class="logo">
-            <h2>Verse Labs</h2>
-        </div></a>
-        <!-- <div class="links">
-            <ul>
-                <li><a href="/" >Get Ticket</a></li>
-                <li><a href="/tickets">View Tickets</a></li>
-            </ul>
-        </div> -->
+        <a style="cursor: pointer;" href="/">
+            <div class="logo">
+                <a v-if="!isWallet" href="https://verse.bitcoin.com" target="_blank">
+                    <div class="nav-chev"></div>
+                    <div class="nav-verse"></div>
+                </a>
+                <a v-if="isWallet" href="https://verse.bitcoin.com">
+                    <div class="nav-chev"></div>
+                    <div class="nav-verse"></div>
+                </a>
+            </div>
+        </a>
+        <h3 class="title-nav-desk">Verse Voyagers</h3>
+
         <div class="wallet">
             <button class="btn verse-nav" v-if="!accountActive" @click="openWalletModal(true)">Connect Wallet</button>
-            <button class="btn verse-nav connected" v-if="accountActive" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo ' + connectedProvider"></div></button>
+            <div v-if="ensUserName">
+                <button class="btn verse-nav connected" v-if="accountActive && !isWallet" @click="openWalletModal(false)">{{ ensUserName}} <div :class="'provider-logo ' + connectedProvider"></div></button>
+                 <button class="btn verse-nav connected" v-if="accountActive && isWallet" @click="openWalletModal(false)">{{ ensUserName }} <div :class="'provider-logo bitcoin'"></div></button>
+            </div>
+            <div v-if="!ensUserName">
+                <button class="btn verse-nav connected" v-if="accountActive && !isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo ' + connectedProvider"></div></button>
+                 <button class="btn verse-nav connected" v-if="accountActive && isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo bitcoin'"></div></button>
+            </div>
         </div>
     </div>
 </template>
 
 <style lang="scss">
+.title-nav-desk {
+    color: white;
+    position: absolute;
+    left: calc(50% - 200px);
+    top: 20px;
+    text-align: center;
+    width: 400px;
+    font-family: Barlow, Helvetica, sans-serif;
+    margin: 0 auto;
+    font-size: 22px;
+    font-weight: 600;
+}
 
 .verse-nav {
     border: none;
@@ -81,9 +127,9 @@ export default {
     text-wrap: nowrap;
     border-radius: 100px;
     font-family: Barlow, Helvetica, sans-serif;
+    background: linear-gradient(rgb(14, 190, 240) 0%, rgb(0, 133, 255) 100%);
     font-weight: 600;
     color: rgb(255, 255, 255);
-    background: linear-gradient(rgb(14, 190, 240) 0%, rgb(0, 133, 255) 100%);
     font-size: 14px;
     height: 36px;
     padding: 0px 16px;
@@ -91,8 +137,10 @@ export default {
     &.mobile {
         padding-right: 21px!important;
         background: #3f526e!important;
+        background: linear-gradient(rgb(14, 190, 240) 0%, rgb(0, 133, 255) 100%);
     }
     &.connected {
+        background: linear-gradient(180deg, #425472 0%, #313E57 100%);
         padding-right: 40px;
     }
 
@@ -105,12 +153,21 @@ export default {
         top: 4.5px;
         background-size: cover;
 
+        &.bitcoin {
+            background-image: url("./../assets/icons/bitcoincom.png");
+            right: 4.3px;
+            top: 4.2px;
+        }
         &.walletconnect {
             background-image: url("./../assets/icons/wc-logo.png");
+            right: 4.3px;
+            top: 4.2px;
         }
 
         &.metamask {
             background-image: url("./../assets/icons/mm-logo.png");
+            right: 5.3px;
+            top: 4.5px;
         }
     }
     &:hover {
@@ -122,7 +179,7 @@ export default {
 }
 .btn-connect {
     @media(max-width: 880px) {
-        width: 100%;
+    width: 100%;
     position: fixed;
     bottom: 0;
     font-weight: 600;
@@ -147,11 +204,32 @@ export default {
     cursor: pointer;
 }
 
+    a {
+        .nav-chev {
+            position: absolute;
+            left: 17px;
+            top: 24px;
+            background-image: url("./../assets/icons/chev.png");
+            background-size: cover;
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-verse {
+            position: absolute;
+            left: 36px;
+            top: 18px;
+            background-image: url("./../assets/icons/logo-full.png");
+            background-size: cover;
+            width: 105px;
+            height: 32px;
+        }
+    }
+
     .navbar-mobile {
         background-color: black;
         width: 100%;
         height: 56px;
-        position: relative;
         background: linear-gradient(0deg, #0F1823, #0F1823),linear-gradient(0deg, #1A2231, #1A2231);
 
 
@@ -205,13 +283,19 @@ export default {
         @media(max-width: 879px) {
             display: none;
         }
+        position: fixed;
+        z-index: 3;
+        top: 0;
         display: block;
         width: 100%;
+        left: 0;
         height: 70px;
+        background: rgba(3, 12, 20, 1);
         div.logo {
             color: white;
             padding-left: 30px;
             width: 32%;
+            position: absolute;
             margin: 0;
             float: left;
             @media(max-width: 880px) {

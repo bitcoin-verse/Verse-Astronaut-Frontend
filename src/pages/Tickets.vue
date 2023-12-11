@@ -206,9 +206,9 @@ export default {
             </div>
             <div class="modal-body short">
                 <div class="img-gift"></div>
-                <h3 class="title">Gift Ticket Received!</h3>
-                <p class="subtext">Somebody has sent a scratch ticket to you. Your ticket has a chance to win <span>100.000 Verse!</span>
-                <br><br>No transaction needed to scratch. Connect your account (<span> {{ giftAccount.slice(0, 7) }}..</span>) to redeem the ticket.
+                <h3 class="title">Voyager Gift Received!</h3>
+                <p class="subtext">Somebody has sent a free voyager spin to you. Use it to roll a unique character
+                <br><br>No transaction needed to create a character. Connect your account (<span> {{ giftAccount.slice(0, 7) }}..</span>) to redeem the ticket.
                 </p>
                 
                 <a @click="closeGiftModal(true)" v-if="accountActive == false"><button class="btn verse-wide fixBottomMobile">Connect and Redeem</button></a>
@@ -223,7 +223,7 @@ export default {
 
 <Reel v-if="openDetail" :detailNFT="detailNFT"/>
 
-<div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div>
+<!-- <div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div> -->
 <div class="page" v-if="!openDetail">
     <div class="head">
         <h2 class="tickhead">My Characters</h2>
@@ -241,7 +241,7 @@ export default {
             <h3>Couldn't find any characters in your connected wallet. Click <a href="/" style="text-decoration: none; font-weight: 600; color: rgb(250, 196, 59);">here</a> to buy a character </h3>
         </div>
         <div class="ticket" v-for="item, index in characterList()">
-            <h3 class="title">#{{item.id}} </h3>
+            <h3 class="title">Voyager #{{item.id}} </h3>
             <!-- <img :src="`src/assets/gift.jpg`" v-if="!item.opened"> -->
             <div v-if="!item.opened" class="char">
                 <img src="../assets/question.png"/>
@@ -255,7 +255,7 @@ export default {
                 <img :src="`/traits/extra/${item.traits[3]}.png`" style="position: absolute; left: 0"/>  
             </div>
 
-            <button v-if="item.opened" class="btn-action main" @click="openReel(item, true)">View Character</button>
+            <button v-if="item.opened" class="btn-action main secondary" @click="openReel(item, true)">View Character</button>
             <button v-if="!item.opened" class="btn-action main" @click="openReel(item)">Create Character</button>
         </div>
     </div>
@@ -316,6 +316,7 @@ export default {
 }
 .title {
     margin-bottom: 0;
+    font-size: 18px;
 }
 .status {
     font-size: 13px;
@@ -324,7 +325,7 @@ export default {
 .btn-action {
     cursor: pointer;
     margin-top: 10px;
-    border-radius: 5px;
+    border-radius: 20px;
     background-color: white;
     color: black;
     border: none;
@@ -338,9 +339,9 @@ export default {
         width: 100%;
         color: white;
         font-weight: 600;
-        background-image: radial-gradient(circle farthest-corner at 10% 20%, rgb(51 249 238) 0%, rgb(19 255 179) 100.2%);
-        background: radial-gradient(circle farthest-corner at 10% 20%, rgb(249, 232, 51) 0%, rgb(250, 196, 59) 100.2%);
-        background: linear-gradient(rgb(14, 190, 240) 0%, rgb(0, 133, 255) 100%);
+        
+        background: linear-gradient(180deg, #425472 0%, #313E57 100%);
+
     }
 
     &.dis {
@@ -440,9 +441,9 @@ div.tickets {
 }
 .page {
     width: 100%;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 50px);
     padding-left: 0;
-    overflow: scroll;
+    overflow: auto;
 }
 
 </style>
