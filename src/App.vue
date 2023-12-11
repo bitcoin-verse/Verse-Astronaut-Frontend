@@ -459,15 +459,15 @@ body {
   margin: 0;
   font-family: 'Barlow', sans-serif;
   background-color: #030c14;
-  background-image: url("./assets/bg.png")!important;
-  background-size: cover;
-  background-repeat: no-repeat;
+  // background-image: url("./assets/bg.png")!important;
+  // background-size: cover;
+  // background-repeat: no-repeat;
   background-color: #37162f;
   overflow: auto;
   @media(max-width: 500px) {
-    background-image: none!important;
-    background-size: 130%!important;
-    background-repeat: no-repeat;
+    // background-image: none!important;
+    // background-size: 130%!important;
+    // background-repeat: no-repeat;
   }
 }
 

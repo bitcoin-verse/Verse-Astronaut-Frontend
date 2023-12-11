@@ -420,7 +420,7 @@ export default {
 
   <!-- finished character -->
   <div class="page-holder" v-if="step == 7 && !loading">
-    <h1>Character #{{nftId}} </h1>
+    <h1>Voyager #{{nftId}} </h1>
     <div class="char">
       <img :src="`traits/background/${resultItems[5]}.jpg`" style="width: 100%; position: absolute; left: 0"/>
       <img :src="`traits/back/${resultItems[4]}.png`" style="width: 100%; position: absolute; left: 0"/> 
@@ -721,9 +721,13 @@ export default {
   font-size: 18px;
  }
  .page-holder {
-    padding-top: 100px;
+    padding-top: 150px;
     text-align: center;
     color: white;
+    background-image: url("../assets/bg-blur-dark.png");
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-size: cover;
  }
  #spinButtonSmall {
 

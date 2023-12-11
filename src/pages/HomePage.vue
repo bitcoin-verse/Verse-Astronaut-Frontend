@@ -825,6 +825,7 @@ iframe {
 }
 .card-info {
     padding: 30px;
+    z-index: 1;
     padding-top: 80px;
     padding-left: 0;
     float: left;
@@ -838,7 +839,6 @@ iframe {
         padding: 20px;
     }
     @media(max-width: 500px) {
-        z-index: 2;
         margin-top: 50vh;
         position: relative;
     }
@@ -856,7 +856,7 @@ iframe {
     }
 }
 .page {
-
+    background-image: url("../assets/bg.png");
     text-align: center;
     @media(max-width: 880px) {
         width: 100%;

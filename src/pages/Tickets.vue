@@ -222,7 +222,6 @@ export default {
 
 
 <Reel v-if="openDetail" :detailNFT="detailNFT"/>
-
 <!-- <div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div> -->
 <div class="page" v-if="!openDetail">
     <div class="head">
@@ -440,10 +439,18 @@ div.tickets {
     color: white;
 }
 .page {
+    background-image: url("../assets/bg-blur-dark.png");
+    background-size: cover;
     width: 100%;
-    height: calc(100vh - 50px);
+    height: calc(100vh);
     padding-left: 0;
     overflow: auto;
+    @media(max-width: 880px) {
+        // background-image: url("../assets/bg-blur.png");
+    }
+    @media(max-width: 500px) {
+        // background-image: none;
+    }
 }
 
 </style>
