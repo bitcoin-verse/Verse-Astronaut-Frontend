@@ -223,107 +223,112 @@ export default {
       return numbers[Math.floor(Math.random() * numbers.length)];
     }
 
-    // collection name is name of type eg body, helmet
-    // result is the result of the spin eg 5 is id 5 (or /helmet/5.png)
     function spinReels(collectionName, result) {
-      spinLoading.value = true
-      prepNextFrame.value = true
-      let winSlot = document.getElementById('slot25');
-      if (winSlot) {
-          winSlot.style.border = '2px solid white';
-          winSlot.style.animation = '';
-      }
-      slots.value = []
+  console.log(result, "resultSpinReels");
+  spinLoading.value = true;
+  prepNextFrame.value = true;
 
-      for(let i=0; i < initialSlots.value.length; i++) {
-        slots.value.push({collection: initialSlots.value[i].collection, image: initialSlots.value[i].image })
-      }
-      
-      for (let i = 0; i < 36; i++) {
-        if(i == 15) {
-          slots.value.push({ collection: collectionName, image: result });
-        } else {
-          slots.value.push({ collection: collectionName, image: getRandomIndex(collectionName) });
-        }
-      }
+  let winSlot = document.getElementById('slot25');
+  if (winSlot) {
+    winSlot.style.border = '2px solid white';
+    winSlot.style.animation = '';
+  }
 
-      const reelElement = document.getElementById('slot-holder');
+  slots.value = [...initialSlots.value];
 
-      const oldDuration = 1;  // Old duration in seconds
-      const newDuration = 10;  // New duration in seconds, change this to whatever value you want
-
-
-      // min-max of needle landing
-      const min = 79.52;
-      const max = 81.28;
-      let range =  Math.random() * (max - min) + min;
-
-      // Calculate new TranslateX value based on the new duration
-      const newTranslateXValue = (newDuration / oldDuration) * range
-      
-        anim.value = reelElement.animate(
-        [
-            { transform: 'none', filter: 'blur(0)' },
-            { filter: 'blur(2px)', offset: 0.5 },
-            {
-                transform: `translate3d(-${newTranslateXValue}%, 0,0)`,
-                filter: 'blur(0)',
-            },
-        ],
-        {
-            duration: newDuration * 1000,  // Update duration here
-            easing: 'ease-in-out',
-            fill: 'forwards' 
-        },
-      )
-
-      setTimeout(() => {
-        let winSlot = document.getElementById('slot42');
-        winSlot.style.border = '2px solid #ff0486';
-        winSlot.style.animation = 'blinker 2s linear infinite';
-        spinLoading.value = false
-
-        let resultElement = document.getElementById('result' + step.value);
-
-        if(step.value > 10) {
-          let realStep = parseInt(step.value) - 10
-          resultElement = document.getElementById('result' + realStep.toString());
-        } 
-
-        let url = `traits/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.png`
-        if(step.value > 10) {
-          let realStep = parseInt(step.value) - 11
-          url = `traits/${collections.value[realStep]}/${result}.png`
-        }
-
-        if(step.value > 10) {
-          // update local values
-          resultItems.value[step.value - 11] = result
-        }
-
-        
-        if(step.value == 6) {
-          // wallpapers are jpg format
-          url = `traits/${collections.value[step.value - 1]}/${resultItems.value[step.value - 1]}.jpg`
-          localStorage.setItem(route.query.tokenId + '/' + GLOBALS.NFT_ADDRESS, 'true')
-        }
-
-        if(step.value == 16) {
-          // wallpapers are jpg format
-          let realStep = 5
-          url = `traits/${collections.value[realStep]}/${result}.jpg`
-          localStorage.setItem(route.query.tokenId + '/' + GLOBALS.NFT_ADDRESS, 'true')
-        }
-
-        resultElement.style.backgroundImage = "url(" + url + ")"
-        resultElement.style.backgroundSize = "cover"
-        resultElement.style.animation = 'blinker 2s linear infinite';
-        
-        const resultLabel = document.getElementById(`result${step.value}label`);
-        resultLabel.style.display = "none";
-
-      }, 10300)
+  for (let i = 0; i < 36; i++) {
+    if (i === 15) {
+      slots.value.push({ collection: collectionName, image: result });
+    } else {
+      slots.value.push({ collection: collectionName, image: getRandomIndex(collectionName) });
     }
+  }
+
+  const reelElement = document.getElementById('slot-holder');
+  const oldDuration = 1;  // Old duration in seconds
+  const newDuration = 10;  // New duration in seconds
+
+  // min-max of needle landing
+  const min = 79.52;
+  const max = 81.28;
+  let range = Math.random() * (max - min) + min;
+
+  // Calculate new TranslateX value based on the new duration
+  const newTranslateXValue = (newDuration / oldDuration) * range;
+
+  // Create a unique name for the keyframes
+  const animationName = `spinAnimation-${Math.round(Math.random() * 10000)}`;
+
+  // Define keyframes
+  const keyframes = `
+    @-webkit-keyframes ${animationName} {
+      0% { transform: none; filter: blur(0); }
+      50% { filter: blur(2px); }
+      100% { transform: translate3d(-${newTranslateXValue}%, 0, 0); filter: blur(0); }
+    }
+    @keyframes ${animationName} {
+      0% { transform: none; filter: blur(0); }
+      50% { filter: blur(2px); }
+      100% { transform: translate3d(-${newTranslateXValue}%, 0, 0); filter: blur(0); }
+    }
+  `;
+
+  // Append keyframes to the document
+  const styleSheet = document.createElement('style');
+  styleSheet.type = 'text/css';
+  styleSheet.innerText = keyframes;
+  document.head.appendChild(styleSheet);
+
+  // Apply the animation
+  reelElement.style.webkitAnimation = `${animationName} ${newDuration}s ease-in-out forwards`;
+  reelElement.style.animation = `${animationName} ${newDuration}s ease-in-out forwards`;
+
+  // Clean up after the animation is complete
+  setTimeout(() => {
+    reelElement.style.webkitAnimation = '';
+    reelElement.style.animation = '';
+    document.head.removeChild(styleSheet);
+
+    // Update the result element after the animation
+    updateResultElement(step.value, result);
+
+    let winSlot = document.getElementById('slot42');
+    if (winSlot) {
+      winSlot.style.border = '2px solid #ff0486';
+      winSlot.style.animation = 'blinker 2s linear infinite';
+    }
+    spinLoading.value = false;
+  }, newDuration * 1000 + 300);
+}
+
+function updateResultElement(stepNumber, result) {
+  let resultElement = document.getElementById('result' + stepNumber);
+  if (stepNumber > 10) {
+    let realStep = stepNumber - 10;
+    resultElement = document.getElementById('result' + realStep);
+  } 
+
+  let url = `traits/${collections.value[stepNumber - 1]}/${resultItems.value[stepNumber - 1]}.png`;
+  if (stepNumber > 10) {
+    let realStep = stepNumber - 11;
+    url = `traits/${collections.value[realStep]}/${result}.png`;
+  }
+
+  if (stepNumber === 6 || stepNumber === 16) {
+    url = `traits/${collections.value[stepNumber - 1]}/${resultItems.value[stepNumber - 1]}.jpg`;
+  }
+
+  if (resultElement) {
+    resultElement.style.backgroundImage = "url(" + url + ")";
+    resultElement.style.backgroundSize = "cover";
+    resultElement.style.animation = 'blinker 2s linear infinite';
+  }
+
+  const resultLabel = document.getElementById(`result${stepNumber}label`);
+  if (resultLabel) {
+    resultLabel.style.display = "none";
+  }
+}
 
 
     return {
