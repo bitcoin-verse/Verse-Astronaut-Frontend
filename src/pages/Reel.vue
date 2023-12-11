@@ -584,11 +584,17 @@ function updateResultElement(stepNumber, result) {
   @keyframes reel-spin {
       0% { transform: none; filter: blur(0); }
       50% { filter: blur(2px); }
-      100% { transform: translate3d(-800%, 0, 0); filter: blur(0); }
+      100% { 
+        transform: translate3d(-800%, 0, 0); 
+        -ms-transform: translate3d(-800%, 0, 0); 
+        -webkit-transform: translate3d(-800%, 0, 0); 
+        -moz-transform: translate3d(-800%, 0, 0); 
+        -o-transform: translate3d(-800%, 0, 0); 
+        filter: blur(0); }
   }
 
 
-  .trgt-enter-active {
+.trgt-enter-active {
   animation: reel-spin 10s;
 }
 
