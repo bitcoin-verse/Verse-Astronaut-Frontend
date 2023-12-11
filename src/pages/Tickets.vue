@@ -225,8 +225,12 @@ export default {
 <!-- <div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div> -->
 <div class="page" v-if="!openDetail">
     <div class="head">
-        <h2 class="tickhead">My Characters</h2>
+        <h2 class="tickhead">My Voyagers
+
+            <a href="/?purchase-intent=true"><button class="btn verse-wide" href="">Buy Ticket</button></a>
+        </h2>
         <div class="tickconnect" v-if="!accountActive">Connect your wallet to view your characters. </div>
+
     </div>
 
     <div class="tickets" v-if="accountActive && loading">
@@ -355,8 +359,25 @@ export default {
     text-align: center;
 }
 .tickhead {
+    padding-left: 80px;
+    // @media(max-width: 880px) {
+    //     display: none;
+    // }
     @media(max-width: 880px) {
-        display: none;
+        padding-left: 8px;
+    }
+    button {
+        position: absolute;
+        right: 85px;
+        font-size: 14px;
+        top: 95px;
+        width: 115px;
+        height: 36px;
+        @media(max-width: 880px) {
+            // top: -25px;
+            top: 65px;
+            right: 24px;
+        }
     }
 }
 
@@ -400,6 +421,8 @@ div.tickets {
     display: inline-block;
     margin-bottom: 500px;
     padding-left: 100px;
+    overflow: auto;
+    height: 70vh;
     padding-top: 20px;
     @media(max-width: 880px) {
         width: calc(100% - 10px);
@@ -431,24 +454,24 @@ div.tickets {
     }
 }
 .head {
-    @media(max-width: 880px) {
-       text-align : center;
-       padding-left: 0;
-    }
-    padding-left: 100px;
+
+    padding-left: 20px;
     color: white;
 }
 .page {
     background-image: url("../assets/bg-blur-dark.png");
     background-size: cover;
     width: 100%;
+    padding-top: 100px;
     height: calc(100vh);
     padding-left: 0;
-    overflow: auto;
+    overflow: hidden;
     @media(max-width: 880px) {
+        padding-top: 16px;
         // background-image: url("../assets/bg-blur.png");
     }
     @media(max-width: 500px) {
+        padding-top: 16px;
         // background-image: none;
     }
 }
