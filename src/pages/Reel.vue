@@ -446,7 +446,6 @@ function updateResultElement(stepNumber, result) {
     <h2 v-if="step < 10">Spin {{step}}: {{collections[step - 1]}}</h2>
     <h2 v-if="step > 9">Respin: {{collections[step - 11]}}</h2>
     <div class="reel-holder">
-      <div class="glass-holder"></div>
       <div id="reel">
         <div class="chev">
           <div class="squaretop"></div>
@@ -800,6 +799,9 @@ function updateResultElement(stepNumber, result) {
  .reel-holder {
     margin-top: 20px;
     position: relative;
+    @media(max-width: 880px) {
+      width: 100%;
+    }
 
  }
  #reel {
@@ -811,6 +813,10 @@ function updateResultElement(stepNumber, result) {
     background-color: #000000;
     position: relative;
     overflow: hidden;
+    @media(max-width: 880px) {
+      margin-left: 5%;
+      width: 90%;
+    }
     
     .chev {
       z-index: 10;
