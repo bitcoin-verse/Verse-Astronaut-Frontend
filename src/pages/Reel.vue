@@ -443,7 +443,7 @@ function updateResultElement(stepNumber, result) {
   </div>
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
-    <h1>NFT Character Creation</h1>
+    <h1>NFT Character Creation - 1.2</h1>
     <h2 v-if="step < 10">Spin {{step}}: {{collections[step - 1]}}</h2>
     <h2 v-if="step > 9">Respin: {{collections[step - 11]}}</h2>
     <div class="reel-holder">
