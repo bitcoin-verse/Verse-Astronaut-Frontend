@@ -223,8 +223,7 @@ export default {
       return numbers[Math.floor(Math.random() * numbers.length)];
     }
 
-    function spinReels(collectionName, result) {
-  console.log(result, "resultSpinReels");
+  function spinReels(collectionName, result) {
   spinLoading.value = true;
   prepNextFrame.value = true;
 
@@ -453,7 +452,7 @@ function updateResultElement(stepNumber, result) {
           <div class="squaretop"></div>
           <div class="squarebottom"></div>
         </div>
-        <Transition>
+        <Transition name="trgt" appear>
         <div id="slot-holder">
           <div
             v-for="(slot, index) in slots"
@@ -582,6 +581,17 @@ function updateResultElement(stepNumber, result) {
 </template>
 
 <style lang="scss" scoped>
+  @keyframes reel-spin {
+      0% { transform: none; filter: blur(0); }
+      50% { filter: blur(2px); }
+      100% { transform: translate3d(-800%, 0, 0); filter: blur(0); }
+  }
+
+
+  .trgt-enter-active {
+  animation: reel-spin 10s;
+}
+
 .trait-selector {
   -webkit-appearance: none;
   height: 32px;
