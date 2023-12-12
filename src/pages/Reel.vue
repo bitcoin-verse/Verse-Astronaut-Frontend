@@ -202,6 +202,10 @@ export default {
       currentResultElement.classList.add('active')
     }
 
+    function capitalize([first, ...rest], lowerRest = false) {
+      return first.toUpperCase() + (lowerRest ? rest.join('').toLowerCase() : rest.join(''));
+    } 
+
     function getRandomIndex (collectionName) {
       const numbers = []
 
@@ -341,6 +345,7 @@ export default {
       traitReroll,
       reroll,
       rerollLoading,
+      capitalize,
       rerollStep,
       rerollLoadingMessage,
       rerollValue,
@@ -484,10 +489,10 @@ export default {
   <div class="page-holder" v-if="step != 7 && !loading">
     <a href="/tickets"><div class="close-scratch"></div></a>
     <div class="reel-holder">
-      <h2 v-if="step < 10" style="margin-bottom: 0; font-weight: 600;">Character Creator</h2>
-      <p style="margin-top: 0px; margin-bottom: 20px;"><small>Spin the reel 6 times to complete your voyager</small></p>
+      <h2 v-if="step < 10" style="margin-bottom: 5px; font-weight: 600;">Build Your Voyager</h2>
+      <p style="margin-top: 0px; margin-bottom: 15px;"><small>Spin the reel to win traits</small></p>
 
-      <button class="bubble" v-if="step < 10" style="margin: 0">{{ collections[step - 1] }}</button>
+      <button class="bubble" v-if="step < 10" style="margin: 0">{{ capitalize(collections[step - 1]) }}</button>
       <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
       <div id="reel">
         <div class="blur-top"></div>
@@ -835,7 +840,7 @@ export default {
   border-radius: 100px;
   color: white;
   height: 32px;
-  padding: 8px 20px 8px 20px;
+  padding: 8px 22px 8px 22px;
 }
 @keyframes reel-spin {
   0% {
@@ -875,6 +880,10 @@ export default {
     top: 21px;
     right: 50px;
     border-radius: 50%;
+    @media(max-width: 880px) {
+      top: 15px;
+      right: 25px;
+    }
 }
 
 .trait-selector {
@@ -1083,7 +1092,7 @@ h2 {
     font-size: 20px!important;
   }
   border-radius: 20px;
-  padding-top: 30px;
+  padding-top: 22px;
   margin-top: 50px;
   background-color: black;
   margin-left: calc(50% - 200px);
