@@ -60,29 +60,17 @@ export default {
     }
 
     async function prepReroll (trait) {
-      try {
-        const data = await readContract({
-          address: GLOBALS.NFT_ADDRESS,
-          abi: ERC721,
-          functionName: 'getTraits',
-          args: [nftId.value]
-        })
-        if (data) {
-          const rerollArray = []
-          data.forEach(dp => {
-            rerollArray.push(parseInt(dp))
-          })
-
-          rerollValue.value = rerollArray[trait]
-        } else {
-          console.log('preproll went wrong')
-        }
-      } catch (e) {
-        console.log(e)
-      }
+        let rerollArray = await getTraits(route.query.tokenId)
+        rerollValue.value = rerollArray[trait]
+        console.log("reroll value")
+        console.log(rerollArray)
+        console.log(trait, "trait")  
     }
 
     async function reroll (trait) {
+      console.log("new trait request")
+      console.log(trait, nftId.value)
+      console.log("..")
       rerollLoadingMessage.value = ''
       const { hash } = await writeContract({
         address: GLOBALS.NFT_ADDRESS,
@@ -97,7 +85,7 @@ export default {
       rerollLoading.value = false
 
       rerollStep.value = 2
-      let timer = 20
+      let timer = 35
       rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in 20 seconds!`
       const countdown = setInterval(() => {
         timer-- // Decrement the timer
@@ -139,14 +127,17 @@ export default {
       }
     }
 
-    async function run () {
+    async function run (forceLoad) {
       nftId.value = route.query.tokenId
       resultItems.value = await getTraits(route.query.tokenId)
+      console.log(resultItems.value)
       loadInitialSlots()
       loading.value = false
 
-      if (route.query.overview == 'true') {
+      if (route.query.overview == 'true' || forceLoad) {
         loadAllProperties()
+        let currentResultElement = document.getElementById('result1')
+        currentResultElement.classList.remove('active')
       }
     }
     run()
@@ -176,7 +167,8 @@ export default {
 
     function resetRespin () {
       rerollStep.value = 1
-      returnToOverview()
+      loading.value = true;
+      run(true)
     }
 
     function toggleModal () {
@@ -187,10 +179,16 @@ export default {
       let lastStep = step.value
       step.value = lastStep + 1
 
+      if (step.value > 10) {
+        lastStep = lastStep - 10;
+      }
+
       loadInitialSlots(collections.value[step.value - 1])
       
       prepNextFrame.value = false
       startAnimation.value = false
+
+      console.log(lastStep)
 
       const resultElement = document.getElementById('result' + lastStep)
       resultElement.style.animation = ''
@@ -246,6 +244,9 @@ export default {
     }
 
     function spinReels (collectionName, result) {
+      console.log("spin reel")
+      console.log(result)
+      console.log(collectionName)
       spinLoading.value = true
       prepNextFrame.value = true
 
@@ -286,6 +287,11 @@ export default {
     }
 
     function updateResultElement (stepNumber, result) {
+
+      if(stepNumber == 6) {
+        localStorage.setItem(nftId.value + '/' + GLOBALS.NFT_ADDRESS,'true')
+      }
+
       let resultElement = document.getElementById('result' + stepNumber)
       if (stepNumber > 10) {
         let realStep = stepNumber - 10
@@ -503,7 +509,7 @@ export default {
             <!-- helmets -->
             <template v-if="step == 2">
               <img :src="`traits/body/${resultItems[0]}.png`" />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -516,7 +522,7 @@ export default {
                 :src="`traits/helmets/${resultItems[1]}.png`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -532,14 +538,14 @@ export default {
                 :src="`traits/gear/${resultItems[2]}.png`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
             </template>
             <!-- back -->
             <template v-if="step == 5">
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -562,7 +568,7 @@ export default {
             </template>
             <!-- background -->
             <template v-if="step == 6">
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.jpg`"
                 style="position: absolute; left: 0"
               />
@@ -599,7 +605,7 @@ export default {
                 :src="`traits/back/${resultItems[4]}.png`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -630,7 +636,7 @@ export default {
                 :src="`traits/body/${resultItems[0]}.png`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -661,7 +667,7 @@ export default {
                 :src="`traits/helmets/${resultItems[1]}.png`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -692,7 +698,7 @@ export default {
                 :src="`traits/gear/${resultItems[2]}.png`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -703,7 +709,7 @@ export default {
                 :src="`traits/background/${resultItems[5]}.jpg`"
                 style="position: absolute; left: 0"
               />
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
@@ -726,7 +732,7 @@ export default {
             </template>
             <!-- reroll background -->
             <template v-if="step == 16">
-              <img
+              <img v-if="index != 1"
                 :src="`traits/${slot.collection}/${slot.image}.jpg`"
                 style="position: absolute; left: 0"
               />
