@@ -428,6 +428,7 @@ export default {
 
   <!-- loading -->
   <div class="page-holder" v-if="loading">
+    <a href="/tickets"><div class="close-scratch"></div></a>
     <div class="spin">
       <div class="lds-ring">
         <div></div>
@@ -440,7 +441,8 @@ export default {
 
   <!-- finished character -->
   <div class="page-holder" v-if="step == 7 && !loading">
-    <h1>Voyager #{{ nftId }}</h1>
+    <a href="/tickets"><div class="close-scratch"></div></a>
+    <button class="name-label">VOYAGER #{{ nftId }}</button>
     <div class="char">
       <img
         :src="`traits/background/${resultItems[5]}.jpg`"
@@ -480,6 +482,7 @@ export default {
   </div>
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
+    <a href="/tickets"><div class="close-scratch"></div></a>
     <div class="reel-holder">
       <h2 v-if="step < 10" style="margin-bottom: 0; font-weight: 600;">Character Creator</h2>
       <p style="margin-top: 0px; margin-bottom: 20px;"><small>Spin the reel 6 times to complete your voyager</small></p>
@@ -811,6 +814,21 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+
+.name-label {
+  background: #030C14;
+  border: none;
+  color: #C5CEDB;
+  border: none;
+  padding: 10px 60px 10px 60px;
+  border-radius: 42px;
+  font-size: 14px;
+  font-weight: 400;
+  @media(max-width: 880px) {
+    margin-top: 20px;
+  }
+}
+
 .bubble {
   background: none;
   border: 1px solid white;
@@ -845,6 +863,18 @@ export default {
 .spin-anim {
   -webkit-animation: reel-spin 10s ease-in-out forwards;
   animation: reel-spin 10s ease-in-out forwards;
+}
+
+.close-scratch {
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    background-image: url("../assets/icons/icn-close-circle.png");
+    background-size: cover;
+    position: absolute;
+    top: 21px;
+    right: 50px;
+    border-radius: 50%;
 }
 
 .trait-selector {
@@ -973,7 +1003,7 @@ export default {
 </style>
 <style lang="scss" scoped>
 .char {
-  margin-top: 50px;
+  margin-top: 150px;
   margin-left: calc(50% - 150px);
   width: 300px;
   height: 300px;
@@ -993,7 +1023,7 @@ h2 {
   font-size: 18px;
 }
 .page-holder {
-  padding-top: 100px;
+  padding-top: 20px;
   text-align: center;
   color: white;
   background-image: url('../assets/bg-blur-dark.png');
@@ -1001,7 +1031,7 @@ h2 {
   height: 100dvh;
   background-repeat: no-repeat;
   background-size: cover;
-  overflow: scroll;
+  overflow: auto;
   
   @media(max-width: 880px) {
     padding-top: 0;
@@ -1054,7 +1084,7 @@ h2 {
   }
   border-radius: 20px;
   padding-top: 30px;
-  margin-top: 20px;
+  margin-top: 50px;
   background-color: black;
   margin-left: calc(50% - 200px);
   width: 400px;

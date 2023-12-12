@@ -422,7 +422,7 @@ div.tickets {
     margin-bottom: 500px;
     padding-left: 100px;
     overflow: auto;
-    height: 70vh;
+    height: 75vh;
     padding-top: 20px;
     @media(max-width: 880px) {
         width: calc(100% - 10px);
@@ -463,7 +463,7 @@ div.tickets {
     background-size: cover;
     width: 100%;
     padding-top: 100px;
-    height: calc(100vh);
+    height: calc(100vh + 100px);
     padding-left: 0;
     overflow: hidden;
     @media(max-width: 880px) {

@@ -1,6 +1,7 @@
 <script setup>
 
-import { RouterView } from 'vue-router'
+import { computed } from "vue"
+import { useRoute, RouterView } from 'vue-router'
 import { polygon } from '@wagmi/core/chains'
 import NavBar from './components/NavBar.vue'
 import Stars from './components/Stars.vue'
@@ -9,6 +10,8 @@ import { defaultWagmiConfig, createWeb3Modal } from '@web3modal/wagmi/vue'
 const projectId = 'b30bc40c0cdef6000cd5066be1febf74'
 const chains = [polygon]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, appName: 'Verse Labs',  })
+const route = useRoute();
+const showNavBar = computed(() => route.name !== 'reel');
 
 createWeb3Modal({ 
     tokens: {
@@ -24,7 +27,7 @@ createWeb3Modal({
 
 <template>  
   <body>
-    <NavBar />
+    <NavBar v-if="showNavBar" />
     <RouterView />
   </body>
 </template>

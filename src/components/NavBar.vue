@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 
+
 export default {
     setup() {
         let account = getAccount()
@@ -16,6 +17,7 @@ export default {
 
         sessionStorage.getItem('isWallet') === "true" ? isWallet.value = true : isWallet.value = false
 
+        
         function openWalletModal(refresh) {            
             if(refresh) disconnect()
             modal.open()
