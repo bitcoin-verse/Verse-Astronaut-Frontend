@@ -978,6 +978,9 @@ export default {
   width: 300px;
   height: 300px;
   position: relative;
+  img {
+    border-radius: 10px;
+  }
 }
 h1 {
   margin-top: 0;
