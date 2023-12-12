@@ -804,10 +804,10 @@ export default {
     -webkit-transform: translate3d(0, 0, 0);
     -moz-transform: translate3d(0, 0, 0);
     -o-transform: translate3d(0, 0, 0);
-    filter: blur(0);
+    // filter: blur(0);
   }
   50% {
-    filter: blur(2px);
+    // filter: blur(2px);
   }
   100% {
     transform: translate3d(0, -5000px, 0);
@@ -815,7 +815,7 @@ export default {
     -webkit-transform: translate3d(0, -5000px, 0);
     -moz-transform: translate3d(0, -5000px, 0);
     -o-transform: translate3d(0, -5000px, 0);
-    filter: blur(0);
+    // filter: blur(0);
   }
 }
 
