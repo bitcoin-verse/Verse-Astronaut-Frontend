@@ -799,11 +799,11 @@ export default {
 @keyframes reel-spin {
   0% {
     transform: translate3d(0, 0, 0);
-    // -webkit-transform: translate3d(0, 0, 0);
-    // -ms-transform: translate3d(0, 0, 0);
-    // -webkit-transform: translate3d(0, 0, 0);
-    // -moz-transform: translate3d(0, 0, 0);
-    // -o-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
     filter: blur(0);
   }
   50% {
@@ -811,10 +811,10 @@ export default {
   }
   100% {
     transform: translate3d(0, -5000px, 0);
-    // -ms-transform: translate3d(0, -800%, 0);
-    // -webkit-transform: translate3d(0, -800%, 0);
-    // -moz-transform: translate3d(0, -800%, 0);
-    // -o-transform: translate3d(0, -800%, 0);
+    -ms-transform: translate3d(0, -5000px, 0);
+    -webkit-transform: translate3d(0, -5000px, 0);
+    -moz-transform: translate3d(0, -5000px, 0);
+    -o-transform: translate3d(0, -5000px, 0);
     filter: blur(0);
   }
 }
