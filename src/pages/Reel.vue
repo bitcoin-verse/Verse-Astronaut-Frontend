@@ -988,9 +988,11 @@ h2 {
   text-align: center;
   color: white;
   background-image: url('../assets/bg-blur-dark.png');
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background-repeat: no-repeat;
   background-size: cover;
+  overflow: scroll;
   
   @media(max-width: 880px) {
     padding-top: 0;
@@ -1052,6 +1054,7 @@ h2 {
     width: 100%;
     min-height: 100vh;
     border-radius: 0;
+    padding-bottom: 100px;
     margin: 0;
   }
 }
