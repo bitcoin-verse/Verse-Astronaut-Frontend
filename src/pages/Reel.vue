@@ -475,8 +475,10 @@ export default {
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
     <div class="reel-holder">
-      <h2 v-if="step < 10">Spin to Create Your Character</h2>
-      <p v-if="step < 10" style="margin: 0">Spin {{ step }}: {{ collections[step - 1] }}</p>
+      <h2 v-if="step < 10" style="margin-bottom: 0; font-weight: 600;">Character Creator</h2>
+      <p style="margin-top: 0px; margin-bottom: 20px;"><small>Spin the reel 6 times to complete your voyager</small></p>
+
+      <button class="bubble" v-if="step < 10" style="margin: 0">{{ collections[step - 1] }}</button>
       <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
       <div id="reel">
         <div class="blur-top"></div>
@@ -778,9 +780,9 @@ export default {
         id="spinButton"
         @click="spinReels(collections[step - 1], resultItems[step - 1])"
       >
-        Spin ({{ step }}/6)
+        Spin ({{ step }} of 6)
       </button>
-      <button v-if="spinLoading" id="spinButton">Spinning...</button>
+      <button v-if="spinLoading" style="opacity: 0.3" id="spinButton">Spin ({{ step }} of 6)</button>
       <button
         v-if="prepNextFrame && !spinLoading && step != 6"
         id="spinButton"
@@ -795,7 +797,7 @@ export default {
       >
         Finish
       </button>
-    </div>
+        </div>
     </div>
 
 
@@ -803,6 +805,14 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.bubble {
+  background: none;
+  border: 1px solid white;
+  border-radius: 100px;
+  color: white;
+  height: 32px;
+  padding: 8px 20px 8px 20px;
+}
 @keyframes reel-spin {
   0% {
     transform: translate3d(0, 0, 0);
@@ -1009,6 +1019,7 @@ h2 {
   margin-left: 0;
   @media (max-width: 880px) {
     margin-left: 0;
+    width: 80%;
   }
   margin-top: 30px;
   border: none;
@@ -1024,7 +1035,7 @@ h2 {
   border-radius: 16px;
   color: rgb(255, 255, 255);
   background: linear-gradient(rgb(14, 190, 240) 0%, rgb(0, 133, 255) 100%);
-  width: 200px;
+  width: 300px;
 }
 .reel-holder {
   h2 {
