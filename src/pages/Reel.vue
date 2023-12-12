@@ -18,6 +18,7 @@ export default {
     let step = ref(1);
     let modalActive = ref(false);
     let anim = ref();
+    let startAnimation = ref(false)
     let loading = ref(true);
     let resultItems = ref([])
     let rerollLoading = ref(false)
@@ -169,7 +170,8 @@ export default {
       step.value = lastStep + 1;
       loadInitialSlots(collections.value[step.value -1])
       prepNextFrame.value = false
-      anim.value.cancel();
+      // anim.value.cancel();
+      startAnimation.value = false;
 
       const resultElement = document.getElementById('result' + lastStep);
       resultElement.style.animation = '';
@@ -243,50 +245,53 @@ export default {
     }
   }
 
-  const reelElement = document.getElementById('slot-holder');
-  const oldDuration = 1;  // Old duration in seconds
-  const newDuration = 10;  // New duration in seconds
+  // const reelElement = document.getElementById('slot-holder');
+  // const newDuration = 10;  // New duration in seconds
 
-  // min-max of needle landing
-  const min = 79.52;
-  const max = 81.28;
-  let range = Math.random() * (max - min) + min;
+  // const newTranslateXValue = 800
 
-  // Calculate new TranslateX value based on the new duration
-  const newTranslateXValue = (newDuration / oldDuration) * range;
+  // // Create a unique name for the keyframes
+  // const animationName = `spinAnimation-${Math.round(Math.random() * 10000)}`;
 
-  // Create a unique name for the keyframes
-  const animationName = `spinAnimation-${Math.round(Math.random() * 10000)}`;
+  // // Define keyframes
+  // const keyframes = `
+  //   @keyframes ${animationName} {
+  //     0% { 
+  //       transform: translate3d(0, 0, 0); 
+  //       -ms-transform: translate3d(0, 0, 0); 
+  //       -webkit-transform: translate3d(0, 0, 0); 
+  //       -moz-transform: translate3d(0, 0, 0); 
+  //       -o-transform: translate3d(0, 0, 0); 
+  //       filter: blur(0); 
+  //     }
+  //     50% { 
+  //       filter: blur(2px); 
+  //     }
+  //     100% { 
+  //       transform: translate3d(-${newTranslateXValue}%, 0, 0); 
+  //       -ms-transform: translate3d(-${newTranslateXValue}%, 0, 0); 
+  //       -webkit-transform: translate3d(-${newTranslateXValue}%, 0, 0); 
+  //       -moz-transform: translate3d(-${newTranslateXValue}%, 0, 0); 
+  //       -o-transform: translate3d(-${newTranslateXValue}%, 0, 0); 
+  //       filter: blur(0); 
+  //     }
+  //   }
+  // `;
 
-  // Define keyframes
-  const keyframes = `
-    @-webkit-keyframes ${animationName} {
-      0% { transform: none; filter: blur(0); }
-      50% { filter: blur(2px); }
-      100% { transform: translate3d(-${newTranslateXValue}%, 0, 0); filter: blur(0); }
-    }
-    @keyframes ${animationName} {
-      0% { transform: none; filter: blur(0); }
-      50% { filter: blur(2px); }
-      100% { transform: translate3d(-${newTranslateXValue}%, 0, 0); filter: blur(0); }
-    }
-  `;
-
-  // Append keyframes to the document
-  const styleSheet = document.createElement('style');
-  styleSheet.type = 'text/css';
-  styleSheet.innerText = keyframes;
-  document.head.appendChild(styleSheet);
+  // // Append keyframes to the document
+  // const styleSheet = document.createElement('style');
+  // styleSheet.type = 'text/css';
+  // styleSheet.innerText = keyframes;
+  // document.head.appendChild(styleSheet);
 
   // Apply the animation
-  reelElement.style.webkitAnimation = `${animationName} ${newDuration}s ease-in-out forwards`;
-  reelElement.style.animation = `${animationName} ${newDuration}s ease-in-out forwards`;
+  // reelElement.style.webkitAnimation = `${animationName} ${newDuration}s ease-in-out forwards`;
+  // reelElement.style.animation = `${animationName} ${newDuration}s ease-in-out forwards`;
+
 
   // Clean up after the animation is complete
+  startAnimation.value = true;
   setTimeout(() => {
-    reelElement.style.webkitAnimation = '';
-    reelElement.style.animation = '';
-    document.head.removeChild(styleSheet);
 
     // Update the result element after the animation
     updateResultElement(step.value, result);
@@ -297,7 +302,7 @@ export default {
       winSlot.style.animation = 'blinker 2s linear infinite';
     }
     spinLoading.value = false;
-  }, newDuration * 1000 + 300);
+  }, 10000 + 300);
 }
 
 function updateResultElement(stepNumber, result) {
@@ -350,6 +355,7 @@ function updateResultElement(stepNumber, result) {
       rerollStep,
       rerollLoadingMessage,
       rerollValue,
+      startAnimation,
       resetRespin
     };
   },
@@ -451,8 +457,8 @@ function updateResultElement(stepNumber, result) {
           <div class="squaretop"></div>
           <div class="squarebottom"></div>
         </div>
-        <Transition name="trgt" appear>
-        <div id="slot-holder">
+
+        <div id="slot-holder" :class="{'spin-anim' : startAnimation}">
           <div
             v-for="(slot, index) in slots"
             :key="index"
@@ -561,7 +567,6 @@ function updateResultElement(stepNumber, result) {
 
         </div>
         </div>
-        </Transition>
       </div>
     </div>
 
@@ -581,27 +586,33 @@ function updateResultElement(stepNumber, result) {
 
 <style lang="scss" scoped>
   @keyframes reel-spin {
-      0% { -webkit-transform: translate3d(0, 0, 0); filter: blur(0); }
-      50% { filter: blur(2px); }
-      100% { 
-        -ms-transform: translate3d(-800%, 0, 0); 
-        -webkit-transform: translate3d(-800%, 0, 0); 
-        -moz-transform: translate3d(-800%, 0, 0); 
-        -o-transform: translate3d(-800%, 0, 0); 
-        filter: blur(0); }
-  }
-
-
-
-
-
-
-.trgt-enter-active {
-  will-change: transform;
-  animation: reel-spin 10s;
-  -webkit-backface-visibility: hidden;
-	-webkit-perspective: 1000;
+    0% { 
+      transform: translate3d(0, 0, 0); 
+      -webkit-transform: translate3d(0, 0, 0);
+      -ms-transform: translate3d(0, 0, 0); 
+      -webkit-transform: translate3d(0, 0, 0); 
+      -moz-transform: translate3d(0, 0, 0); 
+      -o-transform: translate3d(0, 0, 0); 
+      filter: blur(0); 
+    }
+    50% { 
+      filter: blur(2px); 
+    }
+    100% { 
+      transform: translate3d(-800%, 0, 0); 
+      -ms-transform: translate3d(-800%, 0, 0); 
+      -webkit-transform: translate3d(-800%, 0, 0); 
+      -moz-transform: translate3d(-800%, 0, 0); 
+      -o-transform: translate3d(-800%, 0, 0); 
+      filter: blur(0); 
+    }
 }
+
+.spin-anim {
+  -webkit-animation: reel-spin 10s ease-in-out forwards;
+  animation: reel-spin 10s ease-in-out forwards;
+}
+
 
 .trait-selector {
   appearance: none;
