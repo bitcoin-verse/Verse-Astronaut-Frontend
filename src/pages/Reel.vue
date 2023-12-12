@@ -249,16 +249,16 @@ export default {
       spinLoading.value = true
       prepNextFrame.value = true
 
-      let winSlot = document.getElementById('slot25')
-      if (winSlot) {
-        winSlot.style.border = '2px solid white'
-        winSlot.style.animation = ''
-      }
+      // let winSlot = document.getElementById('slot28')
+      // if (winSlot) {
+      //   winSlot.style.border = '2px solid white'
+      //   winSlot.style.animation = ''
+      // }
 
-      slots.value = [...initialSlots.value]
+      slots.value = [...initialSlots.value] // theres 12 prefilled
 
       for (let i = 0; i < 36; i++) {
-        if (i === 15) {
+        if (i === (28 - 10)) { // 28 is result wheel + 12 prefilled
           slots.value.push({ collection: collectionName, image: result })
         } else {
           slots.value.push({
@@ -268,13 +268,15 @@ export default {
         }
       }
 
+      console.log(slots.value)
+
       // Clean up after the animation is complete
       startAnimation.value = true
       setTimeout(() => {
         // Update the result element after the animation
         updateResultElement(step.value, result)
 
-        let winSlot = document.getElementById('slot42')
+        let winSlot = document.getElementById('slot28')
         if (winSlot) {
           winSlot.style.border = '2px solid #ff0486'
           winSlot.style.animation = 'blinker 2s linear infinite'
@@ -472,15 +474,16 @@ export default {
   </div>
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
-    <h1>NFT Character Creation - 1.2</h1>
-    <h2 v-if="step < 10">Spin {{ step }}: {{ collections[step - 1] }}</h2>
-    <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
     <div class="reel-holder">
+      <h2 v-if="step < 10">Spin to Create Your Character</h2>
+      <p v-if="step < 10" style="margin: 0">Spin {{ step }}: {{ collections[step - 1] }}</p>
+      <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
       <div id="reel">
-        <!-- <div class="chev">
+        <div class="blur-top"></div>
+        <div class="chev">
           <div class="squaretop"></div>
           <div class="squarebottom"></div>
-        </div> -->
+        </div>
 
         <div id="slot-holder" :class="{ 'spin-anim': startAnimation }">
           <div
@@ -747,11 +750,12 @@ export default {
               />
             </template>
           </div>
-        </div>
+        </div> 
       </div>
-    </div>
 
-    <div v-if="step > 10">
+
+
+      <div v-if="step > 10">
       <button
         v-if="!spinLoading && !prepNextFrame"
         id="spinButton"
@@ -792,6 +796,9 @@ export default {
         Finish
       </button>
     </div>
+    </div>
+
+
   </div>
 </template>
 
@@ -804,7 +811,7 @@ export default {
     -webkit-transform: translate3d(0, 0, 0);
     -moz-transform: translate3d(0, 0, 0);
     -o-transform: translate3d(0, 0, 0);
-    // filter: blur(0);
+    // filter: blur(0); // todo this is buggy in IOS
   }
   50% {
     // filter: blur(2px);
@@ -943,6 +950,9 @@ export default {
   50% {
     opacity: 0.5;
   }
+  100% {
+    opacity: 0;
+  }
 }
 </style>
 <style lang="scss" scoped>
@@ -964,13 +974,17 @@ h2 {
   font-size: 18px;
 }
 .page-holder {
-  padding-top: 150px;
+  padding-top: 100px;
   text-align: center;
   color: white;
   background-image: url('../assets/bg-blur-dark.png');
   min-height: 100vh;
   background-repeat: no-repeat;
   background-size: cover;
+  
+  @media(max-width: 880px) {
+    padding-top: 0;
+  }
 }
 #spinButtonSmall {
   border: none;
@@ -1013,70 +1027,98 @@ h2 {
   width: 200px;
 }
 .reel-holder {
+  h2 {
+    font-size: 20px!important;
+  }
+  border-radius: 20px;
+  padding-top: 30px;
   margin-top: 20px;
+  background-color: black;
+  margin-left: calc(50% - 200px);
+  width: 400px;
+  padding-bottom: 54px;
   @media (max-width: 880px) {
     width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    margin: 0;
   }
 }
+
+.blur-top {
+  height: 435px;
+  width:  180px;
+  background: 
+  linear-gradient(
+    180deg, rgba(3, 12, 20, 0.9) 0%, rgba(0, 0, 0, 0) 35.84%, rgba(3, 12, 20, 0.9) 78.5%);
+  position: absolute;
+  top: 0;
+  left: calc(50% - 90px);
+  z-index: 2;
+}
 #reel {
-  margin-left: calc(50% - 284px);
-  width: 538px;
+  width: calc(100% - 100px); 
   border-radius: 10px;
-  height: 185px;
-  padding: 30px 0px;
+  height: 435px;
   background-color: #000000;
   position: relative;
   overflow: hidden;
-  @media (max-width: 880px) {
-    margin-left: 5%;
-    width: 90%;
-  }
+  margin: 50px;
+  margin-bottom: 0;
+  margin-top: 30px;
 
   .chev {
-    z-index: 10;
-    position: absolute;
-    width: 3px;
-    height: 800px;
-    background-color: #ff0286;
-    top: 0;
-    left: 54%;
+    // z-index: 10;
+    // position: absolute;
+    // width: 3px;
+    // height: 800px;
+    // background-color: #ff0286;
+    // top: 0;
+    // left: 54%;
     .squaretop {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       background-color: #ff0286;
       transform: rotate(45deg);
-      position: relative;
-      top: -12px;
-      left: -8.3px;
+      position: absolute;
+      top: 160px;
+      left: -9px;
+     border: 2px solid #163756;
     }
     .squarebottom {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       background-color: #ff0286;
       transform: rotate(45deg);
-      position: relative;
-      top: 218px;
-      left: -8.3px;
+      position: absolute;
+      top: 160px;
+      right: -9px;
+     border: 2px solid #163756;
+  
+
     }
   }
   #slot-holder {
     will-change: transform;
     display: flex;
+    padding-left: calc(50% - 90px);
     flex-direction: column;
+    margin-top: -100px;
   }
   .slot {
     position: relative;
     z-index: 2;
-    width: 176px;
-    margin-right: 5px;
+    width: 180px;
     flex-shrink: 0;
-    height: 176px;
-    background-color: white;
+    height: 180px;
+    background-color: #0f1823;
+    margin-bottom: 4px;
     float: left;
     // display: inline-block;
     img {
       width: 100%;
       height: 100%;
+      
     }
   }
 }
