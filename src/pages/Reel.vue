@@ -188,7 +188,7 @@ export default {
       step.value = lastStep + 1
 
       loadInitialSlots(collections.value[step.value - 1])
-
+      
       prepNextFrame.value = false
       startAnimation.value = false
 
@@ -268,16 +268,19 @@ export default {
         }
       }
 
+      // Clean up after the animation is complete
       startAnimation.value = true
       setTimeout(() => {
+        // Update the result element after the animation
         updateResultElement(step.value, result)
+
         let winSlot = document.getElementById('slot42')
         if (winSlot) {
           winSlot.style.border = '2px solid #ff0486'
           winSlot.style.animation = 'blinker 2s linear infinite'
         }
         spinLoading.value = false
-      }, 10300)
+      }, 10000 + 300)
     }
 
     function updateResultElement (stepNumber, result) {
@@ -796,22 +799,22 @@ export default {
 @keyframes reel-spin {
   0% {
     transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
+    // -webkit-transform: translate3d(0, 0, 0);
+    // -ms-transform: translate3d(0, 0, 0);
+    // -webkit-transform: translate3d(0, 0, 0);
+    // -moz-transform: translate3d(0, 0, 0);
+    // -o-transform: translate3d(0, 0, 0);
     filter: blur(0);
   }
   50% {
     filter: blur(2px);
   }
   100% {
-    transform: translate3d(-800%, 0, 0);
-    -ms-transform: translate3d(-800%, 0, 0);
-    -webkit-transform: translate3d(-800%, 0, 0);
-    -moz-transform: translate3d(-800%, 0, 0);
-    -o-transform: translate3d(-800%, 0, 0);
+    transform: translate3d(0, -5000px, 0);
+    // -ms-transform: translate3d(0, -800%, 0);
+    // -webkit-transform: translate3d(0, -800%, 0);
+    // -moz-transform: translate3d(0, -800%, 0);
+    // -o-transform: translate3d(0, -800%, 0);
     filter: blur(0);
   }
 }
@@ -1011,7 +1014,6 @@ h2 {
 }
 .reel-holder {
   margin-top: 20px;
-  position: relative;
   @media (max-width: 880px) {
     width: 100%;
   }
@@ -1060,6 +1062,7 @@ h2 {
   #slot-holder {
     will-change: transform;
     display: flex;
+    flex-direction: column;
   }
   .slot {
     position: relative;
