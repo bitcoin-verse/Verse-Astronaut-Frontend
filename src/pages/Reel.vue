@@ -283,8 +283,7 @@ export default {
 
         let winSlot = document.getElementById('slot28')
         if (winSlot) {
-          winSlot.style.border = '2px solid #ff0486'
-          winSlot.style.animation = 'blinker 2s linear infinite'
+          winSlot.classList.add("blink")
         }
         spinLoading.value = false
       }, 10000 + 300)
@@ -434,7 +433,7 @@ export default {
   <!-- loading -->
   <div class="page-holder" v-if="loading">
     <a href="/tickets"><div class="close-scratch"></div></a>
-    <div class="spin">
+    <div class="spin" style="margin-top: 100px;">
       <div class="lds-ring">
         <div></div>
         <div></div>
@@ -512,6 +511,7 @@ export default {
             <!-- body -->
             <template v-if="step == 1">
               <img :src="`traits/${slot.collection}/${slot.image}.png`" />
+              <div class="title" >Body Title</div>
             </template>
 
             <!-- helmets -->
@@ -521,6 +521,7 @@ export default {
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Helmet Title</div>
             </template>
 
             <!-- gear -->
@@ -534,6 +535,7 @@ export default {
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Gear Title</div>
             </template>
             <!-- extra needs to move up -->
             <template v-if="step == 4">
@@ -550,6 +552,7 @@ export default {
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Extra Title</div>
             </template>
             <!-- back -->
             <template v-if="step == 5">
@@ -573,6 +576,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Back Title</div>
             </template>
             <!-- background -->
             <template v-if="step == 6">
@@ -600,6 +604,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Background Title</div>
             </template>
 
             <!-- rerolls -->
@@ -629,6 +634,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Body Title</div>
             </template>
             <!-- reroll helmet -->
             <template v-if="step == 12">
@@ -656,6 +662,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Helmet Title</div>
             </template>
             <!-- reroll gear -->
             <template v-if="step == 13">
@@ -683,6 +690,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Gear Title</div>
             </template>
             <!-- reroll extra -->
             <template v-if="step == 14">
@@ -710,6 +718,7 @@ export default {
                 :src="`traits/${slot.collection}/${slot.image}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Extra Title</div>
             </template>
             <!-- reroll back -->
             <template v-if="step == 15">
@@ -737,6 +746,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Back Title</div>
             </template>
             <!-- reroll background -->
             <template v-if="step == 16">
@@ -764,6 +774,7 @@ export default {
                 :src="`traits/extra/${resultItems[3]}.png`"
                 style="position: absolute; left: 0"
               />
+              <div class="title" v-if="index != 1">Background Title</div>
             </template>
           </div>
         </div> 
@@ -1005,9 +1016,11 @@ export default {
   50% {
     opacity: 0.5;
   }
-  100% {
-    opacity: 0;
-  }
+}
+
+.blink {
+  border: 2px solid #ff0486!important;
+  animation: blinker 2s linear infinite;
 }
 </style>
 <style lang="scss" scoped>
@@ -1170,17 +1183,35 @@ h2 {
   .slot {
     position: relative;
     z-index: 2;
-    width: 180px;
+    width: 176px;
     flex-shrink: 0;
-    height: 180px;
+    height: 176px;
     background-color: #0f1823;
     margin-bottom: 4px;
+    border: 2px solid #000000;
     float: left;
     // display: inline-block;
     img {
       width: 100%;
       height: 100%;
       
+    }
+
+    .title {
+      &.rare {
+        background-color: purple;
+      }
+      background-color: rgb(0, 51, 255);
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      font-weight: 400;
+      font-size: 13px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      color: white;
+      text-align: center;
+      width: 100%;
     }
   }
 }
