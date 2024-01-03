@@ -77,6 +77,20 @@ export default {
 
         watchAccount(async () => {
             if(getAccount().address &&  getAccount().address.length != undefined) {
+                const itemStr = localStorage.getItem("token")
+                if(!itemStr) {
+                   // show warning and have them return to starting screen
+                   window.location.replace("/");
+
+                }  else {
+                    const item = JSON.parse(itemStr)
+                    const now = new Date()
+                    if (now.getTime() + 1200000 > item.expiry) { // add 20 minute buffer
+                        localStorage.removeItem("token")
+                        // show warning and have them return to starting screen
+                        window.location.replace("/");
+                    } 
+                }
                 accountActive.value = true;
                 getTicketIds()
 
@@ -107,6 +121,7 @@ export default {
                 args: [id]
                 })
                 if(data) {
+                    
                     const objToUpdate = nfts.value.find(obj => obj.id == id);
 
                     if (objToUpdate) {
@@ -114,6 +129,7 @@ export default {
                         data.forEach(dp => {
                             objToUpdate.traits.push(parseInt(dp))
                         })
+                        console.log(objToUpdate.traits)
                     }
                     return data 
                 }

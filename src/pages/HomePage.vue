@@ -1,5 +1,5 @@
 <script>
-import { getAccount, waitForTransaction, switchNetwork, readContract, writeContract, watchAccount, watchNetwork } from '@wagmi/core'
+import { getAccount, waitForTransaction, signMessage, switchNetwork, readContract, writeContract, watchAccount, watchNetwork } from '@wagmi/core'
 import { useWeb3Modal, createWeb3Modal } from '@web3modal/wagmi/vue'
 import { ref } from 'vue';
 import ERC20ABI from '../abi/ERC20.json'
@@ -154,15 +154,28 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             if(_giftAddress && _giftAddress.length > 0) {
                 receiver = _giftAddress
             }
-            const { hash } = await writeContract({
-            address: contractAddress,
-            abi: ContractABI,
-            functionName: 'buyCharacter',
-            chainId: 137,
-            args: [receiver]
-            })
+
+            if(giftTicket.value == true) {
+                const { hash } = await writeContract({
+                address: contractAddress,
+                abi: ContractABI,
+                functionName: 'giftCharacter',
+                chainId: 137,
+                args: [receiver]
+                })
+                await waitForTransaction({ hash })
+            } else {
+                const { hash } = await writeContract({
+                address: contractAddress,
+                abi: ContractABI,
+                functionName: 'buyCharacter',
+                chainId: 137,
+                args: []
+                })
+                await waitForTransaction({ hash })
+            }
+
             loadingMessage.value = "waiting for tx confirmation"
-            await waitForTransaction({ hash })
             let timer = 20; 
             // Create an interval to decrement the timer every second
             const countdown = setInterval(() => {
@@ -239,6 +252,61 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 modalLoading.value = false;
             }
     }
+
+    // account is active, and has a token
+    const continueWithAccount = () => {
+        accountActive.value = true;
+        
+        if(buyStep.value < 1) {
+            buyStep.value = 1;
+        }
+
+        if(reopenAfterConnection.value == true) {
+            reopenAfterConnection.value = false;
+            toggleModal()
+        }
+        getBalance();
+    }
+
+    // deal with user authentication
+    const authChallenge = async() => {
+        let resChallenge = await axios.get(`https://verse-nft-backend-d9a2908379d5.herokuapp.com/challenge/request/${getAccount().address}`)
+
+        if(buyStep.value != 99) {
+            // show auth modal
+            buyStep.value = 99;
+            modalActive.value = true;
+            return
+        }
+
+        // sign request
+        if(resChallenge.data.nonce) {
+            const signature = await signMessage({
+                message: resChallenge.data.nonce,
+            })
+            modalLoading.value = true
+            let payload = {
+                signature
+            }
+            let resComplete = await axios.post(`https://verse-nft-backend-d9a2908379d5.herokuapp.com/challenge/complete/${getAccount().address}`, payload)
+            if(resComplete.data.token && resComplete.data.token.length > 1) {
+                const now = new Date()
+                const item = {
+                    value: resComplete.data.token,
+                    expiry: now.getTime() + 28800000 // 8 hours miliseconds
+                }
+                localStorage.setItem("token", JSON.stringify(item))
+                modalLoading.value = false
+                buyStep.value = 100;
+                continueWithAccount()
+            }
+            // set token
+            
+        } else {
+            alert('cannot establish connection to login server')
+        }
+    }
+    
     watchNetwork((network) => {
         if(network.chain && network.chain.id != 137) {
             correctNetwork.value = false
@@ -260,17 +328,21 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         }
 
 
-        if(getAccount().address &&  getAccount().address.length != undefined) {
-            accountActive.value = true;
-            if(buyStep.value < 1) {
-                buyStep.value = 1;
+        if(getAccount().address &&  getAccount().address.length != undefined) {               
+            const itemStr = localStorage.getItem("token")
+            if(!itemStr) {
+                await authChallenge()
+            }  else {
+                const item = JSON.parse(itemStr)
+	            const now = new Date()
+                if (now.getTime() + 1200000 > item.expiry) { // add 20 minute buffer
+                    localStorage.removeItem("token")
+                    await authChallenge()
+                } else {
+                    continueWithAccount()
+                }
             }
-
-            if(reopenAfterConnection.value == true) {
-                reopenAfterConnection.value = false;
-                toggleModal()
-            }
-            getBalance();
+        
         } else {
             console.log("disable account")
             accountActive.value = false
@@ -309,6 +381,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         accountActive,
         correctNetwork,
         approve,
+        authChallenge,
         openBuy,
         closeBuy,
         buyModal,
@@ -352,7 +425,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         <!-- modal for loading -->
         <div class="modal" v-if="modalLoading">
             <div class="modal-head">
-                <h3 class="title">Buy Character</h3>
+                <h3 class="title">Loading..</h3>
                 <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider" v-if="buyStep < 3">
@@ -389,6 +462,45 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 </div>
             </div>
         </div>
+
+        <!-- modal for connecting account -->
+        <div class="modal" v-if="buyStep == 99 && !modalLoading">
+            <div>
+            <div class="modal-head">
+                <h3 class="title">Sign in</h3>
+            </div>
+            <div class="modal-divider">
+                <div class="modal-progress p25"></div>
+            </div>  
+            <div class="modal-body">
+                <div class="img-wallet"></div>
+                <h3 class="title">Sign in</h3>
+                <p class="subtext short">Secure sign-in using your Web3 Wallet.</p>
+                <a class="" target="_blank" @click="authChallenge()"><button class="btn verse-wide">Sign Message</button></a>
+                <p class="modal-footer">Signing in with your wallet proves your wallet ownership. The message you sign is a random short sentence</p>
+            </div>
+            </div>
+        </div>
+
+                <!-- modal for connecting account -->
+                <div class="modal" v-if="buyStep == 100 && !modalLoading">
+            <div>
+            <div class="modal-head">
+                <h3 class="title">Success! </h3>
+                <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
+            </div>
+            <div class="modal-divider">
+                <div class="modal-progress p100"></div>
+            </div>  
+            <div class="modal-body">
+                <div class="img-wallet"></div>
+                <h3 class="title">Sign in Success</h3>
+                <p class="subtext short">Successfully signed in using Web3!</p>
+                <a class="" target="_blank" @click="toggleModal()"><button class="btn verse-wide">Close</button></a>
+            </div>
+            </div>
+        </div>
+
 
         <!-- modal for connecting account -->
         <div class="modal" v-if="buyStep == 0 && !modalLoading && correctNetwork">

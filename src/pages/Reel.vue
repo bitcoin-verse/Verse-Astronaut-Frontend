@@ -54,7 +54,7 @@ export default {
       if (collectionName) collection = collectionName
       console.log(collection, 'collection')
       for (let i = 1; i < 11; i++) {
-        initialSlots.value.push({ image: i, collection })
+        initialSlots.value.push({ itemIndex: i, collection })
       }
       slots.value = initialSlots.value
     }
@@ -264,11 +264,11 @@ export default {
 
       for (let i = 0; i < 36; i++) {
         if (i === (28 - 10)) { // 28 is result wheel + 12 prefilled
-          slots.value.push({ collection: collectionName, image: result })
+          slots.value.push({ collection: collectionName, itemIndex: result })
         } else {
           slots.value.push({
             collection: collectionName,
-            image: getRandomIndex(collectionName)
+            itemIndex: getRandomIndex(collectionName)
           })
         }
       }
@@ -510,15 +510,16 @@ export default {
             <!-- <img src="../assets/helmets/1.png" /> -->
             <!-- body -->
             <template v-if="step == 1">
-              <img :src="`traits/${slot.collection}/${slot.image}.png`" />
+              <img :src="`traits/${slot.collection}/${slot.itemIndex}.png`" />
               <div class="title" >Body Title</div>
+
             </template>
 
             <!-- helmets -->
             <template v-if="step == 2">
               <img :src="`traits/body/${resultItems[0]}.png`" />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Helmet Title</div>
@@ -532,7 +533,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Gear Title</div>
@@ -549,7 +550,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Extra Title</div>
@@ -557,7 +558,7 @@ export default {
             <!-- back -->
             <template v-if="step == 5">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <img
@@ -581,7 +582,7 @@ export default {
             <!-- background -->
             <template v-if="step == 6">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.jpg`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.jpg`"
                 style="position: absolute; left: 0"
               />
               <img
@@ -619,7 +620,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <img
@@ -651,7 +652,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <img
@@ -683,7 +684,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <img
@@ -715,7 +716,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Extra Title</div>
@@ -727,7 +728,7 @@ export default {
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.png`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
                 style="position: absolute; left: 0"
               />
               <img
@@ -751,7 +752,7 @@ export default {
             <!-- reroll background -->
             <template v-if="step == 16">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.image}.jpg`"
+                :src="`traits/${slot.collection}/${slot.itemIndex}.jpg`"
                 style="position: absolute; left: 0"
               />
               <img

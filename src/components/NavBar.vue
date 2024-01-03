@@ -33,6 +33,7 @@ export default {
 
         watchAccount(async (account) => { 
         if(account.isConnected == true) {
+
             accountActive.value = true;
             let { chain  } = getNetwork()
             
@@ -50,6 +51,7 @@ export default {
             accountActive.value = false
         }
         connectedProvider.value = account.connector.name.toLowerCase()
+        console.log(account.connector)
     })
 
         return { account, isWallet, ensUserName, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
