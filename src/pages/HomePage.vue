@@ -529,7 +529,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 <div class="img-wallet"></div>
                 <h3 class="title">Sign in Success</h3>
                 <p class="subtext short">Successfully signed in using Web3!</p>
-                <a class="" target="_blank" @click="toggleModal()"><button class="btn verse-wide">Close</button></a>
+                <a class="" target="_blank" @click="buyStep = 1" ><button class="btn verse-wide">Create New Character</button></a>
+                <a class="" target="_blank" href="/tickets"><button class="btn verse-wide secondary" style="margin-top: 10px;">View Characters</button></a>
             </div>
             </div>
         </div>
@@ -697,9 +698,10 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 Are you ready to embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations!            </p>
 
             <button class="btn verse-wide" v-if="authenticated" @click="toggleModal()">Create New Character</button>
-            <a href="/tickets" v-if="authenticated"><button class="btn verse-wide secondary" style="margin-top: 10px;" >My Characters</button></a>
+            <a href="/tickets" v-if="authenticated"><button class="btn verse-wide secondary"  style="margin-top: 10px">View Characters</button></a>
 
-            <button class="btn verse-wide" v-if="!authenticated && !accountActive" @click="toggleModal()">Connect Wallet</button>
+            <button class="btn verse-wide" v-if="!authenticated && !accountActive" @click="toggleModal()">Create New Character</button>
+            <button class="btn verse-wide secondary" style="margin-top: 10px" v-if="!authenticated && !accountActive" @click="toggleModal()">View Characters</button>
             <a v-if="!authenticated && accountActive" @click="authChallenge()"><button class="btn verse-wide secondary" style="margin-top: 10px;" >Login with Wallet {{ recognizableWalletFormat(getAccount().address) }}</button></a>
         
         </div>
