@@ -33,6 +33,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     let buyStep = ref(0) // 0
     let giftTicket = ref(false); // false
     let showTimer = ref(false)
+    let authenticated = ref(false)
     let singleTransactionApproval = ref(false)
     
     let ticketInputAddress = ref("")
@@ -270,6 +271,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
 
     // deal with user authentication
     const authChallenge = async() => {
+
         let resChallenge = await axios.get(`https://verse-nft-backend-d9a2908379d5.herokuapp.com/challenge/request/${getAccount().address}`)
 
         if(buyStep.value != 99) {
@@ -295,7 +297,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                     value: resComplete.data.token,
                     expiry: now.getTime() + 28800000 // 8 hours miliseconds
                 }
-                localStorage.setItem("token", JSON.stringify(item))
+                localStorage.setItem(`token/${getAccount().address}`, JSON.stringify(item))
+                authenticated.value = true
                 modalLoading.value = false
                 buyStep.value = 100;
                 continueWithAccount()
@@ -306,6 +309,32 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             alert('cannot establish connection to login server')
         }
     }
+
+    const search = new URLSearchParams(window.location.search);
+    if(search.get("auth") == "true") {
+        authChallenge()
+        search.delete("auth");
+        window.history.replaceState({}, '', `${window.location.pathname}`);
+    }
+
+
+ const recognizableWalletFormat = (inputString) => {
+  if (inputString.length < 6) {
+    // Handle strings with less than 6 characters (3 + 3 + 3 dots)
+    return "String is too short";
+  }
+
+  // Get the first 3 characters
+  const firstThree = inputString.slice(0, 3);
+
+  // Get the last 3 characters
+  const lastThree = inputString.slice(-3);
+
+  // Concatenate the first 3, ellipsis, and last 3
+  const result = firstThree + "..." + lastThree;
+
+  return result;
+}
     
     watchNetwork((network) => {
         if(network.chain && network.chain.id != 137) {
@@ -327,18 +356,19 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             }
         }
 
-
-        if(getAccount().address &&  getAccount().address.length != undefined) {               
-            const itemStr = localStorage.getItem("token")
+        if(getAccount().address &&  getAccount().address.length != undefined) {      
+            accountActive.value = true;         
+            const itemStr = localStorage.getItem(`token/${getAccount().address}`)
             if(!itemStr) {
-                await authChallenge()
+                authenticated.value = false
             }  else {
                 const item = JSON.parse(itemStr)
 	            const now = new Date()
                 if (now.getTime() + 1200000 > item.expiry) { // add 20 minute buffer
-                    localStorage.removeItem("token")
-                    await authChallenge()
+                    localStorage.removeItem(`token/${getAccount().address}`)
+                    authenticated.value = false
                 } else {
+                    authenticated.value = true
                     continueWithAccount()
                 }
             }
@@ -364,8 +394,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     function connectAndClose() {
         modal.open()
         // reopen after user is connect
-        reopenAfterConnection.value = true
-        toggleModal()
+        reopenAfterConnection.value = false
+        modalActive.value = false
     }
 
     function toggleGift()  {
@@ -377,6 +407,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         connectAndClose,
         account,
         buyStep,
+        authenticated,
         modal,
         accountActive,
         correctNetwork,
@@ -384,6 +415,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         authChallenge,
         openBuy,
         closeBuy,
+        recognizableWalletFormat,
         buyModal,
         modalActive,
         toggleModal,
@@ -391,6 +423,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         giftAddress,
         copyDone,
         verseBalance,
+        getAccount,
         showTimer,
         verseAllowance,
         loadingMessage,
@@ -663,8 +696,11 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             <p class="subtitle" style="font-weight: 300; margin-bottom: 20px; padding-left: 0;">
                 Are you ready to embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations!            </p>
 
-            <button class="btn verse-wide" @click="toggleModal()">Create New Character</button>
-            <a href="/tickets"><button class="btn verse-wide secondary" style="margin-top: 10px;" >My Characters</button></a>
+            <button class="btn verse-wide" v-if="authenticated" @click="toggleModal()">Create New Character</button>
+            <a href="/tickets" v-if="authenticated"><button class="btn verse-wide secondary" style="margin-top: 10px;" >My Characters</button></a>
+
+            <button class="btn verse-wide" v-if="!authenticated && !accountActive" @click="toggleModal()">Connect Wallet</button>
+            <a v-if="!authenticated && accountActive" @click="authChallenge()"><button class="btn verse-wide secondary" style="margin-top: 10px;" >Login with Wallet {{ recognizableWalletFormat(getAccount().address) }}</button></a>
         
         </div>
         </div>

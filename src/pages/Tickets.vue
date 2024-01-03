@@ -77,18 +77,18 @@ export default {
 
         watchAccount(async () => {
             if(getAccount().address &&  getAccount().address.length != undefined) {
-                const itemStr = localStorage.getItem("token")
+                const itemStr = localStorage.getItem(`token/${getAccount().address}`)
                 if(!itemStr) {
                    // show warning and have them return to starting screen
-                   window.location.replace("/");
+                   window.location.replace("/?auth=true");
 
                 }  else {
                     const item = JSON.parse(itemStr)
                     const now = new Date()
                     if (now.getTime() + 1200000 > item.expiry) { // add 20 minute buffer
-                        localStorage.removeItem("token")
+                        localStorage.removeItem(`token/${getAccount().address}`)
                         // show warning and have them return to starting screen
-                        window.location.replace("/");
+                        window.location.replace("/?auth=true");
                     } 
                 }
                 accountActive.value = true;

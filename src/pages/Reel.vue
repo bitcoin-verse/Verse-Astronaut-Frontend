@@ -4,6 +4,8 @@ import GLOBALS from '../globals.js'
 import {
   waitForTransaction,
   readContract,
+  watchAccount,
+  getAccount,
   writeContract,
 } from '@wagmi/core'
 import ERC721 from '../abi/ERC721.json'
@@ -25,6 +27,8 @@ export default {
     let rerollLoading = ref(false)
     let rerollLoadingMessage = ref('')
     let rerollStep = ref(1)
+    let accountActive = ref(false)
+    let account = getAccount()
     let rerollValue = ref(0)
 
     const route = useRoute()
@@ -47,6 +51,30 @@ export default {
       'back',
       'background'
     ])
+
+    watchAccount(async () => {
+        if(getAccount().address &&  getAccount().address.length != undefined) {
+            const itemStr = localStorage.getItem(`token/${getAccount().address}`)
+            if(!itemStr) {
+                // show warning and have them return to starting screen
+                window.location.replace("/?auth=true");
+
+            }  else {
+                const item = JSON.parse(itemStr)
+                const now = new Date()
+                if (now.getTime() + 1200000 > item.expiry) { // add 20 minute buffer
+                    localStorage.removeItem(`token/${getAccount().address}`)
+                    // show warning and have them return to starting screen
+                    window.location.replace("/?auth=true");
+                } 
+            }
+            accountActive.value = true;
+            getTicketIds()
+
+        } else {
+            accountActive.value = false
+        }
+    })
 
     function loadInitialSlots (collectionName) {
       initialSlots.value = []
@@ -248,9 +276,6 @@ export default {
     }
 
     function spinReels (collectionName, result) {
-      console.log("spin reel")
-      console.log(result)
-      console.log(collectionName)
       spinLoading.value = true
       prepNextFrame.value = true
 
