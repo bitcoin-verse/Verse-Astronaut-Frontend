@@ -501,6 +501,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             <div>
             <div class="modal-head">
                 <h3 class="title">Sign in</h3>
+                <p class="iholder"><i @click="toggleModal()" class="close-btn" ></i></p>
             </div>
             <div class="modal-divider">
                 <div class="modal-progress p25"></div>

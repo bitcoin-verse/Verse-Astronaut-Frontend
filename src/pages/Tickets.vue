@@ -243,7 +243,7 @@ export default {
     <div class="head">
         <h2 class="tickhead">My Voyagers
 
-            <a href="/?purchase-intent=true"><button class="btn verse-wide" href="">Buy Ticket</button></a>
+            <a href="/?purchase-intent=true"><button class="btn verse-wide" href="">Create New Character</button></a>
         </h2>
         <div class="tickconnect" v-if="!accountActive">Connect your wallet to view your characters. </div>
 
@@ -257,7 +257,7 @@ export default {
     
     <div class="tickets" v-if="accountActive && !loading">
         <div v-if="nfts.length == 0">
-            <h3>Couldn't find any characters in your connected wallet. Click <a href="/" style="text-decoration: none; font-weight: 600; color: rgb(250, 196, 59);">here</a> to buy a character </h3>
+            <h3 style="font-size: 18px;">No characters in your connected wallet.  </h3>
         </div>
         <div class="ticket" v-for="item, index in characterList()">
             <h3 class="title">Voyager #{{item.id}} </h3>
@@ -387,8 +387,8 @@ export default {
         right: 85px;
         font-size: 14px;
         top: 95px;
-        width: 115px;
-        height: 36px;
+        width: 165px;
+        height: 38px;
         @media(max-width: 880px) {
             // top: -25px;
             top: 65px;
