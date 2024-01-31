@@ -239,10 +239,11 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             functionName: 'balanceOf',
             args: [getAccount().address]
             })
-            modalLoading.value = false;
 
 
             if(data) {
+                console.log("balance data")
+                console.log(data)
                  let dataString = data.toString()
                  verseBalance.value= parseFloat(dataString) / Math.pow(10, 18);
                  if(verseBalance.value >= 3000 && buyStep.value < 2) {
@@ -250,6 +251,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                     /// step 2, check allowance       
                     getAllowance()
                  } 
+                 modalLoading.value = false;
             }
             } catch (e) {
                 console.log(e)
@@ -261,15 +263,28 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     const continueWithAccount = () => {
         accountActive.value = true;
         
+        // console.log("continue with account")
+        // console.log(buyStep.value) 
+        // console.log(reopenAfterConnection.value)
+        // console.log('--')
+        if(buyStep.value == 100) {
+            console.log("GET BALANCE")
+            modalLoading.value = true
+            buyStep.value = 1
+            getBalance();
+        }
+
         if(buyStep.value < 1) {
-            buyStep.value = 1;
+            console.log("GET BALANCE")
+            modalLoading.value = true
+            buyStep.value = 1
+            getBalance();
         }
 
         if(reopenAfterConnection.value == true) {
             reopenAfterConnection.value = false;
             toggleModal()
         }
-        getBalance();
     }
 
     // deal with user authentication

@@ -1,17 +1,95 @@
 <script setup>
 
-import { computed } from "vue"
-import { useRoute, RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
+import { computed } from 'vue'
 import { polygon } from '@wagmi/core/chains'
 import NavBar from './components/NavBar.vue'
-import Stars from './components/Stars.vue'
+import { configureChains, createConfig, disconnect, watchAccount } from '@wagmi/core'
+import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 
-import { defaultWagmiConfig, createWeb3Modal } from '@web3modal/wagmi/vue'
+import { WalletConnectConnector } from "@wagmi/connectors/walletConnect";
+import { InjectedConnector } from "@wagmi/connectors/injected";
+import { CoinbaseWalletConnector } from "@wagmi/connectors/coinbaseWallet";
+
+import { createWeb3Modal } from '@web3modal/wagmi/vue'
 const projectId = 'b30bc40c0cdef6000cd5066be1febf74'
-const chains = [polygon]
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, appName: 'Verse Labs',  })
-const route = useRoute();
-const showNavBar = computed(() => route.name !== 'reel');
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [polygon],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        switch (chain.id) {
+          case 137:
+            return {
+              http: "https://1rpc.io/matic", //https://floral-empty-gas.matic.quiknode.pro/
+            };
+          case 1:
+          default:
+            return {
+              http: "https://eth.llamarpc.com",
+              webSocket: "wss://eth.llamarpc.com",
+            };
+        }
+      },
+    }),
+  ],
+)
+
+
+
+const metadata = {
+  name: "VERSE Voyager",
+  description: "Embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations, the possibilities are endless!",
+  url: "https://nft.verse.bitcoin.com",
+  icons: ["https://nft.verse.bitcoin.com/icon.png"],
+};
+
+// quick fix converted into string
+let isWallet = false
+
+// dont have anything in session storage yet
+if(!sessionStorage.getItem('isWallet')) {
+  const search = new URLSearchParams(window.location.search);
+  isWallet = search.get("origin") === "wallet";
+  sessionStorage.setItem('isWallet', isWallet);
+} else {
+  if(sessionStorage.getItem('isWallet') == "true") {
+    isWallet = true
+  } else {
+    isWallet = false
+  }
+}
+
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: [
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId,
+        showQrModal: false,
+        metadata,
+      },
+    }),
+    ...(isWallet === true
+      ? []
+      : [
+          new InjectedConnector({
+            chains,
+            options: { shimDisconnect: true },
+          }),
+          new CoinbaseWalletConnector({
+            chains,
+            options: { appName: metadata.name },
+          }),
+        ]),
+  ],
+  publicClient,
+  webSocketPublicClient,
+})
+
+
 
 createWeb3Modal({ 
     tokens: {
@@ -21,7 +99,23 @@ createWeb3Modal({
         },
     
     },
-    includeWalletIds: ['107bb20463699c4e614d3a2fb7b961e66f48774cb8f6d6c1aee789853280972c','c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927'], wagmiConfig, projectId, chains})
+    featuredWalletIds: ["107bb20463699c4e614d3a2fb7b961e66f48774cb8f6d6c1aee789853280972c"],
+    includeWalletIds: [], wagmiConfig, projectId, chains})
+
+// const chains = [polygon]
+// const wagmiConfig = defaultWagmiConfig({ chains, projectId, appName: 'Verse Labs',  })
+const route = useRoute();
+const showNavBar = computed(() => route.name !== 'reel');
+
+// createWeb3Modal({ 
+//     tokens: {
+//         137:{
+//             address:"0xc708d6f2153933daa50b2d0758955be0a93a8fec",
+//             image:"https://assets.coingecko.com/coins/images/28424/small/verselogo.png?1670461811" 
+//         },
+    
+//     },
+//     includeWalletIds: ['107bb20463699c4e614d3a2fb7b961e66f48774cb8f6d6c1aee789853280972c','c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927'], wagmiConfig, projectId, chains})
 
 </script>
 
