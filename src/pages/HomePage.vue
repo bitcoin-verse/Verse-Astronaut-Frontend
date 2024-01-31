@@ -110,6 +110,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
         modalActive.value = !modalActive.value;
     }
 
+
+
     async function approve() {
         let approvalAmount = 30000000000000000000000000000
         if(singleTransactionApproval.value == true) {
@@ -169,6 +171,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 const { hash } = await writeContract({
                 address: contractAddress,
                 abi: ContractABI,
+                gas: 400000n,
                 functionName: 'buyCharacter',
                 chainId: 137,
                 args: []
@@ -314,8 +317,14 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     if(search.get("auth") == "true") {
         authChallenge()
         search.delete("auth");
-        window.history.replaceState({}, '', `${window.location.pathname}`);
+      
     }
+    if(search.get("purchase-intent") == "true") {
+        toggleModal()
+        search.delete("purchase-intent");
+    }
+    window.history.replaceState({}, '', `${window.location.pathname}`);
+
 
 
  const recognizableWalletFormat = (inputString) => {
@@ -325,7 +334,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
   }
 
   // Get the first 3 characters
-  const firstThree = inputString.slice(0, 3);
+  const firstThree = inputString.slice(0, 4);
 
   // Get the last 3 characters
   const lastThree = inputString.slice(-3);
@@ -481,7 +490,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             </div>
         </div>
         <!-- modal for switching network -->
-        <div class="modal" v-if="correctNetwork == false">
+        <div class="modal" v-if="correctNetwork == false && !modalLoading">
             <div>
                 <div class="modal-head">
                     <h3 class="title">Switch Network</h3>

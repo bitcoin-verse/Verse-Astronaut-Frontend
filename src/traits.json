@@ -1,0 +1,782 @@
+{
+    "extra": [
+        {
+          "Filename": "1px.png",
+          "Type": "Common",
+          "Name": "None",
+          "Range": "1-500"
+        },
+        {
+          "Filename": "extra_01.png",
+          "Type": "Common",
+          "Name": "Full Spectrum Badge",
+          "Range": "501-542"
+        },
+        {
+          "Filename": "extra_04.png",
+          "Type": "Common",
+          "Name": "Tri-Core Circuit Badge",
+          "Range": "543-584"
+        },
+        {
+          "Filename": "extra_06.png",
+          "Type": "Common",
+          "Name": "Arachnid Defender",
+          "Range": "585-626"
+        },
+        {
+          "Filename": "extra_09.png",
+          "Type": "Common",
+          "Name": "Graphite Arrow",
+          "Range": "627-668"
+        },
+        {
+          "Filename": "extra_12.png",
+          "Type": "Common",
+          "Name": "Radio Comms",
+          "Range": "669-710"
+        },
+        {
+          "Filename": "extra_14.png",
+          "Type": "Common",
+          "Name": "Blue Energy Orb",
+          "Range": "711-794"
+        },
+        {
+          "Filename": "extra_02.png",
+          "Type": "Rare",
+          "Name": "Drone Recorder",
+          "Range": "795-815"
+        },
+        {
+          "Filename": "extra_05.png",
+          "Type": "Rare",
+          "Name": "AR Field Laser",
+          "Range": "816-836"
+        },
+        {
+          "Filename": "extra_08.png",
+          "Type": "Rare",
+          "Name": "Emerald Hammer",
+          "Range": "837-857"
+        },
+        {
+          "Filename": "extra_11.png",
+          "Type": "Rare",
+          "Name": "Twinkle",
+          "Range": "858-878"
+        },
+        {
+          "Filename": "extra_13.png",
+          "Type": "Rare",
+          "Name": "Cybernetic Dove Navigator",
+          "Range": "879-899"
+        },
+        {
+          "Filename": "extra_15.png",
+          "Type": "Rare",
+          "Name": "Red Energy Orb",
+          "Range": "900-920"
+        },
+        {
+          "Filename": "extra_16.png",
+          "Type": "Rare",
+          "Name": "Explorer Unit Pin",
+          "Range": "921-941"
+        },
+        {
+          "Filename": "extra_03.png",
+          "Type": "Epic",
+          "Name": "Diamond Pauldron",
+          "Range": "942-957"
+        },
+        {
+          "Filename": "extra_07.png",
+          "Type": "Epic",
+          "Name": "Skull Clip",
+          "Range": "958-973"
+        },
+        {
+          "Filename": "extra_10.png",
+          "Type": "Epic",
+          "Name": "Starfield",
+          "Range": "974-1000"
+        }
+      ],
+    "helmets": [
+        {
+          "Filename": "helmet_05.png",
+          "Type": "Common",
+          "Name": "Knight's Valor",
+          "Range": "1-66"
+        },
+        {
+          "Filename": "helmet_06.png",
+          "Type": "Common",
+          "Name": "Stealth Operative",
+          "Range": "67-132"
+        },
+        {
+          "Filename": "helmet_09.png",
+          "Type": "Common",
+          "Name": "Rogue Sniper",
+          "Range": "133-198"
+        },
+        {
+          "Filename": "helmet_12.png",
+          "Type": "Common",
+          "Name": "Speed Demon",
+          "Range": "199-264"
+        },
+        {
+          "Filename": "helmet_15.png",
+          "Type": "Common",
+          "Name": "Star Visor",
+          "Range": "265-330"
+        },
+        {
+          "Filename": "helmet_16.png",
+          "Type": "Common",
+          "Name": "Skull Visor",
+          "Range": "331-396"
+        },
+        {
+          "Filename": "helmet_18.png",
+          "Type": "Common",
+          "Name": "HAL Visor",
+          "Range": "397-462"
+        },
+        {
+          "Filename": "helmet_02.png",
+          "Type": "Common",
+          "Name": "Spartan Guard",
+          "Range": "463-528"
+        },
+        {
+          "Filename": "helmet_03.png",
+          "Type": "Common",
+          "Name": "Cyberpunk Voyager",
+          "Range": "529-600"
+        },
+        {
+          "Filename": "helmet_01.png",
+          "Type": "Rare",
+          "Name": "Verse Helmet",
+          "Range": "601-630"
+        },
+        {
+          "Filename": "helmet_20.png",
+          "Type": "Rare",
+          "Name": "Anime Bandit",
+          "Range": "631-660"
+        },
+        {
+          "Filename": "helmet_07.png",
+          "Type": "Rare",
+          "Name": "Futurist Pilot",
+          "Range": "661-690"
+        },
+        {
+          "Filename": "helmet_08.png",
+          "Type": "Rare",
+          "Name": "Tactical Vision",
+          "Range": "691-720"
+        },
+        {
+          "Filename": "helmet_10.png",
+          "Type": "Rare",
+          "Name": "Combat Engineer",
+          "Range": "721-750"
+        },
+        {
+          "Filename": "helmet_13.png",
+          "Type": "Rare",
+          "Name": "Phantom Racer",
+          "Range": "751-780"
+        },
+        {
+          "Filename": "helmet_17.png",
+          "Type": "Rare",
+          "Name": "Swords Visors",
+          "Range": "781-810"
+        },
+        {
+          "Filename": "helmet_04.png",
+          "Type": "Rare",
+          "Name": "Samurai Slash",
+          "Range": "811-840"
+        },
+        {
+          "Filename": "helmet_11.png",
+          "Type": "Rare",
+          "Name": "Anime Ace",
+          "Range": "841-870"
+        },
+        {
+          "Filename": "helmet_14.png",
+          "Type": "Rare",
+          "Name": "Guardian Royale",
+          "Range": "871-900"
+        },
+        {
+          "Filename": "helmet_19.png",
+          "Type": "Epic",
+          "Name": "Max Pain",
+          "Range": "901-925"
+        },
+        {
+          "Filename": "helmet_21.png",
+          "Type": "Epic",
+          "Name": "Dragon Skull Warlord",
+          "Range": "926-950"
+        },
+        {
+          "Filename": "helmet_22.png",
+          "Type": "Epic",
+          "Name": "Odin's Sentry",
+          "Range": "951-975"
+        },
+        {
+          "Filename": "helmet_23.png",
+          "Type": "Epic",
+          "Name": "Oni War Helmet",
+          "Range": "976-1000"
+        }
+      ],
+    "gear": [
+        {
+          "Filename": "1px.png",
+          "Type": "Common",
+          "Name": "None",
+          "Range": "1-60"
+        },
+        {
+          "Filename": "gear_02.png",
+          "Type": "Common",
+          "Name": "Racer Jacket",
+          "Range": "61-120"
+        },
+        {
+          "Filename": "gear_07.png",
+          "Type": "Common",
+          "Name": "Crimson Hoodie",
+          "Range": "121-180"
+        },
+        {
+          "Filename": "gear_10.png",
+          "Type": "Common",
+          "Name": "Camo Combat",
+          "Range": "181-240"
+        },
+        {
+          "Filename": "gear_13.png",
+          "Type": "Common",
+          "Name": "Floral Collar",
+          "Range": "241-300"
+        },
+        {
+          "Filename": "gear_16.png",
+          "Type": "Common",
+          "Name": "Skydive Windbreaker",
+          "Range": "301-360"
+        },
+        {
+          "Filename": "gear_18.png",
+          "Type": "Common",
+          "Name": "Monochrome Stripe Tee",
+          "Range": "361-420"
+        },
+        {
+          "Filename": "gear_14.png",
+          "Type": "Common",
+          "Name": "Wool Shirt",
+          "Range": "421-480"
+        },
+        {
+          "Filename": "gear_09.png",
+          "Type": "Common",
+          "Name": "Red Wool Shirt",
+          "Range": "481-540"
+        },
+        {
+          "Filename": "gear_03.png",
+          "Type": "Common",
+          "Name": "Stealth Zip-up",
+          "Range": "541-600"
+        },
+        {
+          "Filename": "gear_08.png",
+          "Type": "Rare",
+          "Name": "3024 Jacket",
+          "Range": "601-642"
+        },
+        {
+          "Filename": "gear_05.png",
+          "Type": "Rare",
+          "Name": "Formal Field Uniform",
+          "Range": "643-684"
+        },
+        {
+          "Filename": "gear_01.png",
+          "Type": "Rare",
+          "Name": "Leafline Hoodie",
+          "Range": "685-726"
+        },
+        {
+          "Filename": "gear_06.png",
+          "Type": "Rare",
+          "Name": "Leather Armor",
+          "Range": "727-768"
+        },
+        {
+          "Filename": "gear_11.png",
+          "Type": "Rare",
+          "Name": "Mission Bandolier",
+          "Range": "769-810"
+        },
+        {
+          "Filename": "gear_17.png",
+          "Type": "Rare",
+          "Name": "Polar Trail Vest",
+          "Range": "811-852"
+        },
+        {
+          "Filename": "gear_19.png",
+          "Type": "Rare",
+          "Name": "Symbiote High Collar",
+          "Range": "853-900"
+        },
+        {
+          "Filename": "gear_04.png",
+          "Type": "Epic",
+          "Name": "Armored Explorer",
+          "Range": "901-925"
+        },
+        {
+          "Filename": "gear_12.png",
+          "Type": "Epic",
+          "Name": "Firestorm Jacket",
+          "Range": "926-950"
+        },
+        {
+          "Filename": "gear_15.png",
+          "Type": "Epic",
+          "Name": "Orbiter Suit",
+          "Range": "951-975"
+        },
+        {
+          "Filename": "gear_20.png",
+          "Type": "Epic",
+          "Name": "Lunar Trim",
+          "Range": "976-1000"
+        }
+      ],
+    "body": [
+        {
+          "Filename": "body_01.png",
+          "Type": "Common",
+          "Name": "Terran Stardwellers",
+          "Range": "1-78"
+        },
+        {
+          "Filename": "body_02.png",
+          "Type": "Common",
+          "Name": "Gravitas Shade",
+          "Range": "79-156"
+        },
+        {
+          "Filename": "body_07.png",
+          "Type": "Common",
+          "Name": "Deep Nebulites",
+          "Range": "157-234"
+        },
+        {
+          "Filename": "body_05.png",
+          "Type": "Common",
+          "Name": "Terranox Bronze",
+          "Range": "235-312"
+        },
+        {
+          "Filename": "body_09.png",
+          "Type": "Common",
+          "Name": "Solsetians",
+          "Range": "313-390"
+        },
+        {
+          "Filename": "body_11.png",
+          "Type": "Common",
+          "Name": "Martian Dustwalkers",
+          "Range": "391-468"
+        },
+        {
+          "Filename": "body_13.png",
+          "Type": "Common",
+          "Name": "Etherlight Greens",
+          "Range": "469-550"
+        },
+        {
+          "Filename": "body_04.png",
+          "Type": "Rare",
+          "Name": "Veridian Starfolk",
+          "Range": "551-616"
+        },
+        {
+          "Filename": "body_06.png",
+          "Type": "Rare",
+          "Name": "Lunargent Sentinels",
+          "Range": "617-682"
+        },
+        {
+          "Filename": "body_03.png",
+          "Type": "Rare",
+          "Name": "Astranox Blues",
+          "Range": "683-748"
+        },
+        {
+          "Filename": "body_10.png",
+          "Type": "Rare",
+          "Name": "Solarian Reds",
+          "Range": "749-814"
+        },
+        {
+          "Filename": "body_12.png",
+          "Type": "Rare",
+          "Name": "Geoheart Giants",
+          "Range": "815-880"
+        },
+        {
+          "Filename": "body_14.png",
+          "Type": "Rare",
+          "Name": "Venusian Sandfolk",
+          "Range": "881-950"
+        },
+        {
+          "Filename": "body_08.png",
+          "Type": "Epic",
+          "Name": "Eclipseborn",
+          "Range": "951-975"
+        },
+        {
+          "Filename": "body_15.png",
+          "Type": "Epic",
+          "Name": "Zephyrion Mints",
+          "Range": "976-1000"
+        }
+      ],
+    "back": [
+        {
+          "Filename": "1px.png",
+          "Type": "None",
+          "Name": "None",
+          "Range": "1-400"
+        },
+        {
+          "Filename": "back_01.png",
+          "Type": "Common",
+          "Name": "Offworld Pack",
+          "Range": "401-438"
+        },
+        {
+          "Filename": "back_07.png",
+          "Type": "Common",
+          "Name": "Expanse Wings",
+          "Range": "439-476"
+        },
+        {
+          "Filename": "back_10.png",
+          "Type": "Common",
+          "Name": "Radar Pack",
+          "Range": "477-514"
+        },
+        {
+          "Filename": "back_17.png",
+          "Type": "Common",
+          "Name": "Arcane Shield",
+          "Range": "515-552"
+        },
+        {
+          "Filename": "back_13.png",
+          "Type": "Common",
+          "Name": "Covert Ops Pack",
+          "Range": "553-590"
+        },
+        {
+          "Filename": "back_09.png",
+          "Type": "Common",
+          "Name": "Armored Pack",
+          "Range": "591-628"
+        },
+        {
+          "Filename": "back_04.png",
+          "Type": "Common",
+          "Name": "Settler's Rake",
+          "Range": "629-666"
+        },
+        {
+          "Filename": "back_06.png",
+          "Type": "Common",
+          "Name": "Void Wings",
+          "Range": "667-704"
+        },
+        {
+          "Filename": "back_11.png",
+          "Type": "Common",
+          "Name": "Battered Trail Rockets",
+          "Range": "705-742"
+        },
+        {
+          "Filename": "back_03.png",
+          "Type": "Rare",
+          "Name": "Hydro Pack",
+          "Range": "743-770"
+        },
+        {
+          "Filename": "back_02.png",
+          "Type": "Rare",
+          "Name": "Rocket Thrusters",
+          "Range": "771-798"
+        },
+        {
+          "Filename": "back_05.png",
+          "Type": "Rare",
+          "Name": "Canon Pack",
+          "Range": "799-826"
+        },
+        {
+          "Filename": "back_12.png",
+          "Type": "Rare",
+          "Name": "Neon Pack",
+          "Range": "827-854"
+        },
+        {
+          "Filename": "back_15.png",
+          "Type": "Rare",
+          "Name": "Crimson Pulse Rifle",
+          "Range": "855-882"
+        },
+        {
+          "Filename": "back_18.png",
+          "Type": "Rare",
+          "Name": "Gromlin",
+          "Range": "883-910"
+        },
+        {
+          "Filename": "back_20.png",
+          "Type": "Rare",
+          "Name": "Advanced Jetpack",
+          "Range": "911-938"
+        },
+        {
+          "Filename": "back_08.png",
+          "Type": "Epic",
+          "Name": "Baby Monkey Pal",
+          "Range": "939-953"
+        },
+        {
+          "Filename": "back_14.png",
+          "Type": "Epic",
+          "Name": "Sludged",
+          "Range": "954-968"
+        },
+        {
+          "Filename": "back_19.png",
+          "Type": "Epic",
+          "Name": "Templar Sword",
+          "Range": "969-983"
+        },
+        {
+          "Filename": "back_16.png",
+          "Type": "Epic",
+          "Name": "Dual Wakizashi",
+          "Range": "984-1000"
+        }
+    ],
+    "background": [
+        {
+          "Filename": "basic_01.jpg",
+          "Type": "Common",
+          "Name": "Pitch Black Void",
+          "Range": "1-50"
+        },
+        {
+          "Filename": "basic_02.jpg",
+          "Type": "Common",
+          "Name": "Pure White Expanse",
+          "Range": "51-100"
+        },
+        {
+          "Filename": "basic_03.jpg",
+          "Type": "Common",
+          "Name": "Azure Sky",
+          "Range": "101-150"
+        },
+        {
+          "Filename": "basic_04.jpg",
+          "Type": "Common",
+          "Name": "Mint Freshness",
+          "Range": "151-200"
+        },
+        {
+          "Filename": "basic_05.jpg",
+          "Type": "Common",
+          "Name": "Deep Space Purple",
+          "Range": "201-250"
+        },
+        {
+          "Filename": "basic_06.jpg",
+          "Type": "Common",
+          "Name": "Oceanic Blue",
+          "Range": "251-300"
+        },
+        {
+          "Filename": "basic_07.jpg",
+          "Type": "Common",
+          "Name": "Sunset Purple",
+          "Range": "301-350"
+        },
+        {
+          "Filename": "basic_08.jpg",
+          "Type": "Common",
+          "Name": "Coral Radiance",
+          "Range": "351-400"
+        },
+        {
+          "Filename": "basic_09.jpg",
+          "Type": "Common",
+          "Name": "Vibrant Magenta",
+          "Range": "401-450"
+        },
+        {
+          "Filename": "basic_10.jpg",
+          "Type": "Common",
+          "Name": "Saffron Sunrise",
+          "Range": "451-500"
+        },
+        {
+          "Filename": "duotone_11.jpg",
+          "Type": "Rare",
+          "Name": "Pastel Dream",
+          "Range": "501-526"
+        },
+        {
+          "Filename": "duotone_12.jpg",
+          "Type": "Rare",
+          "Name": "Twilight Serenity",
+          "Range": "527-552"
+        },
+        {
+          "Filename": "duotone_13.jpg",
+          "Type": "Rare",
+          "Name": "Arctic Chill",
+          "Range": "553-578"
+        },
+        {
+          "Filename": "duotone_14.jpg",
+          "Type": "Rare",
+          "Name": "Midnight Velvet",
+          "Range": "579-604"
+        },
+        {
+          "Filename": "duotone_15.jpg",
+          "Type": "Rare",
+          "Name": "Blazing Horizon",
+          "Range": "605-630"
+        },
+        {
+          "Filename": "duotone_16.jpg",
+          "Type": "Rare",
+          "Name": "Neon Spring",
+          "Range": "631-656"
+        },
+        {
+          "Filename": "duotone_17.jpg",
+          "Type": "Rare",
+          "Name": "Golden Shine",
+          "Range": "657-682"
+        },
+        {
+          "Filename": "duotone_18.jpg",
+          "Type": "Rare",
+          "Name": "Spring Meadow",
+          "Range": "683-708"
+        },
+        {
+          "Filename": "duotone_19.jpg",
+          "Type": "Rare",
+          "Name": "Lavender Dream",
+          "Range": "709-734"
+        },
+        {
+          "Filename": "duotone_20.jpg",
+          "Type": "Rare",
+          "Name": "Ocean Horizon",
+          "Range": "735-760"
+        },
+        {
+          "Filename": "rare_21.jpg",
+          "Type": "Rare",
+          "Name": "Starry Night",
+          "Range": "761-786"
+        },
+        {
+          "Filename": "rare_22.jpg",
+          "Type": "Rare",
+          "Name": "Solar Eclipse",
+          "Range": "787-812"
+        },
+        {
+          "Filename": "rare_23.jpg",
+          "Type": "Rare",
+          "Name": "Star Trails",
+          "Range": "813-850"
+        },
+        {
+          "Filename": "Location_Indonesia.jpg",
+          "Type": "Epic",
+          "Name": "Indonesian Pagoda",
+          "Range": "851-868"
+        },
+        {
+          "Filename": "Location_MARS.jpg",
+          "Type": "Epic",
+          "Name": "Martian Dome",
+          "Range": "869-886"
+        },
+        {
+          "Filename": "Location_NewYork.jpg",
+          "Type": "Epic",
+          "Name": "New York Dusk",
+          "Range": "887-904"
+        },
+        {
+          "Filename": "Location_Nigeria.jpg",
+          "Type": "Epic",
+          "Name": "Nigerian Abuja Gate",
+          "Range": "905-922"
+        },
+        {
+          "Filename": "Location_Singapore.jpg",
+          "Type": "Epic",
+          "Name": "Singapore Neon",
+          "Range": "923-940"
+        },
+        {
+          "Filename": "Location_Tokyo.jpg",
+          "Type": "Epic",
+          "Name": "Tokyo Twilight",
+          "Range": "941-958"
+        },
+        {
+          "Filename": "Location_Vietnam.jpg",
+          "Type": "Epic",
+          "Name": "Vietnam Visitor",
+          "Range": "959-976"
+        },
+        {
+          "Filename": "rare_24.jpg",
+          "Type": "Epic",
+          "Name": "Antarctic Glow",
+          "Range": "977-1000"
+        }
+      ]
+}

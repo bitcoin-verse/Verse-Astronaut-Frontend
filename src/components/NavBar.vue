@@ -174,6 +174,22 @@ export default {
             right: 5.3px;
             top: 4.5px;
         }
+        &.rabby {
+            width: 26px;
+            height: 22px;
+            border-radius: 0;
+            top: -5px;
+            right: -5px;
+            border-radius: 50%;
+            background-image: url("./../assets/icons/rabby.png");
+            background-size: cover;
+            @media(max-width: 880px) {
+                width: 28px;
+                height: 28px;
+                top: 4.5px;
+                right: 4.3px;
+            }
+        }
     }
     &:hover {
         background: linear-gradient(rgb(49, 201, 244) 0%, rgb(44, 150, 246) 100%);

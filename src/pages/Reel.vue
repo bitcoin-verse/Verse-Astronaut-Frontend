@@ -9,7 +9,9 @@ import {
   writeContract,
 } from '@wagmi/core'
 import ERC721 from '../abi/ERC721.json'
+import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
+import { getRealTrait, getImageUrl, getTraitName, getTraitRarity } from "../helper/traitFinder.js"
 
 export default {
   setup (props) {
@@ -20,7 +22,7 @@ export default {
     let slots = ref([])
     let nftId = ref(0)
     let step = ref(1)
-    let modalActive = ref(false)
+    let modalActive = ref(false) // false
     let startAnimation = ref(false)
     let loading = ref(true)
     let resultItems = ref([])
@@ -69,7 +71,7 @@ export default {
                 } 
             }
             accountActive.value = true;
-            getTicketIds()
+            // getTicketIds()
 
         } else {
             accountActive.value = false
@@ -80,7 +82,6 @@ export default {
       initialSlots.value = []
       let collection = 'body'
       if (collectionName) collection = collectionName
-      console.log(collection, 'collection')
       for (let i = 1; i < 11; i++) {
         initialSlots.value.push({ itemIndex: i, collection })
       }
@@ -90,29 +91,23 @@ export default {
     async function prepReroll (trait) {
         let rerollArray = await getTraits(route.query.tokenId)
         rerollValue.value = rerollArray[trait]
-        console.log("reroll value")
-        console.log(rerollArray)
-        console.log(trait, "trait")  
     }
 
     async function reroll (trait) {
-      console.log("new trait request")
-      console.log(trait, nftId.value)
-      console.log("..")
       rerollLoadingMessage.value = ''
       const { hash } = await writeContract({
         address: GLOBALS.NFT_ADDRESS,
         abi: ERC721,
         functionName: 'reroll',
         chainId: 137,
-        args: [trait, nftId.value]
+        args: [nftId.value, trait]
       })
       rerollLoading.value = true
       await waitForTransaction({ hash })
 
       rerollLoading.value = false
-
       rerollStep.value = 2
+
       let timer = 35
       rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in 20 seconds!`
       const countdown = setInterval(() => {
@@ -123,10 +118,8 @@ export default {
           clearInterval(countdown)
           rerollStep.value = 3
           rerollLoadingMessage.value = ''
-          // getRerollValue
           prepReroll(trait)
           step.value = parseInt(trait) + 10
-          console.log(step.value)
           loadNextFrame()
         }
       }, 1000)
@@ -138,15 +131,8 @@ export default {
       // loadNextFrame()
       for (let i = 1; i < 7; i++) {
         const resultElement = document.getElementById('result' + i)
-        let url = `traits/${collections.value[i - 1]}/${
-          resultItems.value[i - 1]
-        }.png`
-        if (i == 6) {
-          // wallpapers are jpg format
-          url = `traits/${collections.value[i - 1]}/${
-            resultItems.value[i - 1]
-          }.jpg`
-        }
+
+        let url = getImageUrl(collections.value[i - 1], resultItems.value[i - 1])
         resultElement.style.backgroundImage = 'url(' + url + ')'
         resultElement.style.backgroundSize = 'cover'
 
@@ -158,7 +144,6 @@ export default {
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
       resultItems.value = await getTraits(route.query.tokenId)
-      console.log(resultItems.value)
       loadInitialSlots()
       loading.value = false
 
@@ -170,6 +155,7 @@ export default {
     }
     run()
 
+
     function returnToOverview () {
       loadAllProperties()
     }
@@ -177,13 +163,13 @@ export default {
       try {
         const data = await readContract({
           address: GLOBALS.NFT_ADDRESS,
-          abi: ERC721,
-          functionName: 'getTraits',
+          abi: contract,
+          functionName: 'getTraitIds',
           args: [id]
         })
         if (data) {
-          const traits = []
-          data.forEach(dp => {
+          let traits = getRealTrait(data)
+          traits.forEach(dp => {
             traits.push(parseInt(dp))
           })
           return traits
@@ -216,8 +202,6 @@ export default {
       prepNextFrame.value = false
       startAnimation.value = false
 
-      console.log(lastStep)
-
       const resultElement = document.getElementById('result' + lastStep)
       resultElement.style.animation = ''
       resultElement.classList.remove('active')
@@ -248,19 +232,19 @@ export default {
         },
         {
           collection: 'gear',
-          size: 20
+          size: 21
         },
         {
           collection: 'extra',
-          size: 15
+          size: 17
         },
         {
           collection: 'back',
-          size: 20
+          size: 21
         },
         {
           collection: 'background',
-          size: 24
+          size: 31
         }
       ]
 
@@ -268,7 +252,7 @@ export default {
         obj => obj.collection === collectionName
       )
 
-      for (let i = 1; i < collection.size + 1; i++) {
+      for (let i = 0; i < collection.size; i++) {
         numbers.push(i.toString())
       }
 
@@ -298,8 +282,6 @@ export default {
         }
       }
 
-      console.log(slots.value)
-
       // Clean up after the animation is complete
       startAnimation.value = true
       setTimeout(() => {
@@ -326,19 +308,19 @@ export default {
         resultElement = document.getElementById('result' + realStep)
       }
 
-      let url = `traits/${collections.value[stepNumber - 1]}/${
-        resultItems.value[stepNumber - 1]
-      }.png`
+
+      let url = getImageUrl(collections.value[stepNumber - 1], resultItems.value[stepNumber - 1])
+
       if (stepNumber > 10) {
         let realStep = stepNumber - 11
-        url = `traits/${collections.value[realStep]}/${result}.png`
+        let url = getImageUrl(collections.value[realStep], [result])
       }
 
-      if (stepNumber === 6 || stepNumber === 16) {
-        url = `traits/${collections.value[stepNumber - 1]}/${
-          resultItems.value[stepNumber - 1]
-        }.jpg`
-      }
+      // if (stepNumber === 6 || stepNumber === 16) {
+      //   url = `traits/${collections.value[stepNumber - 1]}/${
+      //     resultItems.value[stepNumber - 1]
+      //   }.jpg`
+      // }
 
       if (resultElement) {
         resultElement.style.backgroundImage = 'url(' + url + ')'
@@ -360,6 +342,7 @@ export default {
       slots,
       toggleModal,
       modalActive,
+      getTraitName,
       spinLoading,
       spinReels,
       step,
@@ -369,6 +352,8 @@ export default {
       traitReroll,
       reroll,
       rerollLoading,
+      getImageUrl,
+      getTraitRarity,
       capitalize,
       rerollStep,
       rerollLoadingMessage,
@@ -474,27 +459,27 @@ export default {
     <button class="name-label">VOYAGER #{{ nftId }}</button>
     <div class="char">
       <img
-        :src="`traits/background/${resultItems[5]}.jpg`"
+        :src="getImageUrl('background', resultItems[5])"
         style="width: 100%; position: absolute; left: 0"
       />
       <img
-        :src="`traits/back/${resultItems[4]}.png`"
+        :src="getImageUrl('back', resultItems[4])"
         style="width: 100%; position: absolute; left: 0"
       />
       <img
-        :src="`traits/body/${resultItems[0]}.png`"
+        :src="getImageUrl('body', resultItems[0])"
         style="width: 100%; position: absolute; left: 0"
       />
       <img
-        :src="`traits/helmets/${resultItems[1]}.png`"
+        :src="getImageUrl('helmets', resultItems[1])"
         style="width: 100%; position: absolute; left: 0"
       />
       <img
-        :src="`traits/gear/${resultItems[2]}.png`"
+        :src="getImageUrl('gear', resultItems[2])"
         style="width: 100%; position: absolute; left: 0"
       />
       <img
-        :src="`traits/extra/${resultItems[3]}.png`"
+        :src="getImageUrl('extra', resultItems[3])"
         style="width: 100%; position: absolute; left: 0"
       />
     </div>
@@ -535,129 +520,129 @@ export default {
             <!-- <img src="../assets/helmets/1.png" /> -->
             <!-- body -->
             <template v-if="step == 1">
-              <img :src="`traits/${slot.collection}/${slot.itemIndex}.png`" />
-              <div class="title" >Body Title</div>
-
+              <img :src="getImageUrl(slot.collection, slot.itemIndex)">
+              <div :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
 
             <!-- helmets -->
             <template v-if="step == 2">
-              <img :src="`traits/body/${resultItems[0]}.png`" />
+              <img :src="getImageUrl('body', resultItems[0])">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Helmet Title</div>
+              <!-- <div class="title" v-if="index != 1">Helmet Title</div> -->
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
+
             </template>
 
             <!-- gear -->
             <template v-if="step == 3">
-              <img :src="`traits/body/${resultItems[0]}.png`" />
+              <img :src="getImageUrl('body', resultItems[0])">
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+              :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Gear Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
             <!-- extra needs to move up -->
             <template v-if="step == 4">
-              <img :src="`traits/body/${resultItems[0]}.png`" />
+              <img :src="getImageUrl('body', resultItems[0])">
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+              :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+              :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Extra Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
             <!-- back -->
             <template v-if="step == 5">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+                :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+              :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+              :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Back Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
             <!-- background -->
             <template v-if="step == 6">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.jpg`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/back/${resultItems[4]}.png`"
+              :src="getImageUrl('back', resultItems[4])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+              :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+                :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+                :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Background Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
 
             <!-- rerolls -->
             <!-- reroll body -->
             <template v-if="step == 11">
-              <img
-                :src="`traits/background/${resultItems[5]}.jpg`"
+              <img :src="getImageUrl('background', resultItems[5])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/back/${resultItems[4]}.png`"
+              :src="getImageUrl('back', resultItems[4])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+              :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+                :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Body Title</div>
@@ -665,27 +650,27 @@ export default {
             <!-- reroll helmet -->
             <template v-if="step == 12">
               <img
-                :src="`traits/background/${resultItems[5]}.jpg`"
+              :src="getImageUrl('background', resultItems[5])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/back/${resultItems[4]}.png`"
+                :src="getImageUrl('back', resultItems[4])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+                :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+                :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+                :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Helmet Title</div>
@@ -693,27 +678,27 @@ export default {
             <!-- reroll gear -->
             <template v-if="step == 13">
               <img
-                :src="`traits/background/${resultItems[5]}.jpg`"
+              :src="getImageUrl('background', resultItems[5])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/back/${resultItems[4]}.png`"
+                :src="getImageUrl('back', resultItems[4])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+                :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+              :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
               <div class="title" v-if="index != 1">Gear Title</div>
@@ -721,86 +706,86 @@ export default {
             <!-- reroll extra -->
             <template v-if="step == 14">
               <img
-                :src="`traits/background/${resultItems[5]}.jpg`"
+              :src="getImageUrl('background', resultItems[5])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/back/${resultItems[4]}.png`"
+                :src="getImageUrl('back', resultItems[4])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+                :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+                :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Extra Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
             <!-- reroll back -->
             <template v-if="step == 15">
               <img
-                :src="`traits/background/${resultItems[5]}.jpg`"
+              :src="getImageUrl('background', resultItems[5])"
                 style="position: absolute; left: 0"
               />
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.png`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+                :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+                :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+                :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Back Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
             <!-- reroll background -->
             <template v-if="step == 16">
               <img v-if="index != 1"
-                :src="`traits/${slot.collection}/${slot.itemIndex}.jpg`"
+                :src="getImageUrl(slot.collection, slot.itemIndex)"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/back/${resultItems[4]}.png`"
+                :src="getImageUrl('back', resultItems[4])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/body/${resultItems[0]}.png`"
+                :src="getImageUrl('body', resultItems[0])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/helmets/${resultItems[1]}.png`"
+                :src="getImageUrl('helmets', resultItems[1])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/gear/${resultItems[2]}.png`"
+                :src="getImageUrl('gear', resultItems[2])"
                 style="position: absolute; left: 0"
               />
               <img
-                :src="`traits/extra/${resultItems[3]}.png`"
+              :src="getImageUrl('extra', resultItems[3])"
                 style="position: absolute; left: 0"
               />
-              <div class="title" v-if="index != 1">Background Title</div>
+              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
             </template>
           </div>
         </div> 
@@ -825,7 +810,7 @@ export default {
       </button>
     </div>
 
-    <div v-if="step < 7">
+    <div v-if="step < 7" >
       <button
         v-if="!spinLoading && !prepNextFrame"
         id="spinButton"
@@ -1224,14 +1209,20 @@ h2 {
     }
 
     .title {
+      &.common {
+        background-color: rgb(0, 51, 255);
+      }
       &.rare {
-        background-color: purple;
+        background-color: #a120a8
+      }
+      &.epic {
+        background-color: #fb0a3e;
       }
       background-color: rgb(0, 51, 255);
       position: absolute;
       left: 0;
       bottom: 0;
-      font-weight: 400;
+      font-weight: 500;
       font-size: 13px;
       padding-top: 5px;
       padding-bottom: 5px;

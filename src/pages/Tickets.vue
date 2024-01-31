@@ -6,10 +6,12 @@ import Reel from '../pages/Reel.vue'
 import { useWeb3Modal } from '@web3modal/wagmi/vue'
 import ContractABI from '../abi/contract.json'
 import ERC721 from '../abi/ERC721.json'
+import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-
+import traitJSON from '../traits.json'
 import GLOBALS from '../globals.js'
+import { getRealTrait, getImageUrl } from "../helper/traitFinder.js"
 
 export default {
     components: {
@@ -98,8 +100,7 @@ export default {
                 accountActive.value = false
             }
         })
-
-
+        
         function openDetailScreen(id) {
             detailNFT.value = nfts.value.find(obj => obj.id === id);
             openDetail.value = true;
@@ -116,8 +117,8 @@ export default {
             try {
                 const data = await readContract({
                 address: GLOBALS.NFT_ADDRESS,
-                abi: ERC721,
-                functionName: 'getTraits',
+                abi: contract,
+                functionName: 'getTraitIds',
                 args: [id]
                 })
                 if(data) {
@@ -125,8 +126,11 @@ export default {
                     const objToUpdate = nfts.value.find(obj => obj.id == id);
 
                     if (objToUpdate) {
+
                         objToUpdate.traits = []
-                        data.forEach(dp => {
+
+                        let traits = getRealTrait(data)
+                        traits.forEach(dp => {
                             objToUpdate.traits.push(parseInt(dp))
                         })
                         console.log(objToUpdate.traits)
@@ -207,7 +211,7 @@ export default {
         }   
 
         return {
-            list, nfts, account, nftContract, correctNetwork, closeGiftModal, step, loading, giftModal, giftAccount, claimNFT, claimActive, modalLoading, toggleModal, accountActive, getTicketIds, characterList, openDetail, openDetailScreen, closeDetailScreen, detailNFT, openReel
+            list, nfts, account, nftContract, correctNetwork, getImageUrl, closeGiftModal, step, loading, giftModal, giftAccount, claimNFT, claimActive, modalLoading, toggleModal, accountActive, getTicketIds, characterList, openDetail, openDetailScreen, closeDetailScreen, detailNFT, openReel
         }   
     }
 }
@@ -265,13 +269,13 @@ export default {
             <div v-if="!item.opened" class="char">
                 <img src="../assets/question.png"/>
             </div>
-            <div v-if="item.opened" class="char">
-                <img :src="`/traits/background/${item.traits[5]}.jpg`" style="position: relative; left: 0"/>
-                <img :src="`/traits/back/${item.traits[4]}.png`" style="position: absolute; left: 0"/> 
-                <img :src="`/traits/body/${item.traits[0]}.png`" style="position: absolute; left: 0"> 
-                <img :src="`/traits/helmets/${item.traits[1]}.png`" style="position: absolute; left: 0"/> 
-                <img :src="`/traits/gear/${item.traits[2]}.png`" style="position: absolute; left: 0"/> 
-                <img :src="`/traits/extra/${item.traits[3]}.png`" style="position: absolute; left: 0"/>  
+            <div v-if="item.opened && item.traits" class="char">
+                <img :src="getImageUrl('background', item.traits[5])" style="position: relative; left: 0"/>
+                <img :src="getImageUrl('back', item.traits[4])" style="position: absolute; left: 0"/> 
+                <img :src="getImageUrl('body', item.traits[0])" style="position: absolute; left: 0"> 
+                <img :src="getImageUrl('helmets', item.traits[1])" style="position: absolute; left: 0"/> 
+                <img :src="getImageUrl('gear', item.traits[2])" style="position: absolute; left: 0"/> 
+                <img :src="getImageUrl('extra', item.traits[3])" style="position: absolute; left: 0"/>  
             </div>
 
             <button v-if="item.opened" class="btn-action main secondary" @click="openReel(item, true)">View Character</button>
