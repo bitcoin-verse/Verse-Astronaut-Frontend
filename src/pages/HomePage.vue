@@ -539,8 +539,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 <div class="img-wallet"></div>
                 <h3 class="title">Sign in Success</h3>
                 <p class="subtext short">Successfully signed in using Web3!</p>
-                <a class="" target="_blank" @click="buyStep = 1" ><button class="btn verse-wide">Create New Character</button></a>
-                <a class="" target="_blank" href="/tickets"><button class="btn verse-wide secondary" style="margin-top: 10px;">View Characters</button></a>
+                <a class="" @click="buyStep = 1" ><button class="btn verse-wide">Create New Character</button></a>
+                <a class="" href="/tickets"><button class="btn verse-wide secondary" style="margin-top: 10px;">View Characters</button></a>
             </div>
             </div>
         </div>
