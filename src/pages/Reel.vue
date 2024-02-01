@@ -8,6 +8,7 @@ import {
   getAccount,
   writeContract,
 } from '@wagmi/core'
+import axios from 'axios'
 import ERC721 from '../abi/ERC721.json'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
@@ -78,6 +79,23 @@ export default {
         }
     })
 
+    async function updateMetaData (tokenId) {
+      try {
+        let url = `${GLOBALS.BACKEND_URL}/metadata/${tokenId}`
+        let auth = localStorage.getItem(`token/${getAccount().address}`)
+        if(auth) {
+          let headerAuth = JSON.parse(auth)
+          let res = await axios.post(url, { }, {
+          headers: {
+          'authorization': headerAuth.value
+          }
+        })
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
     function loadInitialSlots (collectionName) {
       initialSlots.value = []
       let collection = 'body'
@@ -90,6 +108,7 @@ export default {
 
     async function prepReroll (trait) {
         let rerollArray = await getTraits(route.query.tokenId)
+        updateMetaData(route.query.tokenId)
         rerollValue.value = rerollArray[trait]
     }
 
@@ -143,6 +162,7 @@ export default {
 
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
+
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false
@@ -300,6 +320,7 @@ export default {
 
       if(stepNumber == 6) {
         localStorage.setItem(nftId.value + '/' + GLOBALS.NFT_ADDRESS,'true')
+        updateMetaData(nftId.value)
       }
 
       let resultElement = document.getElementById('result' + stepNumber)
@@ -343,6 +364,7 @@ export default {
       toggleModal,
       modalActive,
       getTraitName,
+      updateMetaData,
       spinLoading,
       spinReels,
       step,

@@ -290,7 +290,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
     // deal with user authentication
     const authChallenge = async() => {
 
-        let resChallenge = await axios.get(`https://verse-nft-backend-d9a2908379d5.herokuapp.com/challenge/request/${getAccount().address}`)
+        let resChallenge = await axios.get(`${GLOBALS.BACKEND_URL}/challenge/request/${getAccount().address}`)
 
         if(buyStep.value != 99) {
             // show auth modal
@@ -308,7 +308,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
             let payload = {
                 signature
             }
-            let resComplete = await axios.post(`https://verse-nft-backend-d9a2908379d5.herokuapp.com/challenge/complete/${getAccount().address}`, payload)
+            
+            let resComplete = await axios.post(`${GLOBALS.BACKEND_URL}/challenge/complete/${getAccount().address}`, payload)
             if(resComplete.data.token && resComplete.data.token.length > 1) {
                 const now = new Date()
                 const item = {

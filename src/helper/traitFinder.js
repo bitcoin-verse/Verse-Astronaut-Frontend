@@ -20,7 +20,6 @@ export const getImageUrl = (collection, trait) => {
 }
 
 export const getTraitName = (collection, trait) => {
-    console.log(collection, trait)
     return traitJSON[collection][trait].Name
 }
 
