@@ -44,6 +44,4 @@ jobs:
           projectName: voyager-verse-bitcoin-com
           directory: dist
           branch: trunk
-          workingDirectory: webapp
           wranglerVersion: '3'
-
