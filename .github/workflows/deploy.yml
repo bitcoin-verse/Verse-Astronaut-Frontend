@@ -1,4 +1,4 @@
-name: Deploy master to CF (dev.scratcher.verse.bitcoin.com)
+name: Deploy master to CF (dev.voyagerher.verse.bitcoin.com)
 on:
   workflow_dispatch:
   repository_dispatch:
