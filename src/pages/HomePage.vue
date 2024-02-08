@@ -166,6 +166,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 chainId: 137,
                 args: [receiver]
                 })
+                loadingMessage.value = "waiting for tx confirmation.."
                 await waitForTransaction({ hash })
             } else {
                 const { hash } = await writeContract({
@@ -176,6 +177,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-mainnet.g.alc
                 chainId: 137,
                 args: []
                 })
+                loadingMessage.value = "waiting for tx confirmation.."
                 await waitForTransaction({ hash })
             }
 

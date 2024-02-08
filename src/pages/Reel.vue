@@ -9,6 +9,7 @@ import {
   writeContract,
 } from '@wagmi/core'
 import axios from 'axios'
+import ERC20ABI from '../abi/ERC20.json'
 import ERC721 from '../abi/ERC721.json'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
@@ -28,6 +29,7 @@ export default {
     let loading = ref(true)
     let resultItems = ref([])
     let rerollLoading = ref(false)
+    let verseAllowance = ref(0)
     let rerollLoadingMessage = ref('')
     let rerollStep = ref(1)
     let accountActive = ref(false)
@@ -112,7 +114,29 @@ export default {
         rerollValue.value = rerollArray[trait]
     }
 
+    async function getAllowanceInBackground() {
+        try {
+            const data = await readContract({
+            address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
+            abi: ERC20ABI,
+            functionName: 'allowance',
+            args: [getAccount().address, contractAddress]
+            })
+
+            if(data) {
+                 let dataString = data.toString()
+                 verseAllowance.value= parseFloat(dataString) / Math.pow(10, 18);
+            }
+            } catch (e) {
+                console.log(e)
+            }
+    }
+
     async function reroll (trait) {
+      // placeholder
+      const rerollcost = 100000
+      console.log(verseAllowance.value)
+
       rerollLoadingMessage.value = ''
       const { hash } = await writeContract({
         address: GLOBALS.NFT_ADDRESS,
@@ -207,6 +231,7 @@ export default {
 
     function toggleModal () {
       modalActive.value = !modalActive.value
+      getAllowanceInBackground()
     }
 
     function loadNextFrame () {
@@ -962,6 +987,7 @@ export default {
       position: absolute;
       width: 90%;
       left: 0;
+      top: 0;
       padding: 5%;
     }
 
