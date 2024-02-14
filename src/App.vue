@@ -6,12 +6,11 @@ import { polygon } from '@wagmi/core/chains'
 import NavBar from './components/NavBar.vue'
 import { configureChains, createConfig, disconnect, watchAccount } from '@wagmi/core'
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
-
 import { WalletConnectConnector } from "@wagmi/connectors/walletConnect";
 import { InjectedConnector } from "@wagmi/connectors/injected";
 import { CoinbaseWalletConnector } from "@wagmi/connectors/coinbaseWallet";
-
 import { createWeb3Modal } from '@web3modal/wagmi/vue'
+
 const projectId = 'b30bc40c0cdef6000cd5066be1febf74'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
@@ -36,8 +35,6 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   ],
 )
 
-
-
 const metadata = {
   name: "VERSE Voyager",
   description: "Embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations, the possibilities are endless!",
@@ -45,7 +42,6 @@ const metadata = {
   icons: ["https://nft.verse.bitcoin.com/icon.png"],
 };
 
-// quick fix converted into string
 let isWallet = false
 
 // dont have anything in session storage yet

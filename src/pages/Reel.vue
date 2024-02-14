@@ -1,22 +1,19 @@
 <script>
-import { ref  } from 'vue'
+import { ref } from 'vue'
 import GLOBALS from '../globals.js'
-import {
-  waitForTransaction,
-  readContract,
-  watchAccount,
-  getAccount,
-  writeContract,
-} from '@wagmi/core'
+import { waitForTransaction, readContract, watchAccount, getAccount, writeContract } from '@wagmi/core'
 import axios from 'axios'
 import ERC20ABI from '../abi/ERC20.json'
-import ERC721 from '../abi/ERC721.json'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
-import { getRealTrait, getImageUrl, getTraitName, getTraitRarity } from "../helper/traitFinder.js"
+import SlotHolder from '../components/SlotHolder.vue'
+import { getRealTrait, getImageUrl, getTraitName, getTraitRarity } from '../helper/traitFinder'
 
 export default {
-  setup (props) {
+  components: {
+    SlotHolder
+  },
+  setup () {
     let traitReroll = ref(0)
     let initialSlots = ref([])
     let spinLoading = ref(false)
@@ -24,7 +21,8 @@ export default {
     let slots = ref([])
     let nftId = ref(0)
     let step = ref(1)
-    let modalActive = ref(false) // false
+    let singleTransactionApproval = ref(false)
+    let modalActive = ref(false) 
     let startAnimation = ref(false)
     let loading = ref(true)
     let resultItems = ref([])
@@ -33,11 +31,9 @@ export default {
     let rerollLoadingMessage = ref('')
     let rerollStep = ref(1)
     let accountActive = ref(false)
-    let account = getAccount()
+    let allowanceRequestNeeded = ref(false)
+    let rerollCost = ref(0)
     let rerollValue = ref(0)
-
-    const route = useRoute()
-
     let collections = ref([
       'body',
       'helmets',
@@ -56,46 +52,52 @@ export default {
       'back',
       'background'
     ])
+    const route = useRoute()
 
     watchAccount(async () => {
-        if(getAccount().address &&  getAccount().address.length != undefined) {
-            const itemStr = localStorage.getItem(`token/${getAccount().address}`)
-            if(!itemStr) {
-                // show warning and have them return to starting screen
-                window.location.replace("/?auth=true");
-
-            }  else {
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-                if (now.getTime() + 1200000 > item.expiry) { // add 20 minute buffer
-                    localStorage.removeItem(`token/${getAccount().address}`)
-                    // show warning and have them return to starting screen
-                    window.location.replace("/?auth=true");
-                } 
-            }
-            accountActive.value = true;
-            // getTicketIds()
-
+      if (getAccount().address && getAccount().address.length != undefined) {
+        const itemStr = localStorage.getItem(`token/${getAccount().address}`)
+        if (!itemStr) {
+          window.location.replace('/?auth=true')
         } else {
-            accountActive.value = false
+          const item = JSON.parse(itemStr)
+          const now = new Date()
+          if (now.getTime() + 1200000 > item.expiry) {
+            // add 20 minute buffer
+            localStorage.removeItem(`token/${getAccount().address}`)
+            window.location.replace('/?auth=true')
+          }
         }
+        accountActive.value = true
+        // getTicketIds()
+      } else {
+        accountActive.value = false
+      }
     })
 
     async function updateMetaData (tokenId) {
       try {
         let url = `${GLOBALS.BACKEND_URL}/metadata/${tokenId}`
         let auth = localStorage.getItem(`token/${getAccount().address}`)
-        if(auth) {
+        if (auth) {
           let headerAuth = JSON.parse(auth)
-          let res = await axios.post(url, { }, {
-          headers: {
-          'authorization': headerAuth.value
-          }
-        })
+          let res = await axios.post(
+            url,
+            {},
+            {
+              headers: {
+                authorization: headerAuth.value
+              }
+            }
+          )
         }
       } catch (e) {
         console.log(e)
       }
+    }
+
+    function toggleSingleApproval () {
+      singleTransactionApproval.value = !singleTransactionApproval.value
     }
 
     function loadInitialSlots (collectionName) {
@@ -109,39 +111,74 @@ export default {
     }
 
     async function prepReroll (trait) {
-        let rerollArray = await getTraits(route.query.tokenId)
-        updateMetaData(route.query.tokenId)
-        rerollValue.value = rerollArray[trait]
+      let rerollArray = await getTraits(route.query.tokenId)
+      updateMetaData(route.query.tokenId)
+      rerollValue.value = rerollArray[trait]
     }
 
-    async function getAllowanceInBackground() {
-        try {
-            const data = await readContract({
-            address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
-            abi: ERC20ABI,
-            functionName: 'allowance',
-            args: [getAccount().address, contractAddress]
-            })
+    async function getRerollCost (id) {
+      try {
+        rerollLoading.value = true
+        rerollLoadingMessage.value = 'getting next reroll cost'
+        const data = await readContract({
+          address: GLOBALS.NFT_ADDRESS,
+          abi: contract,
+          functionName: 'getNextRerollPrice',
+          args: [id]
+        })
+        if (data) {
+          let dataString = data.toString()
+          rerollCost.value = dataString / Math.pow(10, 18)
+          rerollLoading.value = false
+          rerollLoadingMessage.value = ''
+        } else {
+          rerollCost.value = 0
+          rerollLoadingMessage.value = ''
+          rerollLoading.value = false
+        }
 
-            if(data) {
-                 let dataString = data.toString()
-                 verseAllowance.value= parseFloat(dataString) / Math.pow(10, 18);
-            }
-            } catch (e) {
-                console.log(e)
-            }
+        if (rerollCost.value > verseAllowance.value) {
+          allowanceRequestNeeded.value = true
+        } else {
+          allowanceRequestNeeded.value = false
+        }
+      } catch (e) {
+        console.log(e)
+        rerollLoading.value = false
+        rerollLoadingMessage.value = ''
+      }
+    }
+
+    async function getAllowance () {
+      try {
+        rerollLoadingMessage.value = 'getting contract allowance'
+        rerollLoading.value = true
+        const data = await readContract({
+          address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
+          abi: ERC20ABI,
+          functionName: 'allowance',
+          args: [getAccount().address, GLOBALS.NFT_ADDRESS]
+        })
+
+        if (data) {
+          let dataString = data.toString()
+          verseAllowance.value = parseFloat(dataString) / Math.pow(10, 18)
+          rerollLoading.value = false
+          rerollLoadingMessage.value = ''
+        }
+      } catch (e) {
+        rerollLoading.value = false
+        rerollLoadingMessage.value = ''
+        console.log(e)
+      }
     }
 
     async function reroll (trait) {
-      // placeholder
-      const rerollcost = 100000
-      console.log(verseAllowance.value)
-
       rerollLoadingMessage.value = ''
       const { hash } = await writeContract({
         address: GLOBALS.NFT_ADDRESS,
-        abi: ERC721,
-        functionName: 'reroll',
+        abi: contract,
+        functionName: 'rerollTrait',
         chainId: 137,
         args: [nftId.value, trait]
       })
@@ -152,7 +189,7 @@ export default {
       rerollStep.value = 2
 
       let timer = 35
-      rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in 20 seconds!`
+      rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in 35 seconds!`
       const countdown = setInterval(() => {
         timer-- // Decrement the timer
         rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in ${timer} seconds!`
@@ -161,8 +198,14 @@ export default {
           clearInterval(countdown)
           rerollStep.value = 3
           rerollLoadingMessage.value = ''
-          prepReroll(trait)
-          step.value = parseInt(trait) + 10
+
+          // the order that smart contracts returns values in is different from roll flow,
+          // this array modifies this, similar to getRealTrait
+          const stepValue = [5, 4, 0, 2, 1, 3]
+
+          let realTrait = stepValue[trait] // should be
+          prepReroll(realTrait)
+          step.value = stepValue[trait] + 10
           loadNextFrame()
         }
       }, 1000)
@@ -170,12 +213,13 @@ export default {
 
     function loadAllProperties () {
       step.value = 7
-      // TODO: change this
-      // loadNextFrame()
       for (let i = 1; i < 7; i++) {
         const resultElement = document.getElementById('result' + i)
 
-        let url = getImageUrl(collections.value[i - 1], resultItems.value[i - 1])
+        let url = getImageUrl(
+          collections.value[i - 1],
+          resultItems.value[i - 1]
+        )
         resultElement.style.backgroundImage = 'url(' + url + ')'
         resultElement.style.backgroundSize = 'cover'
 
@@ -184,9 +228,33 @@ export default {
       }
     }
 
+    async function approve () {
+      let approvalAmount = 30000000000000000000000000000
+      if (singleTransactionApproval.value == true) {
+        approvalAmount = rerollCost.value
+      }
+
+      rerollLoadingMessage.value = 'waiting for wallet approval..'
+      rerollLoading.value = true
+      const { hash } = await writeContract({
+        address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
+        abi: ERC20ABI,
+        functionName: 'approve',
+        chainId: 137,
+        args: [GLOBALS.NFT_ADDRESS, approvalAmount]
+      })
+
+      rerollLoadingMessage.value = 'waiting for wallet approval..'
+      await waitForTransaction({ hash })
+      rerollLoadingMessage.value =
+        'approval done, approve reroll transaction in wallet'
+      // need to send them to a submit transaction modal, otherwise they are still on approval modal
+      reroll(traitReroll.value)
+      rerollLoading.value = false
+    }
+
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
-
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false
@@ -198,7 +266,6 @@ export default {
       }
     }
     run()
-
 
     function returnToOverview () {
       loadAllProperties()
@@ -225,13 +292,14 @@ export default {
 
     function resetRespin () {
       rerollStep.value = 1
-      loading.value = true;
+      loading.value = true
       run(true)
     }
 
-    function toggleModal () {
+    async function toggleModal () {
       modalActive.value = !modalActive.value
-      getAllowanceInBackground()
+      await getAllowance()
+      await getRerollCost(nftId.value)
     }
 
     function loadNextFrame () {
@@ -239,11 +307,11 @@ export default {
       step.value = lastStep + 1
 
       if (step.value > 10) {
-        lastStep = lastStep - 10;
+        lastStep = lastStep - 10
       }
 
       loadInitialSlots(collections.value[step.value - 1])
-      
+
       prepNextFrame.value = false
       startAnimation.value = false
 
@@ -259,9 +327,12 @@ export default {
       currentResultElement.classList.add('active')
     }
 
-    function capitalize([first, ...rest], lowerRest = false) {
-      return first.toUpperCase() + (lowerRest ? rest.join('').toLowerCase() : rest.join(''));
-    } 
+    function capitalize ([first, ...rest], lowerRest = false) {
+      return (
+        first.toUpperCase() +
+        (lowerRest ? rest.join('').toLowerCase() : rest.join(''))
+      )
+    }
 
     function getRandomIndex (collectionName) {
       const numbers = []
@@ -308,16 +379,11 @@ export default {
       spinLoading.value = true
       prepNextFrame.value = true
 
-      // let winSlot = document.getElementById('slot28')
-      // if (winSlot) {
-      //   winSlot.style.border = '2px solid white'
-      //   winSlot.style.animation = ''
-      // }
-
       slots.value = [...initialSlots.value] // theres 12 prefilled
 
       for (let i = 0; i < 36; i++) {
-        if (i === (28 - 10)) { // 28 is result wheel + 12 prefilled
+        if (i === 28 - 10) {
+          // 28 is result wheel + 12 prefilled
           slots.value.push({ collection: collectionName, itemIndex: result })
         } else {
           slots.value.push({
@@ -335,16 +401,15 @@ export default {
 
         let winSlot = document.getElementById('slot28')
         if (winSlot) {
-          winSlot.classList.add("blink")
+          winSlot.classList.add('blink')
         }
         spinLoading.value = false
       }, 10000 + 300)
     }
 
     function updateResultElement (stepNumber, result) {
-
-      if(stepNumber == 6) {
-        localStorage.setItem(nftId.value + '/' + GLOBALS.NFT_ADDRESS,'true')
+      if (stepNumber == 6) {
+        localStorage.setItem(nftId.value + '/' + GLOBALS.NFT_ADDRESS, 'true')
         updateMetaData(nftId.value)
       }
 
@@ -354,19 +419,17 @@ export default {
         resultElement = document.getElementById('result' + realStep)
       }
 
-
-      let url = getImageUrl(collections.value[stepNumber - 1], resultItems.value[stepNumber - 1])
+      let url = ''
 
       if (stepNumber > 10) {
         let realStep = stepNumber - 11
-        let url = getImageUrl(collections.value[realStep], [result])
+        url = getImageUrl(collections.value[realStep], [result])
+      } else {
+        url = getImageUrl(
+          collections.value[stepNumber - 1],
+          resultItems.value[stepNumber - 1]
+        )
       }
-
-      // if (stepNumber === 6 || stepNumber === 16) {
-      //   url = `traits/${collections.value[stepNumber - 1]}/${
-      //     resultItems.value[stepNumber - 1]
-      //   }.jpg`
-      // }
 
       if (resultElement) {
         resultElement.style.backgroundImage = 'url(' + url + ')'
@@ -388,6 +451,7 @@ export default {
       slots,
       toggleModal,
       modalActive,
+      allowanceRequestNeeded,
       getTraitName,
       updateMetaData,
       spinLoading,
@@ -397,12 +461,14 @@ export default {
       returnToOverview,
       nftId,
       traitReroll,
+      toggleSingleApproval,
       reroll,
       rerollLoading,
       getImageUrl,
       getTraitRarity,
       capitalize,
       rerollStep,
+      approve,
       rerollLoadingMessage,
       rerollValue,
       startAnimation,
@@ -417,7 +483,7 @@ export default {
     <!-- loading -->
     <div class="modal" v-if="rerollLoading == true">
       <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
-      <h3>Waiting for tx to confirm</h3>
+      <h3>{{ rerollLoadingMessage }}</h3>
       <div class="lds-ring">
         <div></div>
         <div></div>
@@ -431,16 +497,27 @@ export default {
       <h3>Rerolling a body part</h3>
       <p>Choose which part you want to roll again</p>
       <select v-model="traitReroll" class="trait-selector">
-        <option :value="0">body</option>
-        <option :value="1">helmet</option>
-        <option :value="2">gear</option>
-        <option :value="3">extra</option>
-        <option :value="4">back</option>
-        <option :value="5">background</option>
+        <option :value="0">background</option>
+        <option :value="1">back</option>
+        <option :value="2">body</option>
+        <option :value="3">gear</option>
+        <option :value="4">helmets</option>
+        <option :value="5">extra</option>
       </select>
+      <!-- respin -->
       <button
+        v-if="allowanceRequestNeeded == false"
         id="spinButton"
         @click="reroll(traitReroll)"
+        style="margin-top: 2px"
+      >
+        Respin Now
+      </button>
+      <!-- set allowance and respin -->
+      <button
+        v-if="allowanceRequestNeeded == true"
+        id="spinButton"
+        @click="rerollStep = 4"
         style="margin-top: 2px"
       >
         Respin Now
@@ -463,13 +540,43 @@ export default {
         Respin Now
       </button>
     </div>
+    <!--  reroll allowance -->
+    <div class="modal" v-if="rerollStep == 4 && rerollLoading == false">
+      <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
+      <div class="modal-body" style="padding: 0">
+        <div class="img-approve"></div>
+        <h3 class="title">Approve the use of VERSE</h3>
+        <p class="subtext">
+          You need to enable the use of at least <span>3000 VERSE</span>. This
+          is used to pay for your ticket.
+        </p>
+        <div class="gift-toggle-holder">
+          <h3 class="title">Allow for one transaction only</h3>
+          <label class="switch">
+            <input type="checkbox" v-on:change="toggleSingleApproval" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <a class="" target="_blank" @click="approve()"
+          ><button class="btn verse-wide">Allow the use of VERSE</button></a
+        >
+        <p class="modal-footer">
+          All tokens on the Polygon network require an approval transaction
+          before they can be spent.
+          <a
+            target="blank"
+            href="https://revoke.cash/learn/approvals/what-are-token-approvals"
+            >learn more here.</a
+          >
+        </p>
+      </div>
+    </div>
   </div>
-
+  <!-- side screen -->
   <div class="results">
     <div class="result active" id="result1">
       <h3 id="result1label">body</h3>
     </div>
-    <!-- <button v-if="!spinLoading && !prepNextFrame" id="spinButtonSmall">reroll</button> -->
     <div class="result" id="result2">
       <h3 id="result2label">helmet</h3>
     </div>
@@ -490,7 +597,7 @@ export default {
   <!-- loading -->
   <div class="page-holder" v-if="loading">
     <a href="/tickets"><div class="close-scratch"></div></a>
-    <div class="spin" style="margin-top: 100px;">
+    <div class="spin" style="margin-top: 100px">
       <div class="lds-ring">
         <div></div>
         <div></div>
@@ -541,14 +648,21 @@ export default {
       </div>
     </div>
   </div>
+
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
     <a href="/tickets"><div class="close-scratch"></div></a>
     <div class="reel-holder">
-      <h2 v-if="step < 10" style="margin-bottom: 5px; font-weight: 600;">Build Your Voyager</h2>
-      <p style="margin-top: 0px; margin-bottom: 15px;"><small>Spin the reel to win traits</small></p>
+      <h2 v-if="step < 10" style="margin-bottom: 5px; font-weight: 600">
+        Build Your Voyager
+      </h2>
+      <p style="margin-top: 0px; margin-bottom: 15px">
+        <small>Spin the reel to win traits</small>
+      </p>
 
-      <button class="bubble" v-if="step < 10" style="margin: 0">{{ capitalize(collections[step - 1]) }}</button>
+      <button class="bubble" v-if="step < 10" style="margin: 0">
+        {{ capitalize(collections[step - 1]) }}
+      </button>
       <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
       <div id="reel">
         <div class="blur-top"></div>
@@ -556,349 +670,74 @@ export default {
           <div class="squaretop"></div>
           <div class="squarebottom"></div>
         </div>
-
-        <div id="slot-holder" :class="{ 'spin-anim': startAnimation }">
-          <div
-            v-for="(slot, index) in slots"
-            :key="index"
-            class="slot"
-            :id="'slot' + index"
-          >
-            <!-- <img src="../assets/helmets/1.png" /> -->
-            <!-- body -->
-            <template v-if="step == 1">
-              <img :src="getImageUrl(slot.collection, slot.itemIndex)">
-              <div :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-
-            <!-- helmets -->
-            <template v-if="step == 2">
-              <img :src="getImageUrl('body', resultItems[0])">
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <!-- <div class="title" v-if="index != 1">Helmet Title</div> -->
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-
-            </template>
-
-            <!-- gear -->
-            <template v-if="step == 3">
-              <img :src="getImageUrl('body', resultItems[0])">
-              <img
-              :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-            <!-- extra needs to move up -->
-            <template v-if="step == 4">
-              <img :src="getImageUrl('body', resultItems[0])">
-              <img
-              :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-            <!-- back -->
-            <template v-if="step == 5">
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-            <!-- background -->
-            <template v-if="step == 6">
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('back', resultItems[4])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-
-            <!-- rerolls -->
-            <!-- reroll body -->
-            <template v-if="step == 11">
-              <img :src="getImageUrl('background', resultItems[5])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('back', resultItems[4])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div class="title" v-if="index != 1">Body Title</div>
-            </template>
-            <!-- reroll helmet -->
-            <template v-if="step == 12">
-              <img
-              :src="getImageUrl('background', resultItems[5])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('back', resultItems[4])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div class="title" v-if="index != 1">Helmet Title</div>
-            </template>
-            <!-- reroll gear -->
-            <template v-if="step == 13">
-              <img
-              :src="getImageUrl('background', resultItems[5])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('back', resultItems[4])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div class="title" v-if="index != 1">Gear Title</div>
-            </template>
-            <!-- reroll extra -->
-            <template v-if="step == 14">
-              <img
-              :src="getImageUrl('background', resultItems[5])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('back', resultItems[4])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-            <!-- reroll back -->
-            <template v-if="step == 15">
-              <img
-              :src="getImageUrl('background', resultItems[5])"
-                style="position: absolute; left: 0"
-              />
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-            <!-- reroll background -->
-            <template v-if="step == 16">
-              <img v-if="index != 1"
-                :src="getImageUrl(slot.collection, slot.itemIndex)"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('back', resultItems[4])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('body', resultItems[0])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('helmets', resultItems[1])"
-                style="position: absolute; left: 0"
-              />
-              <img
-                :src="getImageUrl('gear', resultItems[2])"
-                style="position: absolute; left: 0"
-              />
-              <img
-              :src="getImageUrl('extra', resultItems[3])"
-                style="position: absolute; left: 0"
-              />
-              <div  v-if="index != 1" :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)" >{{ getTraitName(slot.collection, slot.itemIndex) }}</div>
-            </template>
-          </div>
-        </div> 
+        <!-- the items in the reel -->
+        <SlotHolder
+          :slots="slots"
+          :resultItems="resultItems"
+          :step="step"
+          :startAnimation="startAnimation"
+        />
       </div>
 
-
-
       <div v-if="step > 10">
-      <button
-        v-if="!spinLoading && !prepNextFrame"
-        id="spinButton"
-        @click="spinReels(collections[step - 11], rerollValue)"
-      >
-        Respin {{ collections[step - 11] }}
-      </button>
-      <button
-        v-if="prepNextFrame && !spinLoading"
-        id="spinButton"
-        @click="resetRespin()"
-      >
-        Finish
-      </button>
+        <button
+          v-if="!spinLoading && !prepNextFrame"
+          id="spinButton"
+          @click="spinReels(collections[step - 11], rerollValue)"
+        >
+          Respin {{ collections[step - 11] }}
+        </button>
+
+        <button
+          v-if="prepNextFrame && !spinLoading"
+          id="spinButton"
+          @click="resetRespin()"
+        >
+          Finish
+        </button>
+      </div>
+
+      <div v-if="step < 7">
+        <button
+          v-if="!spinLoading && !prepNextFrame"
+          id="spinButton"
+          @click="spinReels(collections[step - 1], resultItems[step - 1])"
+        >
+          Spin ({{ step }} of 6)
+        </button>
+        <button v-if="spinLoading" style="opacity: 0.3" id="spinButton">
+          Spin ({{ step }} of 6)
+        </button>
+        <button
+          v-if="prepNextFrame && !spinLoading && step != 6"
+          id="spinButton"
+          @click="loadNextFrame()"
+        >
+          Next
+        </button>
+        <button
+          v-if="prepNextFrame && !spinLoading && step == 6"
+          id="spinButton"
+          @click="returnToOverview()"
+        >
+          Finish
+        </button>
+      </div>
     </div>
-
-    <div v-if="step < 7" >
-      <button
-        v-if="!spinLoading && !prepNextFrame"
-        id="spinButton"
-        @click="spinReels(collections[step - 1], resultItems[step - 1])"
-      >
-        Spin ({{ step }} of 6)
-      </button>
-      <button v-if="spinLoading" style="opacity: 0.3" id="spinButton">Spin ({{ step }} of 6)</button>
-      <button
-        v-if="prepNextFrame && !spinLoading && step != 6"
-        id="spinButton"
-        @click="loadNextFrame()"
-      >
-        Next
-      </button>
-      <button
-        v-if="prepNextFrame && !spinLoading && step == 6"
-        id="spinButton"
-        @click="returnToOverview()"
-      >
-        Finish
-      </button>
-        </div>
-    </div>
-
-
   </div>
 </template>
 
 <style lang="scss" scoped>
-
 .name-label {
-  background: #030C14;
+  background: #030c14;
   border: none;
-  color: #C5CEDB;
+  color: #c5cedb;
   border: none;
   padding: 10px 60px 10px 60px;
   border-radius: 42px;
   font-size: 14px;
   font-weight: 400;
-  @media(max-width: 880px) {
+  @media (max-width: 880px) {
     margin-top: 20px;
   }
 }
@@ -940,19 +779,19 @@ export default {
 }
 
 .close-scratch {
-    cursor: pointer;
-    width: 34px;
-    height: 34px;
-    background-image: url("../assets/icons/icn-close-circle.png");
-    background-size: cover;
-    position: absolute;
-    top: 21px;
-    right: 50px;
-    border-radius: 50%;
-    @media(max-width: 880px) {
-      top: 15px;
-      right: 25px;
-    }
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  background-image: url('../assets/icons/icn-close-circle.png');
+  background-size: cover;
+  position: absolute;
+  top: 21px;
+  right: 50px;
+  border-radius: 50%;
+  @media (max-width: 880px) {
+    top: 15px;
+    right: 25px;
+  }
 }
 
 .trait-selector {
@@ -1003,9 +842,7 @@ export default {
     width: 450px;
     position: absolute;
     left: calc(50% - 225px);
-    top: 150px;
-
-    background-color: #1c1b21;
+    top: 100px;
     border-radius: 5px;
     padding: 30px;
     h3 {
@@ -1078,7 +915,7 @@ export default {
 }
 
 .blink {
-  border: 2px solid #ff0486!important;
+  border: 2px solid #ff0486 !important;
   animation: blinker 2s linear infinite;
 }
 </style>
@@ -1113,8 +950,8 @@ h2 {
   background-repeat: no-repeat;
   background-size: cover;
   overflow: auto;
-  
-  @media(max-width: 880px) {
+
+  @media (max-width: 880px) {
     padding-top: 0;
   }
 }
@@ -1161,7 +998,7 @@ h2 {
 }
 .reel-holder {
   h2 {
-    font-size: 20px!important;
+    font-size: 20px !important;
   }
   border-radius: 20px;
   padding-top: 22px;
@@ -1181,17 +1018,20 @@ h2 {
 
 .blur-top {
   height: 435px;
-  width:  180px;
-  background: 
-  linear-gradient(
-    180deg, rgba(3, 12, 20, 0.9) 0%, rgba(0, 0, 0, 0) 35.84%, rgba(3, 12, 20, 0.9) 78.5%);
+  width: 180px;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 12, 20, 0.9) 0%,
+    rgba(0, 0, 0, 0) 35.84%,
+    rgba(3, 12, 20, 0.9) 78.5%
+  );
   position: absolute;
   top: 0;
   left: calc(50% - 90px);
   z-index: 2;
 }
 #reel {
-  width: calc(100% - 100px); 
+  width: calc(100% - 100px);
   border-radius: 10px;
   height: 435px;
   background-color: #000000;
@@ -1217,7 +1057,7 @@ h2 {
       position: absolute;
       top: 160px;
       left: -9px;
-     border: 2px solid #163756;
+      border: 2px solid #163756;
     }
     .squarebottom {
       width: 14px;
@@ -1227,56 +1067,7 @@ h2 {
       position: absolute;
       top: 160px;
       right: -9px;
-     border: 2px solid #163756;
-  
-
-    }
-  }
-  #slot-holder {
-    will-change: transform;
-    display: flex;
-    padding-left: calc(50% - 90px);
-    flex-direction: column;
-    margin-top: -100px;
-  }
-  .slot {
-    position: relative;
-    z-index: 2;
-    width: 176px;
-    flex-shrink: 0;
-    height: 176px;
-    background-color: #0f1823;
-    margin-bottom: 4px;
-    border: 2px solid #000000;
-    float: left;
-    // display: inline-block;
-    img {
-      width: 100%;
-      height: 100%;
-      
-    }
-
-    .title {
-      &.common {
-        background-color: rgb(0, 51, 255);
-      }
-      &.rare {
-        background-color: #a120a8
-      }
-      &.epic {
-        background-color: #fb0a3e;
-      }
-      background-color: rgb(0, 51, 255);
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      font-weight: 500;
-      font-size: 13px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      color: white;
-      text-align: center;
-      width: 100%;
+      border: 2px solid #163756;
     }
   }
 }
