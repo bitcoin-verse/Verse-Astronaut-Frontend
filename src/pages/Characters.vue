@@ -9,6 +9,7 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import GLOBALS from '../globals.js'
 import { getRealTrait, getImageUrl } from '../helper/traitFinder.js'
+import axios from 'axios'
 
 export default {
   components: {
@@ -163,6 +164,36 @@ export default {
       claimActive.value = !claimActive.value
     }
 
+    async function checkMetaData() {
+    let promiseArray = nfts.value.map(nft => {
+    let imageUrl = `https://versevoyagers.s3.us-west-1.amazonaws.com/${nft.id}/${GLOBALS.NFT_ADDRESS}.jpg`;
+    return axios.head(imageUrl)
+      .then(response => ({ status: response.status, url: imageUrl, success: true }))
+      .catch(error => {
+        if (error.response && error.response.status === 403) {
+          return { status: 403, url: imageUrl, success: false, error: 'Forbidden' };
+        } else {
+          return { status: error.response ? error.response.status : 'Unknown', url: imageUrl, success: false, error: 'Error occurred' };
+        }
+      });
+  });
+
+  try {
+    let results = await Promise.all(promiseArray);
+    results.forEach((result,index) => {
+      if(result.success == true ) {
+        nfts.value[index].opened = true
+        // if it was already opened we dont want to set it to false as we have the data locally
+      } else if (nfts.value[index].opened == false) {
+        nfts.value[index].opened = false
+      }
+    })
+
+  } catch (error) {
+    console.error('An unexpected error occurred:', error);
+  }
+}
+
     function characterList () {
       return nfts.value.toReversed()
     }
@@ -194,13 +225,15 @@ export default {
             ) {
               opened = true
             }
-            arr.push({ id: parseInt(dat.toString()), opened, claimed: false })
+            arr.push({ id: parseInt(dat.toString()), opened })
           })
           nfts.value = arr
 
           nfts.value.forEach(nft => {
             promiseArray.push(promiseArray.push(getTraits(nft.id)))
           })
+          // check if tickets have metadata images
+          await checkMetaData(nfts)
           loading.value = false
         }
       } catch (e) {
