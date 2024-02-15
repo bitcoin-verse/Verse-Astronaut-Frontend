@@ -402,7 +402,7 @@ export default {
     })
 
     function copyText () {
-      let text = `https://main--chipper-hotteok-85cbb2.netlify.app/tickets?gift=1&address=${giftAddress.value}`
+      let text = `https://voyager.verse.bitcoin.com/characters?gift=1&address=${giftAddress.value}`
       navigator.clipboard.writeText(text)
       copyDone.value = true
 
@@ -578,7 +578,7 @@ export default {
           <a class="" @click="buyStep = 1"
             ><button class="btn verse-wide">Create New Character</button></a
           >
-          <a class="" href="/tickets"
+          <a class="" href="/characters"
             ><button class="btn verse-wide secondary" style="margin-top: 10px">
               View Characters
             </button></a
@@ -829,7 +829,7 @@ export default {
             <input
               class="ticketlink"
               type="text"
-              :value="`https://main--chipper-hotteok-85cbb2.netlify.app/tickets?gift=1&address=${giftAddress}`"
+              :value="`https://voyager.verse.bitcoin.com/characters?gift=1&address=${giftAddress}`"
             />
             <button
               style="cursor: pointer"
@@ -847,13 +847,13 @@ export default {
             >
               copied
             </button>
-            <!-- change this text for gifted tickets -->
+            <!-- change this text for gifted characters -->
             <a class="" href="/"
               ><button class="btn verse-wide half extraTop extraTopMobile">
                 Buy Another Character
               </button></a
             >
-            <a class="" href="/tickets"
+            <a class="" href="/characters"
               ><button class="btn verse-wide half secondary extraTop">
                 View your Characters
               </button></a
@@ -865,7 +865,7 @@ export default {
               Time to spin the reel and create your Voyager!
             </p>
             <!-- change this text for gifted tickets -->
-            <a class="" href="/tickets"
+            <a class="" href="/characters"
               ><button class="btn verse-wide">View your Characters!</button></a
             >
           </div>
@@ -899,7 +899,7 @@ export default {
         >
           Create New Character
         </button>
-        <a href="/tickets" v-if="authenticated"
+        <a href="/characters" v-if="authenticated"
           ><button class="btn verse-wide secondary" style="margin-top: 10px">
             View Characters
           </button></a

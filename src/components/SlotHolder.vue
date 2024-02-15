@@ -193,7 +193,12 @@ export default {
           :src="getImageUrl('extra', resultItems[3])"
           style="position: absolute; left: 0"
         />
-        <div class="title" v-if="index != 1">Body Title</div>
+        <div
+          v-if="index != 1"
+          :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)"
+        >
+          {{ getTraitName(slot.collection, slot.itemIndex) }}
+        </div>
       </template>
       <!-- reroll helmet -->
       <template v-if="step == 12">
@@ -257,7 +262,12 @@ export default {
           :src="getImageUrl('extra', resultItems[3])"
           style="position: absolute; left: 0"
         />
-        <div class="title" v-if="index != 1">Gear Title</div>
+        <div
+          v-if="index != 1"
+          :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)"
+        >
+          {{ getTraitName(slot.collection, slot.itemIndex) }}
+        </div>
       </template>
 
       <!-- reroll extra -->
@@ -376,6 +386,18 @@ export default {
   flex-direction: column;
   margin-top: -100px;
 }
+
+@keyframes blinker {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.blink {
+  border: 2px solid #13ffb3 !important;
+  animation: blinker 2s linear infinite;
+}
+
 .slot {
   position: relative;
   z-index: 2;

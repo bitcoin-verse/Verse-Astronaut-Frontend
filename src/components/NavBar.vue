@@ -16,7 +16,6 @@ export default {
         let ensUserName = ref("");
 
         sessionStorage.getItem('isWallet') === "true" ? isWallet.value = true : isWallet.value = false
-
         
         function openWalletModal(refresh) {            
             if(refresh) disconnect()
@@ -30,6 +29,28 @@ export default {
             if (!match) return address;
             return `${match[1]}…${match[2]}`;
         };
+
+        function handleHome(newTab) {
+            const openUrl = (url, newTab) => {
+                if(newTab) {
+                    window.open(url,"_blank")
+                } else {
+                    window.open(url,"_self")
+                }
+            }
+            console.log(window.location.search.indexOf('?tokenId=') != -1)
+            if(window.location.search.indexOf('?tokenId=') != -1) {
+                openUrl("/characters")
+                return
+            }
+            else if(window.location.pathname == '/') {
+               openUrl("https://verse.bitcoin.com" ,newTab)
+               return
+            } else {
+               openUrl("/")
+               return
+            }
+        }
 
         watchAccount(async (account) => { 
         if(account.isConnected == true) {
@@ -53,7 +74,7 @@ export default {
         connectedProvider.value = account.connector.name.toLowerCase()
     })
 
-        return { account, isWallet, ensUserName, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
+        return { account, isWallet, ensUserName, handleHome, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
     }
     
 }
@@ -61,11 +82,11 @@ export default {
 
 <template>
     <div class="navbar-mobile">
-        <a v-if="!isWallet" href="https://verse.bitcoin.com" target="_blank">
+        <a v-if="!isWallet" @click="handleHome(true)">
             <div class="nav-chev"></div>
             <div class="nav-verse"></div>
         </a>
-        <a v-if="isWallet" href="https://verse.bitcoin.com">
+        <a v-if="isWallet" @click="handleHome()">
             <div class="nav-chev"></div>
             <div class="nav-verse"></div>
         </a>
@@ -79,11 +100,11 @@ export default {
     <div class="navbar">
         <a style="cursor: pointer;" href="/">
             <div class="logo">
-                <a v-if="!isWallet" href="https://verse.bitcoin.com" target="_blank">
+                <a v-if="!isWallet" @click="handleHome(true)">
                     <div class="nav-chev"></div>
                     <div class="nav-verse"></div>
                 </a>
-                <a v-if="isWallet" href="https://verse.bitcoin.com">
+                <a v-if="isWallet" @click="handleHome()">
                     <div class="nav-chev"></div>
                     <div class="nav-verse"></div>
                 </a>

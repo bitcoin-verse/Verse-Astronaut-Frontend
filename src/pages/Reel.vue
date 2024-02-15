@@ -14,13 +14,14 @@ export default {
     SlotHolder
   },
   setup () {
-    let traitReroll = ref(0)
+    let traitReroll = ref(2)
     let initialSlots = ref([])
     let spinLoading = ref(false)
     let prepNextFrame = ref(false)
     let slots = ref([])
     let nftId = ref(0)
     let step = ref(1)
+    let showTimer = ref(false)
     let singleTransactionApproval = ref(false)
     let modalActive = ref(false) 
     let startAnimation = ref(false)
@@ -112,7 +113,7 @@ export default {
 
     async function prepReroll (trait) {
       let rerollArray = await getTraits(route.query.tokenId)
-      updateMetaData(route.query.tokenId)
+      updateMetaData(nftId.value)
       rerollValue.value = rerollArray[trait]
     }
 
@@ -175,6 +176,7 @@ export default {
 
     async function reroll (trait) {
       rerollLoadingMessage.value = ''
+      rerollLoadingMessage.value = "Confirm transaction in your wallet"
       const { hash } = await writeContract({
         address: GLOBALS.NFT_ADDRESS,
         abi: contract,
@@ -183,19 +185,22 @@ export default {
         args: [nftId.value, trait]
       })
       rerollLoading.value = true
+      rerollLoadingMessage.value = "Waiting for transaction to confirm"
       await waitForTransaction({ hash })
 
       rerollLoading.value = false
       rerollStep.value = 2
 
       let timer = 35
-      rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in 35 seconds!`
+      showTimer.value = true
+      rerollLoadingMessage.value = `Expected arrival in 35 seconds!`
       const countdown = setInterval(() => {
         timer-- // Decrement the timer
-        rerollLoadingMessage.value = `payment success! issuing respin and awaiting final confirmation. Expected arrival in ${timer} seconds!`
+        rerollLoadingMessage.value = `Expected arrival in ${timer} seconds!`
 
         if (timer <= 0) {
           clearInterval(countdown)
+          showTimer.value = false
           rerollStep.value = 3
           rerollLoadingMessage.value = ''
 
@@ -448,6 +453,7 @@ export default {
       collections,
       loadNextFrame,
       prepNextFrame,
+      showTimer,
       slots,
       toggleModal,
       modalActive,
@@ -459,6 +465,7 @@ export default {
       step,
       loading,
       returnToOverview,
+      GLOBALS,
       nftId,
       traitReroll,
       toggleSingleApproval,
@@ -467,12 +474,13 @@ export default {
       getImageUrl,
       getTraitRarity,
       capitalize,
+      rerollCost,
       rerollStep,
       approve,
       rerollLoadingMessage,
       rerollValue,
       startAnimation,
-      resetRespin
+      resetRespin,
     }
   }
 }
@@ -492,9 +500,133 @@ export default {
       </div>
     </div>
     <!-- step 1 -->
-    <div class="modal" v-if="rerollStep == 1 && rerollLoading == false">
-      <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
-      <h3>Rerolling a body part</h3>
+    <div class="modal wide" v-if="rerollStep == 1 && rerollLoading == false">
+      <div class="modal-head">
+        <h3 class="title" style="text-align: left;">Select a Trait</h3>
+        <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
+      </div>
+      <div class="modal-divider">
+        <div class="modal-progress p25"></div>
+      </div>
+      <div class="modal-body clearfix" style="height: unset;">
+        <div class="left-respin">
+          <div class="char respin">
+            <img
+              :src="getImageUrl('background', resultItems[5])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 0 ? '' : 'greyscale' "
+            />
+            <img
+              :src="getImageUrl('back', resultItems[4])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 1 ? '' : 'greyscale' "
+            />
+            <img
+              :src="getImageUrl('body', resultItems[0])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 2 ? '' : 'greyscale' "
+            />
+            <img
+              :src="getImageUrl('helmets', resultItems[1])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 4 ? '' : 'greyscale' "
+            />
+            <img
+              :src="getImageUrl('gear', resultItems[2])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 3 ? '' : 'greyscale' "
+            />
+            <img
+              :src="getImageUrl('extra', resultItems[3])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 5 ? '' : 'greyscale' "
+            />
+          </div>
+        </div>
+        <div class="right-respin">
+          <div class="tile" :class="traitReroll == 2 ? 'active' : '' ">
+            <img
+              :src="getImageUrl('body', resultItems[0])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 2 ? '' : 'greyscale' "
+              @click="traitReroll = 2"
+            />
+            <div class="trait">Body</div>
+          </div>
+          <div class="tile" :class="traitReroll == 4 ? 'active' : '' ">
+            <img
+              :src="getImageUrl('helmets', resultItems[1])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 4 ? '' : 'greyscale' "
+              @click="traitReroll = 4"
+            />
+            <div class="trait">Helmet</div>
+          </div>
+          <div class="tile" :class="traitReroll == 3 ? 'active' : '' ">
+            <img
+              :src="getImageUrl('gear', resultItems[2])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 3 ? '' : 'greyscale' "
+              @click="traitReroll = 3"
+            />
+            <div class="trait">Gear</div>
+          </div>
+          <div class="tile" :class="traitReroll == 5 ? 'active' : '' ">
+            <img
+              :src="getImageUrl('extra', resultItems[3])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 5 ? '' : 'greyscale' "
+              @click="traitReroll = 5"
+            />
+            <div class="trait">Extra</div>
+          </div>
+          <div class="tile" :class="traitReroll == 1 ? 'active' : '' ">
+            <img
+              :src="getImageUrl('back', resultItems[4])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 1 ? '' : 'greyscale' "
+              @click="traitReroll = 1"
+            />
+            <div class="trait">Back</div>
+          </div>
+          <div class="tile" :class="traitReroll == 0 ? 'active' : '' ">
+            <img
+              :src="getImageUrl('background', resultItems[5])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 0 ? '' : 'greyscale' "
+              @click="traitReroll = 0"
+            />
+            <div class="trait">Wallpaper</div>
+          </div>
+        </div>
+        <div>
+          
+        </div>
+        <div class="clearfix" style="margin-top: 340px;">
+          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white;">Respin Cost <strong>{{ rerollCost }} VERSE </strong></p>
+          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white;"><br/>Respin Cost <strong>0 VERSE </strong></p>
+          <button
+          v-if="allowanceRequestNeeded == false"
+          id="spinButton"
+          @click="reroll(traitReroll)"
+          style="margin-top: 0px; width: 80%"
+        >
+          Respin Now
+        </button>
+
+        <button
+          v-if="allowanceRequestNeeded == true"
+          id="spinButton"
+          @click="rerollStep = 4"
+          style="margin-top: 0px; width: 80%"
+        >
+          Respin Now
+        </button>
+        <p style="font-size: 13px;">Note: Rerolls are provably random. It is possible <br> to roll the same trait as you already have.</p>
+      </div>
+      </div>
+
+      <!-- <h3>Rerolling a body part</h3>
       <p>Choose which part you want to roll again</p>
       <select v-model="traitReroll" class="trait-selector">
         <option :value="0">background</option>
@@ -504,34 +636,55 @@ export default {
         <option :value="4">helmets</option>
         <option :value="5">extra</option>
       </select>
-      <!-- respin -->
+  
       <button
         v-if="allowanceRequestNeeded == false"
         id="spinButton"
         @click="reroll(traitReroll)"
-        style="margin-top: 2px"
+        style="margin-top: 2px; width: 80%"
       >
         Respin Now
       </button>
-      <!-- set allowance and respin -->
+
       <button
         v-if="allowanceRequestNeeded == true"
         id="spinButton"
         @click="rerollStep = 4"
-        style="margin-top: 2px"
+        style="margin-top: 2px; width: 80%"
       >
         Respin Now
-      </button>
+      </button> -->
     </div>
+
     <!-- step 2 -->
-    <div class="modal" v-if="rerollStep == 2 && rerollLoading == false">
-      <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
-      <h3>{{ rerollLoadingMessage }}</h3>
+    <div class="modal expandmobile" v-if="rerollStep == 2 && rerollLoading == false" style="border-radius: 10px; padding: 0;">
+      <div class="modal-head">
+        <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
+      </div>
+
+      <div class="modal-body" style="padding: 10px;">
+        <div class="img-spinner"></div>
+
+        <p v-if="!showTimer" class="loadingText">{{ loadingMessage }}</p>
+        <h3 v-if="showTimer" class="title">Payment Successful</h3>
+        <p v-if="showTimer" class="subtext short">
+          Issuing respin for the chosen character and awaiting final confirmation
+        </p>
+
+        <div v-if="showTimer" class="attention-footer">
+          <p>
+           <strong>{{ rerollLoadingMessage }}</strong>
+          </p>
+        </div>
+      </div>
     </div>
+
+
     <!-- step 3 -->
     <div class="modal" v-if="rerollStep == 3 && rerollLoading == false">
       <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
-      <h3>Transaction Finished</h3>
+      <h3 style="font-size: 18px;">Transaction Completed</h3>
+      <p style="margin-bottom: 20px;">You are now ready to respin the <strong>{{(collections[step - 11])}}</strong> trait for your character.</p>
       <button
         id="spinButton"
         @click="toggleModal(reset)"
@@ -596,7 +749,7 @@ export default {
 
   <!-- loading -->
   <div class="page-holder" v-if="loading">
-    <a href="/tickets"><div class="close-scratch"></div></a>
+    <a href="/characters"><div class="close-scratch"></div></a>
     <div class="spin" style="margin-top: 100px">
       <div class="lds-ring">
         <div></div>
@@ -609,7 +762,7 @@ export default {
 
   <!-- finished character -->
   <div class="page-holder" v-if="step == 7 && !loading">
-    <a href="/tickets"><div class="close-scratch"></div></a>
+    <a href="/characters"><div class="close-scratch"></div></a>
     <button class="name-label">VOYAGER #{{ nftId }}</button>
     <div class="char">
       <img
@@ -642,6 +795,11 @@ export default {
         Respin a trait
       </button>
       <div>
+          <a target="_blank" :href="`https://opensea.io/assets/matic/${GLOBALS.NFT_ADDRESS}/${nftId}`"><button id="spinButton" class="opensea" style="position: relative">
+        View on OpenSea
+        </button></a>
+      </div>
+      <div>
         <p class="smalltext">
           <small><i class="fa-solid fa-gift"></i> first respin is free!</small>
         </p>
@@ -651,7 +809,7 @@ export default {
 
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
-    <a href="/tickets"><div class="close-scratch"></div></a>
+    <a href="/characters"><div class="close-scratch"></div></a>
     <div class="reel-holder">
       <h2 v-if="step < 10" style="margin-bottom: 5px; font-weight: 600">
         Build Your Voyager
@@ -660,7 +818,7 @@ export default {
         <small>Spin the reel to win traits</small>
       </p>
 
-      <button class="bubble" v-if="step < 10" style="margin: 0">
+      <button class="bubble" v-if="step < 10" style="margin: 0;">
         {{ capitalize(collections[step - 1]) }}
       </button>
       <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
@@ -698,6 +856,7 @@ export default {
       </div>
 
       <div v-if="step < 7">
+
         <button
           v-if="!spinLoading && !prepNextFrame"
           id="spinButton"
@@ -728,6 +887,73 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.left-respin {
+  width: 300px;
+  margin: 0;
+  height: 300px;
+  float: left;
+  border: 1px solid grey;
+  border-radius: 20px;
+  padding: 5px;
+  @media(max-width: 880px) {
+    display: none;
+  }
+}
+
+.greyscale {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+
+.front {
+  z-index: 10;
+}
+
+.right-respin {
+  width: 40%;
+  margin: 0;
+  height: 300px;
+  float: left;
+  margin-left: 9.5px;
+  margin-top: 3px;
+  @media(max-width: 880px) {
+    margin-left: calc(50% - 100px);
+    width: 220px;
+  }
+  .tile {
+    border-radius: 10px;
+    cursor: pointer;
+    width: 96px;
+    height: 96px;
+    background-color: #586F91;
+    float: left;
+    margin-right: 5px;
+    border: 2px solid #586F91;
+    &.active {
+      border: 2px solid #0085ff;
+    }
+    margin-bottom: 5px;
+    position: relative;
+    img {
+        border-radius: 10px;
+    }
+
+    .trait {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background-color: #1A2231;
+      color: #899BB5;
+      font-size: 14px;
+      width: 100%;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      height: 20px;
+    }
+
+  }
+}
+
 .name-label {
   background: #030c14;
   border: none;
@@ -794,6 +1020,17 @@ export default {
   }
 }
 
+.opensea {
+  margin-top: 10px!important;
+  background: linear-gradient(180deg, #425472 0%, #313E57 100%)!important;
+}
+
+.expandmobile {
+  @media(max-width: 880px) {
+    width: 100%!important;
+  }
+}
+
 .trait-selector {
   appearance: none;
   height: 32px;
@@ -803,7 +1040,7 @@ export default {
   font-weight: 500;
   color: white;
   background-color: #2e2c3c;
-  width: 250px;
+  width: 80%;
   text-align: center;
   margin-bottom: 10px;
   outline: none;
@@ -820,6 +1057,18 @@ export default {
   z-index: 20;
 
   .modal {
+    &.wide {
+      padding: 0;
+      width: 600px!important;
+      left: calc(50% - 300px)!important;
+      min-height: unset;
+      padding-bottom: 10px;
+        @media(max-width: 880px) {
+          width: 100%!important;
+          left: 0!important;
+          min-height: 100vh;
+      }
+    }
     position: relative;
     text-align: center;
     @media (max-width: 880px) {
@@ -904,7 +1153,7 @@ export default {
     background-color: #030c14;
 
     &.active {
-      border: 1px solid #68284a;
+      border: 1px solid #13ffb3;
     }
   }
 }
@@ -926,6 +1175,10 @@ export default {
   width: 300px;
   height: 300px;
   position: relative;
+  &.respin {
+    margin: 0;
+    width: 300px;
+  }
   img {
     border-radius: 10px;
   }
@@ -1052,22 +1305,22 @@ h2 {
     .squaretop {
       width: 14px;
       height: 14px;
-      background-color: #ff0286;
+      background-color: #13ffb3;
       transform: rotate(45deg);
       position: absolute;
       top: 160px;
       left: -9px;
-      border: 2px solid #163756;
+      // border: 2px solid #163756;
     }
     .squarebottom {
       width: 14px;
       height: 14px;
-      background-color: #ff0286;
+      background-color: #13ffb3;
       transform: rotate(45deg);
       position: absolute;
       top: 160px;
       right: -9px;
-      border: 2px solid #163756;
+      // border: 2px solid #163756;
     }
   }
 }

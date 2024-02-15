@@ -275,7 +275,7 @@ export default {
   <div class="page" v-if="!openDetail">
     <div class="head">
       <h2 class="tickhead">
-        My Voyagers
+        My Characters
 
         <a href="/?purchase-intent=true"
           ><button class="btn verse-wide" href="">
