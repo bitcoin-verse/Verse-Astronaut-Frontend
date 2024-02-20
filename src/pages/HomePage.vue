@@ -234,7 +234,9 @@ export default {
         if (data) {
           let dataString = data.toString()
           verseAllowance.value = parseFloat(dataString) / Math.pow(10, 18)
-          if (verseBalance.value >= 3000 && buyStep.value < 3) {
+          console.log(verseBalance.value, "verse")
+          console.log(verseAllowance.value, "allowance")
+          if (verseBalance.value >= 3000 && verseAllowance.value >=3000 && buyStep.value < 3) {
             buyStep.value = 3
           }
         }
