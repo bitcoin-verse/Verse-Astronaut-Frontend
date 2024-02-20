@@ -34,6 +34,7 @@ export default {
     let copyDone = ref(false)
     let reopenAfterConnection = ref(false)
     let accountActive = ref(false)
+    let txHash = ref("")
     let correctNetwork = ref(true)
     let modalActive = ref(false) 
     let ensLoaded = ref('')
@@ -120,6 +121,7 @@ export default {
     }
 
     async function approve () {
+      txHash.value = ""
       let approvalAmount = 30000000000000000000000000000
       if (singleTransactionApproval.value == true) {
         approvalAmount = 3000000000000000000000
@@ -134,6 +136,7 @@ export default {
         chainId: 137,
         args: [contractAddress, approvalAmount]
       })
+      txHash.value = hash
 
       loadingMessage.value = 'waiting for transaction to finish..'
       await waitForTransaction({ hash })
@@ -152,6 +155,7 @@ export default {
     }
 
     async function purchaseTicket (_giftAddress) {
+      txHash.value = ""
       try {
         if (_giftAddress) {
           giftAddress.value = _giftAddress
@@ -173,6 +177,7 @@ export default {
             chainId: 137,
             args: [receiver]
           })
+          txHash.value = hash
           loadingMessage.value = 'waiting for tx confirmation..'
           await waitForTransaction({ hash })
         } else {
@@ -184,6 +189,7 @@ export default {
             chainId: 137,
             args: []
           })
+          txHash.value = hash
           loadingMessage.value = 'waiting for tx confirmation..'
           await waitForTransaction({ hash })
         }
@@ -459,6 +465,7 @@ export default {
       requestNetworkChange,
       ensLoaded,
       singleTransactionApproval,
+      txHash,
       giftInputLoad
     }
   }
@@ -494,6 +501,7 @@ export default {
 
         <p v-if="!showTimer" class="loadingText">{{ loadingMessage }}</p>
         <h3 v-if="showTimer" class="title">Payment Successful</h3>
+        <a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash && !showTimer">View blockchain transaction</a>
         <p v-if="showTimer && !giftTicket" class="subtext short">
           Issuing character to your wallet and awaiting final confirmation
         </p>

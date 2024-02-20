@@ -21,13 +21,14 @@ export default {
     let slots = ref([])
     let nftId = ref(0)
     let step = ref(1)
+    let txHash = ref("")
     let showTimer = ref(false)
     let singleTransactionApproval = ref(false)
-    let modalActive = ref(false) 
+    let modalActive = ref(false)  // false
     let startAnimation = ref(false)
     let loading = ref(true)
     let resultItems = ref([])
-    let rerollLoading = ref(false)
+    let rerollLoading = ref(false) // false
     let verseAllowance = ref(0)
     let rerollLoadingMessage = ref('')
     let rerollStep = ref(1)
@@ -175,6 +176,7 @@ export default {
     }
 
     async function reroll (trait) {
+      txHash.value = ""
       rerollLoadingMessage.value = ''
       rerollLoadingMessage.value = "Confirm transaction in your wallet"
       const { hash } = await writeContract({
@@ -184,6 +186,7 @@ export default {
         chainId: 137,
         args: [nftId.value, trait]
       })
+      txHash.value = hash
       rerollLoading.value = true
       rerollLoadingMessage.value = "Waiting for transaction to confirm"
       await waitForTransaction({ hash })
@@ -234,6 +237,7 @@ export default {
     }
 
     async function approve () {
+      txHash.value = ""
       let approvalAmount = 30000000000000000000000000000
       if (singleTransactionApproval.value == true) {
         approvalAmount = rerollCost.value
@@ -248,6 +252,7 @@ export default {
         chainId: 137,
         args: [GLOBALS.NFT_ADDRESS, approvalAmount]
       })
+      txHash.value = hash
 
       rerollLoadingMessage.value = 'waiting for wallet approval..'
       await waitForTransaction({ hash })
@@ -480,6 +485,7 @@ export default {
       rerollLoadingMessage,
       rerollValue,
       startAnimation,
+      txHash,
       resetRespin,
     }
   }
@@ -498,6 +504,7 @@ export default {
         <div></div>
         <div></div>
       </div>
+      <p><a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash">View blockchain transaction</a></p>
     </div>
     <!-- step 1 -->
     <div class="modal wide" v-if="rerollStep == 1 && rerollLoading == false">
@@ -667,6 +674,7 @@ export default {
 
         <p v-if="!showTimer" class="loadingText">{{ loadingMessage }}</p>
         <h3 v-if="showTimer" class="title">Payment Successful</h3>
+        <a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash && !showTimer">View blockchain transaction</a>
         <p v-if="showTimer" class="subtext short">
           Issuing respin for the chosen character and awaiting final confirmation
         </p>
