@@ -388,7 +388,7 @@ export default {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wrongNetworkWarning {
   @media (max-width: 880px) {
     font-size: 13px;
@@ -411,6 +411,8 @@ export default {
 }
 
 .char {
+  background-color: black;
+  border-radius: 28px;
   width: 260px;
   height: 260px;
   position: relative;
@@ -584,7 +586,10 @@ div.tickets {
   color: white;
 }
 .page {
-  background-image: url('../assets/bg-blur-dark.png');
+  background: rgba(0, 0, 0, .65) url('../assets/bg.png');
+  background-blend-mode: darken;
+  background-position-y: 70px;
+  background-position-x: -300px;
   background-size: cover;
   width: 100%;
   padding-top: 100px;
@@ -593,6 +598,8 @@ div.tickets {
   overflow: hidden;
   @media (max-width: 880px) {
     padding-top: 16px;
+    background-position-x: -762px;
+    background-position-y: 0;
   }
   @media (max-width: 500px) {
     padding-top: 16px;

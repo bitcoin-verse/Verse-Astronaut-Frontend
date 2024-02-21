@@ -23,7 +23,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
         switch (chain.id) {
           case 137:
             return {
-              http: 'https://1rpc.io/matic' //https://floral-empty-gas.matic.quiknode.pro/
+              http: 'https://polygon-mainnet.g.alchemy.com/v2/FoEnISGWHrxYu6AJLkkX3IY6nYMkkt2S',
+              webSocket: 'wss://polygon-mainnet.g.alchemy.com/v2/FoEnISGWHrxYu6AJLkkX3IY6nYMkkt2S'
             }
           case 1:
           default:
@@ -230,16 +231,165 @@ i.close-btn {
     font-size: 24px;
   }
 }
+
+.trait-rarity {
+      position: absolute;
+      top: 40px;
+      font-size: 12px;
+      width: 70%;
+      margin-left: 15%;
+      height: 17px;
+
+      p {
+        margin: 0;
+      }
+      &.common {
+        p {
+          margin-left: 10px;
+          color: #2FA9EE!important;
+        }
+        
+        border: 1px solid #2FA9EE;
+        border-radius: 10px;
+        width: 60%;
+        margin-left: 20%;
+        .spot {
+          width: 6px;
+          height: 6px;
+          background-color: #2FA9EE;
+          position: absolute;
+          left: 9px;
+          border-radius: 50%;
+          top: 5px;
+        }
+      }
+      &.rare {
+        p {
+          margin-left: 10px;
+          color: #6C43EE!important;
+        }
+        border: 1px solid #6C43EE;
+        border-radius: 10px;
+        width: 40%;
+        margin-left: 30%;
+        .spot {
+          width: 6px;
+          height: 6px;
+          background-color: #6C43EE;
+          position: absolute;
+          left: 9px;
+          border-radius: 50%;
+          top: 5px;
+        }
+      }
+      &.epic {
+        p {
+          margin-left: 10px;
+          color: #EE3772!important;
+        }
+        
+        border: 1px solid #EE3772;
+        border-radius: 10px;
+        width: 40%;
+        margin-left: 30%;
+        .spot {
+          width: 6px;
+          height: 6px;
+          background-color: #EE3772;
+          position: absolute;
+          left: 9px;
+          border-radius: 50%;
+          top: 5px;
+        }
+      }
+    }
+
 .backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #030c14a6;
+  // background-color: #030c14a6;
+  backdrop-filter: blur(1px);
   z-index: 2;
 
   .modal {
+    &.summary {
+      width: 340px!important;
+      left: calc(50% - 170px)!important;
+      z-index: 100!important;
+
+
+      h2 {
+        color: white;
+        font-size: 24px;
+        margin-top: 10px;
+        font-weight: 500;
+        font-family: 'Barlow', sans-serif;
+      }
+      .trait-list {
+        background-color: #252D40;
+        width: 100%;
+        border-radius: 10px;
+        table {
+          padding: 10px 15px;
+          color: white;
+          width: 100%;
+          font-size: 14px;
+          .key {
+            text-align: left;
+            color: #899BB5;
+            padding-bottom: 5px;
+            font-weight: 500;
+          }
+          .value {
+            text-align: right;
+            font-weight: 500;
+            position: relative;
+            padding-right: 20px;
+
+            .dot {
+              &.left {
+                &.rare {
+                  right: 35px;
+                  position: absolute;
+                }
+                &.common {
+                  right: 65px;
+                  position: absolute;
+                }
+                &.epic {
+                  right: 35px;
+                  position: absolute;
+                }
+              }
+              width: 9px;
+              height: 9px; 
+              background-color: black;
+              border-radius: 50%;
+              position: absolute;
+              right: 0;
+              top: 8px;
+              &.rare {
+                background-color: #6C43EE;
+              }
+              &.common {
+                background-color: #2FA9EE;
+              }
+              &.epic {
+                background-color: #EE3772;
+              }
+            }
+          }
+        }
+      }
+      @media(max-width: 880px) {
+        width:90%!important;
+        z-index: 100!important;
+        left: 0!important;
+      }
+    }
     @media (max-width: 880px) {
       position: absolute;
       top: 0;
@@ -440,7 +590,7 @@ i.close-btn {
         margin: 0 auto;
       }
       .img-purchase {
-        background-image: url('./assets/icons/purchase.png');
+        background-image: url('./assets/img-char.png');
         width: 148px;
         height: 120px;
         background-size: cover;

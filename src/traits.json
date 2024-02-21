@@ -466,7 +466,7 @@
     "back": [
         {
           "Filename": "1px.png",
-          "Type": "None",
+          "Type": "Common",
           "Name": "None",
           "Range": "1-400"
         },

@@ -33,6 +33,8 @@ export default {
     let rerollLoadingMessage = ref('')
     let rerollStep = ref(1)
     let accountActive = ref(false)
+    let currentRespinCollection = ref(0)
+    let currentRespinValue = ref(0)
     let allowanceRequestNeeded = ref(false)
     let rerollCost = ref(0)
     let rerollValue = ref(0)
@@ -232,7 +234,10 @@ export default {
         resultElement.style.backgroundSize = 'cover'
 
         const resultLabel = document.getElementById(`result${i}label`)
-        resultLabel.style.display = 'none'
+        resultLabel.classList.add("done")
+
+        const resultLock = document.getElementById(`result${i}lock`)
+        resultLock.style.display = 'none'
       }
     }
 
@@ -268,6 +273,8 @@ export default {
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false
+
+      console.log("RUN")
 
       if (route.query.overview == 'true' || forceLoad) {
         loadAllProperties()
@@ -417,6 +424,17 @@ export default {
       }, 10000 + 300)
     }
 
+    function goOverView (reroll, collection, value) {
+      if(reroll) {
+        rerollStep.value = 71
+        currentRespinCollection.value = collection
+        currentRespinValue.value = value
+      } else {
+        rerollStep.value = 70;
+      }
+      modalActive.value = true;
+    }
+
     function updateResultElement (stepNumber, result) {
       if (stepNumber == 6) {
         localStorage.setItem(nftId.value + '/' + GLOBALS.NFT_ADDRESS, 'true')
@@ -449,7 +467,11 @@ export default {
 
       const resultLabel = document.getElementById(`result${stepNumber}label`)
       if (resultLabel) {
-        resultLabel.style.display = 'none'
+        resultLabel.classList.add("done")
+      }
+      const resultLock = document.getElementById(`result${stepNumber}lock`)
+      if (resultLock) {
+        resultLock.style.display = 'none'
       }
     }
 
@@ -457,6 +479,7 @@ export default {
       resultItems,
       collections,
       loadNextFrame,
+      goOverView,
       prepNextFrame,
       showTimer,
       slots,
@@ -475,6 +498,8 @@ export default {
       traitReroll,
       toggleSingleApproval,
       reroll,
+      currentRespinCollection,
+      currentRespinValue,
       rerollLoading,
       getImageUrl,
       getTraitRarity,
@@ -494,6 +519,169 @@ export default {
 
 <template>
   <div class="backdrop" v-if="modalActive">
+        <!-- reroll overview -->
+      <div class="modal summary" v-if="rerollStep == 71 && rerollLoading == false">
+      <div class="char mini">
+            <img v-if="currentRespinCollection != 'background'"
+              :src="getImageUrl('background', resultItems[5])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'background'"
+              :src="getImageUrl('background', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection != 'back'"
+              :src="getImageUrl('back', resultItems[4])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'back'"
+              :src="getImageUrl('back', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img  v-if="currentRespinCollection != 'body'"
+              :src="getImageUrl('body', resultItems[0])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'body'"
+              :src="getImageUrl('body', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img  v-if="currentRespinCollection != 'helmets'"
+              :src="getImageUrl('helmets', resultItems[1])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'helmets'"
+              :src="getImageUrl('helmets', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img  v-if="currentRespinCollection != 'gear'"
+              :src="getImageUrl('gear', resultItems[2])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'gear'"
+              :src="getImageUrl('gear', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection != 'extra'"
+              :src="getImageUrl('extra', resultItems[3])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'extra'"
+              :src="getImageUrl('extra', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+         </div>
+         <h2>You have received a new trait</h2>
+         <div class="trait-list">
+          <table>
+              <tr>
+                <td class="key">Item Name</td>
+                <td class="value" style="padding-right: 0">{{ getTraitName(currentRespinCollection, currentRespinValue)}}</td>
+              </tr>
+              <tr>
+                <td class="key">Item Type</td>
+                <td class="value" style="padding-right: 0">{{ capitalize(currentRespinCollection) }}</td>
+              </tr>
+              <tr>
+                <td class="key">Item Rarity</td>
+                <td class="value" style="padding-right: 0"><div :class="'dot left ' + getTraitRarity(currentRespinCollection, currentRespinValue)"></div> {{ capitalize(getTraitRarity(currentRespinCollection, currentRespinValue))}}</td>
+              </tr>
+          </table>
+         </div>
+
+         <div class="legend">
+          <h4 class='trait-rarity common'><div class="spot"></div> <p>common</p></h4>
+          <h4 class='trait-rarity rare'><div class="spot"></div> <p>rare</p></h4>
+          <h4 class='trait-rarity epic'><div class="spot"></div> <p>epic</p></h4>
+         </div>
+
+         <div>
+          <button id="spinButton" @click="resetRespin()" style="width: 100%; margin-top: 10px; position: relative">
+            Re-Spin Another Trait
+          </button>
+          <div>
+            <a :href="`/reel?tokenId=${nftId}&overview=true`"><button id="spinButton" class="opensea" style="width: 100%; position: relative">
+           View My Voyager
+          </button></a>
+        </div>
+      </div>
+    </div>
+    <!-- summary overview -->
+    <div class="modal summary" v-if="rerollStep == 70 && rerollLoading == false">
+      <div class="char mini">
+            <img
+              :src="getImageUrl('background', resultItems[5])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img
+              :src="getImageUrl('back', resultItems[4])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img
+              :src="getImageUrl('body', resultItems[0])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img
+              :src="getImageUrl('helmets', resultItems[1])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img
+              :src="getImageUrl('gear', resultItems[2])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img
+              :src="getImageUrl('extra', resultItems[3])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+         </div>
+         <h2>Your Voyager #{{ nftId }} has been assembled</h2>
+         <div class="trait-list">
+          <table>
+              <tr>
+                <td class="key">Body</td>
+                <td class="value">{{ getTraitName('body', resultItems[0])}} <div :class="'dot ' + getTraitRarity('body', resultItems[0])"></div></td>
+              </tr>
+              <tr>
+                <td class="key">Helmet</td>
+                <td class="value">{{ getTraitName('helmets', resultItems[1])}} <div :class="'dot ' + getTraitRarity('helmets', resultItems[1])"></div></td>
+              </tr>
+              <tr>
+                <td class="key">Gear</td>
+                <td class="value">{{ getTraitName('gear', resultItems[2])}} <div :class="'dot ' + getTraitRarity('gear', resultItems[2])"></div></td>
+              </tr>
+              <tr>
+                <td class="key">Extra</td>
+                <td class="value">{{ getTraitName('extra', resultItems[3])}} <div :class="'dot ' + getTraitRarity('extra', resultItems[3])"></div></td>
+              </tr>
+              <tr>
+                <td class="key">Back</td>
+                <td class="value">{{ getTraitName('back', resultItems[4])}} <div :class="'dot ' + getTraitRarity('back', resultItems[4])"></div></td>
+              </tr>
+              <tr>
+                <td class="key">Backdrop</td>
+                <td class="value">{{ getTraitName('background', resultItems[5])}} <div :class="'dot ' + getTraitRarity('background', resultItems[5])"></div></td>
+              </tr>
+          </table>
+         </div>
+
+         <div class="legend">
+          <h4 class='trait-rarity common'><div class="spot"></div> <p>common</p></h4>
+          <h4 class='trait-rarity rare'><div class="spot"></div> <p>rare</p></h4>
+          <h4 class='trait-rarity epic'><div class="spot"></div> <p>epic</p></h4>
+         </div>
+
+         <div>
+          <button id="spinButton" @click="resetRespin()" style="width: 100%; margin-top: 10px; position: relative">
+            Re-Spin a Trait
+          </button>
+          <div>
+            <a :href="`/reel?tokenId=${nftId}&overview=true`"><button id="spinButton" class="opensea" style="width: 100%; position: relative">
+           View My Voyager
+          </button></a>
+        </div>
+      </div>
+    </div>
+
     <!-- loading -->
     <div class="modal" v-if="rerollLoading == true">
       <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
@@ -610,15 +798,15 @@ export default {
           
         </div>
         <div class="clearfix" style="margin-top: 340px;">
-          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white;">Respin Cost <strong>{{ rerollCost }} VERSE </strong></p>
-          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white;"><br/>Respin Cost <strong>0 VERSE </strong></p>
+          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
+          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
           <button
           v-if="allowanceRequestNeeded == false"
           id="spinButton"
           @click="reroll(traitReroll)"
           style="margin-top: 0px; width: 80%"
         >
-          Respin Now
+          Re-Spin Now
         </button>
 
         <button
@@ -627,40 +815,11 @@ export default {
           @click="rerollStep = 4"
           style="margin-top: 0px; width: 80%"
         >
-          Respin Now
+          Re-Spin Now
         </button>
         <p style="font-size: 13px;">Note: Rerolls are provably random. It is possible <br> to roll the same trait as you already have.</p>
       </div>
       </div>
-
-      <!-- <h3>Rerolling a body part</h3>
-      <p>Choose which part you want to roll again</p>
-      <select v-model="traitReroll" class="trait-selector">
-        <option :value="0">background</option>
-        <option :value="1">back</option>
-        <option :value="2">body</option>
-        <option :value="3">gear</option>
-        <option :value="4">helmets</option>
-        <option :value="5">extra</option>
-      </select>
-  
-      <button
-        v-if="allowanceRequestNeeded == false"
-        id="spinButton"
-        @click="reroll(traitReroll)"
-        style="margin-top: 2px; width: 80%"
-      >
-        Respin Now
-      </button>
-
-      <button
-        v-if="allowanceRequestNeeded == true"
-        id="spinButton"
-        @click="rerollStep = 4"
-        style="margin-top: 2px; width: 80%"
-      >
-        Respin Now
-      </button> -->
     </div>
 
     <!-- step 2 -->
@@ -676,7 +835,7 @@ export default {
         <h3 v-if="showTimer" class="title">Payment Successful</h3>
         <a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash && !showTimer">View blockchain transaction</a>
         <p v-if="showTimer" class="subtext short">
-          Issuing respin for the chosen character and awaiting final confirmation
+          Issuing re-spin for the chosen character and awaiting final confirmation
         </p>
 
         <div v-if="showTimer" class="attention-footer">
@@ -692,13 +851,13 @@ export default {
     <div class="modal" v-if="rerollStep == 3 && rerollLoading == false">
       <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
       <h3 style="font-size: 18px;">Transaction Completed</h3>
-      <p style="margin-bottom: 20px;">You are now ready to respin the <strong>{{(collections[step - 11])}}</strong> trait for your character.</p>
+      <p style="margin-bottom: 20px;">You are now ready to re-spin the <strong>{{(collections[step - 11])}}</strong> trait for your character.</p>
       <button
         id="spinButton"
         @click="toggleModal(reset)"
         style="margin-top: 2px"
       >
-        Respin Now
+        Re-Spin
       </button>
     </div>
     <!--  reroll allowance -->
@@ -733,27 +892,6 @@ export default {
       </div>
     </div>
   </div>
-  <!-- side screen -->
-  <div class="results">
-    <div class="result active" id="result1">
-      <h3 id="result1label">body</h3>
-    </div>
-    <div class="result" id="result2">
-      <h3 id="result2label">helmet</h3>
-    </div>
-    <div class="result" id="result3">
-      <h3 id="result3label">gear</h3>
-    </div>
-    <div class="result" id="result4">
-      <h3 id="result4label">extra</h3>
-    </div>
-    <div class="result" id="result5">
-      <h3 id="result5label">back</h3>
-    </div>
-    <div class="result" id="result6">
-      <h3 id="result6label">backdrop</h3>
-    </div>
-  </div>
 
   <!-- loading -->
   <div class="page-holder" v-if="loading">
@@ -772,70 +910,151 @@ export default {
   <div class="page-holder" v-if="step == 7 && !loading">
     <a href="/characters"><div class="close-scratch"></div></a>
     <button class="name-label">VOYAGER #{{ nftId }}</button>
-    <div class="char">
-      <img
-        :src="getImageUrl('background', resultItems[5])"
-        style="width: 100%; position: absolute; left: 0"
-      />
-      <img
-        :src="getImageUrl('back', resultItems[4])"
-        style="width: 100%; position: absolute; left: 0"
-      />
-      <img
-        :src="getImageUrl('body', resultItems[0])"
-        style="width: 100%; position: absolute; left: 0"
-      />
-      <img
-        :src="getImageUrl('helmets', resultItems[1])"
-        style="width: 100%; position: absolute; left: 0"
-      />
-      <img
-        :src="getImageUrl('gear', resultItems[2])"
-        style="width: 100%; position: absolute; left: 0"
-      />
-      <img
-        :src="getImageUrl('extra', resultItems[3])"
-        style="width: 100%; position: absolute; left: 0"
-      />
-    </div>
-    <div>
-      <button id="spinButton" @click="toggleModal()" style="position: relative">
-        Respin a trait
-      </button>
-      <div>
-          <a target="_blank" :href="`https://opensea.io/assets/matic/${GLOBALS.NFT_ADDRESS}/${nftId}`"><button id="spinButton" class="opensea" style="position: relative">
-        View on OpenSea
-        </button></a>
+    <div class="center-div">
+    <div class="char-holder">
+      <h2>VOYAGER #{{ nftId }}</h2>
+      <div class="char">
+        <img
+          :src="getImageUrl('background', resultItems[5])"
+          style="width: 100%; position: absolute; left: 0"
+        />
+        <img
+          :src="getImageUrl('back', resultItems[4])"
+          style="width: 100%; position: absolute; left: 0"
+        />
+        <img
+          :src="getImageUrl('body', resultItems[0])"
+          style="width: 100%; position: absolute; left: 0"
+        />
+        <img
+          :src="getImageUrl('helmets', resultItems[1])"
+          style="width: 100%; position: absolute; left: 0"
+        />
+        <img
+          :src="getImageUrl('gear', resultItems[2])"
+          style="width: 100%; position: absolute; left: 0"
+        />
+        <img
+          :src="getImageUrl('extra', resultItems[3])"
+          style="width: 100%; position: absolute; left: 0"
+        />
       </div>
-      <div>
-        <p class="smalltext">
-          <small><i class="fa-solid fa-gift"></i> first respin is free!</small>
-        </p>
+
+      <div class="social-holder">
+        <a class="share" href=""><i class="share-icn"></i>Share</a>
+        <a class="download" target="_blank" :href="`https://versevoyagers.s3.us-west-1.amazonaws.com/${nftId}/${GLOBALS.NFT_ADDRESS}.jpg`" download><i class="download-icn"></i>Download Image</a>
       </div>
     </div>
+    <div class="trait-holder">
+      <div class="mobile-buttons">
+          <button id="spinButton" @click="toggleModal()" style="width: 100%; margin-top: 10px; position: relative">
+            Re-Spin a Trait
+          </button>
+          <div>
+            <a target="_blank" :href="`https://opensea.io/assets/matic/${GLOBALS.NFT_ADDRESS}/${nftId}`"><button id="spinButton" class="opensea" style="width: 100%; position: relative">
+           OpenSea <i class="icn-link"></i>
+          </button></a>
+        </div>
+      </div>
+      <h2>VOYAGER #{{ nftId }}</h2>
+      <h3>Traits</h3>
+      <div class="trait">
+          <h3 class="trait-title">BODY</h3>
+          <h4 :class="getTraitName('body', resultItems[0]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('body', resultItems[0]) }}</h4>
+          <h4 :class="'trait-rarity ' + getTraitRarity('body', resultItems[0]) " ><div class="spot"></div> <p>{{capitalize(getTraitRarity('body', resultItems[0]))}}</p></h4>
+      </div>
+      <div class="trait">
+          <h3 class="trait-title">HELMET</h3>
+          <h4 :class="getTraitName('helmets', resultItems[1]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('helmets', resultItems[1]) }}</h4>
+          <h4 :class="'trait-rarity ' + getTraitRarity('helmets', resultItems[1]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('helmets', resultItems[1]))}}</p></h4>
+      </div>
+      <div class="trait no-margin-right">
+          <h3 class="trait-title">GEAR</h3>
+          <h4 :class="getTraitName('gear', resultItems[2]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('gear', resultItems[2]) }}</h4>
+          <h4 :class="'trait-rarity ' + getTraitRarity('gear', resultItems[2]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('gear', resultItems[2]))}}</p></h4>
+      </div>
+      <div class="trait">
+          <h3 class="trait-title">EXTRA</h3>
+          <h4 :class="getTraitName('extra', resultItems[3]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('extra', resultItems[3]) }}</h4>
+          <h4 :class="'trait-rarity ' + getTraitRarity('extra', resultItems[3]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('extra', resultItems[3]))}}</p></h4>
+      </div>
+      <div class="trait">
+          <h3 class="trait-title">BACK</h3>
+          <h4 :class="getTraitName('back', resultItems[4]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('back', resultItems[4]) }}</h4>
+          <h4 :class="'trait-rarity ' + getTraitRarity('back', resultItems[4]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('back', resultItems[4]))}}</p></h4>
+      </div>
+      <div class="trait no-margin-right">
+          <h3 class="trait-title">BACKDROP</h3>
+          <h4 :class="getTraitName('background', resultItems[5]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('background', resultItems[5]) }}</h4>
+          <h4 :class="'trait-rarity ' + getTraitRarity('background', resultItems[5]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('background', resultItems[5]))}}</p></h4>
+      </div>
+      <div>
+        <div class="desktop-buttons">
+          <button id="spinButton" @click="toggleModal()" style="width: 100%; margin-top: 10px; position: relative">
+            Re-Spin a Trait
+          </button>
+          <div>
+            <a target="_blank" :href="`https://opensea.io/assets/matic/${GLOBALS.NFT_ADDRESS}/${nftId}`"><button id="spinButton" class="opensea" style="width: 100%; position: relative">
+           OpenSea  <i class="icn-link"></i>
+          </button></a>
+        </div>
+      </div>
+      <div>
+      </div>
+    </div>
+    </div>
+  </div>
   </div>
 
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
     <a href="/characters"><div class="close-scratch"></div></a>
+
+    <div :class="step > 10 ? 'core respin' : 'core'">
+      <!-- side screen -->
+      <div :class="step > 10 ? 'results respin' : 'results'">
+      <div class="result active" id="result1">
+        <div id="result1lock" class="lock"></div>
+        <h3 id="result1label">Body</h3>
+      </div>
+      <div class="result" id="result2">
+        <div id="result2lock" class="lock"></div>
+        <h3 id="result2label">Helmet</h3>
+      </div>
+      <div class="result" id="result3">
+        <div id="result3lock" class="lock"></div>
+        <h3 id="result3label">Gear</h3>
+      </div>
+      <div class="result" id="result4">
+        <div id="result4lock" class="lock"></div>
+        <h3 id="result4label">Extra</h3>
+      </div>
+      <div class="result" id="result5">
+        <div id="result5lock" class="lock"></div>
+        <h3 id="result5label">Back</h3>
+      </div>
+      <div class="result" id="result6">
+        <div id="result6lock" class="lock"></div>
+        <h3 id="result6label">Backdrop</h3>
+      </div>
+    </div>
+
     <div class="reel-holder">
       <h2 v-if="step < 10" style="margin-bottom: 5px; font-weight: 600">
-        Build Your Voyager
+        Unlock {{ capitalize(collections[step - 1]) }}
       </h2>
-      <p style="margin-top: 0px; margin-bottom: 15px">
+      <!-- <p style="margin-top: 0px; margin-bottom: 15px">
         <small>Spin the reel to win traits</small>
-      </p>
+      </p> -->
 
-      <button class="bubble" v-if="step < 10" style="margin: 0;">
+      <!-- <button class="bubble" v-if="step < 10" style="margin: 0;">
         {{ capitalize(collections[step - 1]) }}
-      </button>
+      </button> -->
       <h2 v-if="step > 9">Respin: {{ collections[step - 11] }}</h2>
+      <div class="chev-left"></div>
+      <div class="chev-right"></div>
       <div id="reel">
         <div class="blur-top"></div>
-        <div class="chev">
-          <div class="squaretop"></div>
-          <div class="squarebottom"></div>
-        </div>
         <!-- the items in the reel -->
         <SlotHolder
           :slots="slots"
@@ -851,15 +1070,15 @@ export default {
           id="spinButton"
           @click="spinReels(collections[step - 11], rerollValue)"
         >
-          Respin {{ collections[step - 11] }}
+          Re-Spin
         </button>
 
         <button
           v-if="prepNextFrame && !spinLoading"
           id="spinButton"
-          @click="resetRespin()"
+          @click="goOverView(true, collections[step - 11], rerollValue)"
         >
-          Finish
+          Review New Trait
         </button>
       </div>
 
@@ -870,10 +1089,10 @@ export default {
           id="spinButton"
           @click="spinReels(collections[step - 1], resultItems[step - 1])"
         >
-          Spin ({{ step }} of 6)
+          Spin
         </button>
         <button v-if="spinLoading" style="opacity: 0.3" id="spinButton">
-          Spin ({{ step }} of 6)
+          Spin
         </button>
         <button
           v-if="prepNextFrame && !spinLoading && step != 6"
@@ -885,16 +1104,229 @@ export default {
         <button
           v-if="prepNextFrame && !spinLoading && step == 6"
           id="spinButton"
-          @click="returnToOverview()"
+          @click="goOverView()"
         >
-          Finish
+          Review Traits
         </button>
+        <p style="margin-bottom: 0; font-size: 14px; font-weight: 500; color: #899BB5;" v-if="step < 7">trait <span style="color: white">{{step}}</span> out of 6 </p>
       </div>
+    </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.center-div {
+  margin-left: calc(50% - 410px);
+  @media(max-width: 880px) {
+    margin: unset;
+  }
+}
+
+
+.legend {
+  width: 280px;
+  margin-left: calc(50% - 140px);
+  height: 40px;
+  .trait-rarity {
+    position: relative;
+    float: left;
+    top: 0;
+    margin-left: 10px;
+    &.common {
+      width: 75px;
+    }
+    &.rare {
+      width: 75px;
+    }
+    &.epic {
+      width: 75px;
+    }
+  }
+}
+
+.mobile-buttons {
+  display: none;
+  @media(max-width: 880px) {
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+.desktop-buttons {
+  @media(max-width: 880px) {
+    display: none;
+  }
+  display: block;
+}
+
+i.icn-link {
+  background-image: url('../assets/icons/link-sm.png');
+  width: 13px;
+  height: 13px;
+  background-size: cover;
+  display: block;
+  position: absolute;
+  right: 150px;
+  top: 11px;
+  @media(max-width: 460px) {
+    right: 80px;
+  }
+}
+i.download-icn {
+  background-image: url('../assets/icons/download-sm.png');
+  width: 16px;
+  height: 16px;
+  background-size: cover;
+  display: block;
+  position: absolute;
+  right: 108px;
+  top: 0px;
+}
+
+i.share-icn {
+  background-image: url('../assets/icons/share-sm.png');
+  width: 15px;
+  height: 14px;
+  background-size: cover;
+  display: block;
+  position: absolute;
+  right: 45px;
+  top: 2px;
+} 
+
+.social-holder {
+  margin-top: 15px;
+  font-weight: 600;
+  .share {
+    text-decoration: none;
+    margin-left: 50px;
+    position: relative;
+    font-size: 14px;
+    color: white;
+    margin-right: 50px;
+  }
+  .download {
+    text-decoration: none;
+    color: white;
+    position: relative;
+    font-size: 14px;
+  }
+}
+.char-holder {
+  h2 {
+    display: none;
+    @media(max-width: 880px) {
+      font-size: 40px;
+      color: white;
+      text-align: left;
+      font-weight: 800;
+      font-family: 'Barlow';
+      margin-top: 5px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+  }
+
+  margin-top: 150px;
+  width: 400px;
+  margin-right: 20px;
+  float: left;
+  @media(max-width: 880px) {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+}
+.trait-holder {
+  margin-top: 150px;
+  width: 405px;
+  margin-left: 0.5%;
+  float: left;
+      // switch to rows of 2
+   @media(max-width: 460px) {
+    width: 276px!important;
+    margin-left: calc(50% - 138px)!important;
+  }
+
+  @media(max-width: 880px) {
+    margin-top: 10px;
+    width: 415px;
+    margin-left: calc(50% - 202px);
+  }
+  h2 {
+    @media(max-width: 880px) {
+      display: none;
+    }
+    font-size: 40px;
+    color: white;
+    text-align: left;
+    font-weight: 800;
+    font-family: 'Barlow';
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  h3 {
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 14px;
+  }
+  .trait {
+    &.no-margin-right {
+      margin-right: 0;
+      @media(max-width: 880px) {
+        margin-right: 10px;
+      }
+    }
+    float: left;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    background-color: #0F1823;
+    border-radius: 10px;
+    width: 128px;
+    height: 81px;
+    position: relative;
+
+    .trait-title {
+      color: #899BB5;
+      font-size: 14px;
+      text-align: center;
+      top: -5px;
+      width: 100%;
+      position : absolute;
+    } 
+
+    .trait-name {
+      &.disabled {
+        color: #425472;
+      }
+      position: absolute;
+      top: 15px;
+      width: 100%;
+      font-weight: 300;
+      font-size: 12px;
+      
+    }
+  }
+}
+.core {
+  &.respin {
+    background: none!important;
+  }
+  background-color: black;
+  position: absolute;
+  width: 500px;
+  margin-top: 50px;
+  height: 670px;
+  margin-left: calc(50% - 250px);
+  border-radius: 10px;
+  @media(max-width: 880px) {
+    margin-top: 0;
+    margin-left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
 .left-respin {
   width: 300px;
   margin: 0;
@@ -1133,35 +1565,68 @@ export default {
   left: 0;
 }
 .results {
+  &.respin {
+    display: none!important;
+  }
   height: 550px;
-  background-color: #0f1823;
   width: 100px;
-  border: 1px solid #313e57;
-  position: fixed;
-  right: 50px;
-  top: 100px;
+  position: absolute;
+  left: 20px;
+  top: 10px;
   @media (max-width: 880px) {
     display: none;
   }
   h3 {
+    &.done {
+      border: 1px solid #586F9166;
+      background-color: #FFFFFFCC!important;
+      color: #425472;
+    }
     position: absolute;
-    top: 17px;
-    left: 0;
+    top: 45px;
+    left: 7px;
     text-align: center;
-    width: 80px;
     color: #294258;
     text-align: center;
-    font-size: 13px;
+    font-size: 8px;
+    padding-top: 4px;
+    height: 20px;
+    color: white;
+    background-color: #313E5780;
+    width: 72px;
+    font-size: 12px;
+    border-radius: 15px;
+
   }
   .result {
+    .lock {
+      background-image: url('/src/assets/lock.png');
+      width: 16px;
+      height: 20px;
+      background-size: cover;
+      position: relative;
+      top: 22px;
+      left: 35px;
+    }
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 86px;
+    height: 86px;
     margin: 10px;
-    background-color: #030c14;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background-color: #0F1823;
+    border: 1px solid #0F1823;
 
     &.active {
-      border: 1px solid #13ffb3;
+      border: 1px solid #D43280;
+      border-radius: 10px;
+      .lock {
+         background-image: url('/src/assets/lock-active.png');
+      }
+
+        h3 {
+          background-color: #D43280;
+        }
     }
   }
 }
@@ -1178,11 +1643,21 @@ export default {
 </style>
 <style lang="scss" scoped>
 .char {
-  margin-top: 150px;
-  margin-left: calc(50% - 150px);
-  width: 300px;
-  height: 300px;
+  &.mini {
+    width: 120px;
+    height: 120px;
+    margin-left: calc(50% - 60px);
+    border: 2px solid #D43280;
+    border-radius: 10px;
+  }
+  width: 400px;
+  height: 400px;
   position: relative;
+  @media(max-width: 880px) {
+    width: 300px;
+    height: 300px;
+    margin-left: calc(50% - 150px);
+  }
   &.respin {
     margin: 0;
     width: 300px;
@@ -1205,7 +1680,8 @@ h2 {
   padding-top: 20px;
   text-align: center;
   color: white;
-  background-image: url('../assets/bg-blur-dark.png');
+  background: rgba(0, 0, 0, .55) url('../assets/bg.png');
+  background-blend-mode: darken;
   height: 100vh;
   height: 100dvh;
   background-repeat: no-repeat;
@@ -1261,15 +1737,20 @@ h2 {
   h2 {
     font-size: 20px !important;
   }
+  position: absolute;
   border-radius: 20px;
   padding-top: 22px;
-  margin-top: 50px;
-  background-color: black;
+  top: 20px;
+  right: 20px;
+  background-color: #0F1823;
   margin-left: calc(50% - 200px);
-  width: 400px;
-  padding-bottom: 54px;
+  width: 340px;
+  padding-bottom: 18px;
   @media (max-width: 880px) {
     width: 100%;
+    right: 0;
+    background-color: black;
+    top: 0;
     min-height: 100vh;
     border-radius: 0;
     padding-bottom: 100px;
@@ -1292,44 +1773,37 @@ h2 {
   z-index: 2;
 }
 #reel {
-  width: calc(100% - 100px);
-  border-radius: 10px;
+  width: 180px;
+  margin-left: calc(50% - 90px)!important;
+  border-radius: 20px;
   height: 435px;
-  background-color: #000000;
+  // background-color: #000000;
   position: relative;
   overflow: hidden;
   margin: 50px;
   margin-bottom: 0;
   margin-top: 30px;
+}
 
-  .chev {
-    // z-index: 10;
-    // position: absolute;
-    // width: 3px;
-    // height: 800px;
-    // background-color: #ff0286;
-    // top: 0;
-    // left: 54%;
-    .squaretop {
-      width: 14px;
-      height: 14px;
-      background-color: #13ffb3;
-      transform: rotate(45deg);
-      position: absolute;
-      top: 160px;
-      left: -9px;
-      // border: 2px solid #163756;
-    }
-    .squarebottom {
-      width: 14px;
-      height: 14px;
-      background-color: #13ffb3;
-      transform: rotate(45deg);
-      position: absolute;
-      top: 160px;
-      right: -9px;
-      // border: 2px solid #163756;
-    }
-  }
+.chev-left {
+  position: absolute;
+  background-image: url(/src/assets/chev-left.png);
+  left: 51px;
+  height: 21px;
+  z-index: 1;
+  width: 19px;
+  background-size: cover;
+  top: 248px;
+}
+
+.chev-right {
+  position: absolute;
+  background-image: url(/src/assets/chev-right.png);
+  right: 51px;
+  z-index: 1;
+  height: 21px;
+  width: 19px;
+  background-size: cover;
+  top: 248px;
 }
 </style>

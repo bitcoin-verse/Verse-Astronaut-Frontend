@@ -394,19 +394,21 @@ export default {
 }
 
 .blink {
-  border: 2px solid #13ffb3 !important;
+  border: 4px solid #D43280 !important; 
+  width: 172px!important;
+  border-radius: 10px;
+  height: 172px!important;
   animation: blinker 2s linear infinite;
 }
 
 .slot {
   position: relative;
   z-index: 2;
-  width: 176px;
+  width: 180px;
   flex-shrink: 0;
-  height: 176px;
+  height: 180px;
   background-color: #0f1823;
   margin-bottom: 4px;
-  border: 2px solid #000000;
   float: left;
   // display: inline-block;
   img {
@@ -415,14 +417,16 @@ export default {
   }
 
   .title {
+    display: none;
     &.common {
-      background-color: rgb(0, 51, 255);
+      background-color: #1e7eb4;
     }
     &.rare {
-      background-color: #a120a8;
+      background-color: #6C43EE;
+;
     }
     &.epic {
-      background-color: #fb0a3e;
+      background-color: #EE3772;
     }
     background-color: rgb(0, 51, 255);
     position: absolute;
