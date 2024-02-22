@@ -308,16 +308,16 @@ export default {
   <div class="page" v-if="!openDetail">
     <div class="head">
       <h2 class="tickhead">
-        My Characters
+        My Voyagers
 
         <a href="/?purchase-intent=true"
           ><button class="btn verse-wide" href="">
-            Create New Character
+            Create New Voyager
           </button></a
         >
       </h2>
       <div class="tickconnect" v-if="!accountActive">
-        Connect your wallet to view your characters.
+        Connect your wallet to view your Voyagers.
       </div>
     </div>
 

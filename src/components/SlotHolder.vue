@@ -1,14 +1,17 @@
 <script>
-import { toRefs } from 'vue'
+import { toRefs, computed } from 'vue'
 import {
   getImageUrl,
   getTraitName,
   getTraitRarity
 } from '../helper/traitFinder'
 export default {
-  props: ['slots', 'resultItems', 'step', 'startAnimation'],
+  props: ['slots', 'resultItems', 'step', 'startAnimation', 'animationClass'],
   setup (props) {
-    const { slots, resultItems, step, startAnimation } = toRefs(props)
+    const { slots, resultItems, step, startAnimation, animationClass } = toRefs(props)
+    const spinClass = computed(() => {
+      return startAnimation.value ? {[animationClass.value]: startAnimation.value} : {};
+    })
     return {
       slots,
       resultItems,
@@ -16,14 +19,16 @@ export default {
       startAnimation,
       getImageUrl,
       getTraitRarity,
-      getTraitName
+      getTraitName,
+      spinClass,
+      animationClass,
     }
   }
 }
 </script>
 
 <template>
-  <div id="slot-holder" :class="{ 'spin-anim': startAnimation }">
+  <div id="slot-holder" :class="spinClass">
     <div
       v-for="(slot, index) in slots"
       :key="index"
@@ -36,7 +41,7 @@ export default {
         <div
           :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)"
         >
-          {{ getTraitName(slot.collection, slot.itemIndex) }}
+        {{ getTraitName(slot.collection, slot.itemIndex) }}
         </div>
       </template>
 
@@ -396,7 +401,7 @@ export default {
 .blink {
   border: 4px solid #D43280 !important; 
   width: 172px!important;
-  border-radius: 10px;
+  border-radius: 3px;
   height: 172px!important;
   animation: blinker 2s linear infinite;
 }
@@ -417,7 +422,7 @@ export default {
   }
 
   .title {
-    display: none;
+    // display: none;
     &.common {
       background-color: #1e7eb4;
     }

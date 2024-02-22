@@ -21,6 +21,7 @@ export default {
     let slots = ref([])
     let nftId = ref(0)
     let step = ref(1)
+    let animationClass = ref('spin-anim-0')
     let txHash = ref("")
     let showTimer = ref(false)
     let singleTransactionApproval = ref(false)
@@ -393,6 +394,10 @@ export default {
     }
 
     function spinReels (collectionName, result) {
+      // generate new animation
+      const randomNumber = Math.floor(Math.random() * 7); 
+      animationClass.value = `spin-anim-${randomNumber}`;
+
       spinLoading.value = true
       prepNextFrame.value = true
 
@@ -421,7 +426,7 @@ export default {
           winSlot.classList.add('blink')
         }
         spinLoading.value = false
-      }, 10000 + 300)
+      }, 8000 + 300)
     }
 
     function goOverView (reroll, collection, value) {
@@ -482,6 +487,7 @@ export default {
       goOverView,
       prepNextFrame,
       showTimer,
+      animationClass,
       slots,
       toggleModal,
       modalActive,
@@ -683,25 +689,28 @@ export default {
     </div>
 
     <!-- loading -->
-    <div class="modal" v-if="rerollLoading == true">
-      <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
-      <h3>{{ rerollLoadingMessage }}</h3>
-      <div class="lds-ring">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-      <p><a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash">View blockchain transaction</a></p>
-    </div>
-    <!-- step 1 -->
-    <div class="modal wide" v-if="rerollStep == 1 && rerollLoading == false">
+    <div class="modal wide" v-if="rerollLoading == true">
       <div class="modal-head">
-        <h3 class="title" style="text-align: left;">Select a Trait</h3>
+        <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
       </div>
       <div class="modal-divider">
         <div class="modal-progress p25"></div>
+      </div>
+      <div class="modal-body" style="height: 480px">
+      <div class="img-spinner"></div>
+      <h3 style="font-size: 18px; margin-top: 20px; font-family: 'Barlow'">{{ rerollLoadingMessage }}</h3>
+      <p><a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash">View blockchain transaction</a></p>
+      </div>
+    </div>
+    <!-- step 1 -->
+    <div class="modal wide" v-if="rerollStep == 1 && rerollLoading == false">
+      <div class="modal-head">
+        <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
+        <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
+      </div>
+      <div class="modal-divider">
+        <div class="modal-progress p50"></div>
       </div>
       <div class="modal-body clearfix" style="height: unset;">
         <div class="left-respin">
@@ -798,8 +807,8 @@ export default {
           
         </div>
         <div class="clearfix" style="margin-top: 340px;">
-          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
-          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
+          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white; margin-top: 0;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
+          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white; margin-top: 0;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
           <button
           v-if="allowanceRequestNeeded == false"
           id="spinButton"
@@ -895,7 +904,7 @@ export default {
 
   <!-- loading -->
   <div class="page-holder" v-if="loading">
-    <a href="/characters"><div class="close-scratch"></div></a>
+    <a href="/voyagers"><div class="close-scratch"></div></a>
     <div class="spin" style="margin-top: 100px">
       <div class="lds-ring">
         <div></div>
@@ -908,7 +917,7 @@ export default {
 
   <!-- finished character -->
   <div class="page-holder" v-if="step == 7 && !loading">
-    <a href="/characters"><div class="close-scratch"></div></a>
+    <a href="/voyagers"><div class="close-scratch"></div></a>
     <button class="name-label">VOYAGER #{{ nftId }}</button>
     <div class="center-div">
     <div class="char-holder">
@@ -1008,34 +1017,34 @@ export default {
 
   <!-- reel -->
   <div class="page-holder" v-if="step != 7 && !loading">
-    <a href="/characters"><div class="close-scratch"></div></a>
+    <a href="/voyagers"><div class="close-scratch"></div></a>
 
     <div :class="step > 10 ? 'core respin' : 'core'">
       <!-- side screen -->
       <div :class="step > 10 ? 'results respin' : 'results'">
       <div class="result active" id="result1">
         <div id="result1lock" class="lock"></div>
-        <h3 id="result1label">Body</h3>
+        <h3 id="result1label"><div :class="'smalldot one ' + getTraitRarity('body', resultItems[0])"></div><p class="title-p">Body</p></h3>
       </div>
       <div class="result" id="result2">
         <div id="result2lock" class="lock"></div>
-        <h3 id="result2label">Helmet</h3>
+        <h3 id="result2label"><div :class="'smalldot two ' + getTraitRarity('helmets', resultItems[1])"></div><p class="title-p">Helmet</p></h3>
       </div>
       <div class="result" id="result3">
         <div id="result3lock" class="lock"></div>
-        <h3 id="result3label">Gear</h3>
+        <h3 id="result3label"><div :class="'smalldot three ' + getTraitRarity('gear', resultItems[2])"></div><p class="title-p">Gear</p></h3>
       </div>
       <div class="result" id="result4">
-        <div id="result4lock" class="lock"></div>
-        <h3 id="result4label">Extra</h3>
+        <div id="result4lock" class="lock"> </div>
+        <h3 id="result4label"><div :class="'smalldot four ' + getTraitRarity('extra', resultItems[3])"></div><p class="title-p">Extra</p></h3>
       </div>
       <div class="result" id="result5">
-        <div id="result5lock" class="lock"></div>
-        <h3 id="result5label">Back</h3>
+        <div id="result5lock" class="lock"> </div>
+        <h3 id="result5label"><div :class="'smalldot five ' + getTraitRarity('back', resultItems[4])"></div><p class="title-p">Back</p></h3>
       </div>
       <div class="result" id="result6">
         <div id="result6lock" class="lock"></div>
-        <h3 id="result6label">Backdrop</h3>
+        <h3 id="result6label"><div :class="'smalldot six ' + getTraitRarity('background', resultItems[5])"></div><p class="title-p wallpaper">Backdrop</p></h3>
       </div>
     </div>
 
@@ -1060,6 +1069,7 @@ export default {
           :slots="slots"
           :resultItems="resultItems"
           :step="step"
+          :animationClass="animationClass"
           :startAnimation="startAnimation"
         />
       </div>
@@ -1123,7 +1133,9 @@ export default {
   }
 }
 
-
+.title-p {
+  margin: 0;
+}
 .legend {
   width: 280px;
   margin-left: calc(50% - 140px);
@@ -1416,7 +1428,124 @@ i.share-icn {
   height: 32px;
   padding: 8px 22px 8px 22px;
 }
-@keyframes reel-spin {
+@keyframes reel-spin-0 {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    // filter: blur(0); // todo this is buggy in IOS
+  }
+  50% {
+    // filter: blur(2px);
+  }
+  100% {
+    transform: translate3d(0, -4880px, 0);
+    -ms-transform: translate3d(0, -4880px, 0);
+    -webkit-transform: translate3d(0, -4880px, 0);
+    -moz-transform: translate3d(0, -4880px, 0);
+    -o-transform: translate3d(0, -4880px, 0);
+    // filter: blur(0);
+  }
+}
+
+@keyframes reel-spin-1 {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    // filter: blur(0); // todo this is buggy in IOS
+  }
+  50% {
+    // filter: blur(2px);
+  }
+  100% {
+    transform: translate3d(0, -4910px, 0);
+    -ms-transform: translate3d(0, -4910px, 0);
+    -webkit-transform: translate3d(0, -4910px, 0);
+    -moz-transform: translate3d(0, -4910px, 0);
+    -o-transform: translate3d(0, -4910px, 0);
+    // filter: blur(0);
+  }
+}
+
+@keyframes reel-spin-2 {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    // filter: blur(0); // todo this is buggy in IOS
+  }
+  50% {
+    // filter: blur(2px);
+  }
+  100% {
+    transform: translate3d(0, -4940px, 0);
+    -ms-transform: translate3d(0, -4940px, 0);
+    -webkit-transform: translate3d(0, -4940px, 0);
+    -moz-transform: translate3d(0, -4940px, 0);
+    -o-transform: translate3d(0, -4940px, 0);
+    // filter: blur(0);
+  }
+}
+
+
+@keyframes reel-spin-3 {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    // filter: blur(0); // todo this is buggy in IOS
+  }
+  50% {
+    // filter: blur(2px);
+  }
+  100% {
+    transform: translate3d(0, -4970px, 0);
+    -ms-transform: translate3d(0, -4970px, 0);
+    -webkit-transform: translate3d(0, -4970px, 0);
+    -moz-transform: translate3d(0, -4970px, 0);
+    -o-transform: translate3d(0, -4970px, 0);
+    // filter: blur(0);
+  }
+}
+
+@keyframes reel-spin-4 {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    // filter: blur(0); // todo this is buggy in IOS
+  }
+  50% {
+    // filter: blur(2px);
+  }
+  100% {
+    transform: translate3d(0, -4985px, 0);
+    -ms-transform: translate3d(0, -4985px, 0);
+    -webkit-transform: translate3d(0, -4985px, 0);
+    -moz-transform: translate3d(0, -4985px, 0);
+    -o-transform: translate3d(0, -4985px, 0);
+    // filter: blur(0);
+  }
+}
+
+
+@keyframes reel-spin-5 {
   0% {
     transform: translate3d(0, 0, 0);
     -webkit-transform: translate3d(0, 0, 0);
@@ -1439,9 +1568,62 @@ i.share-icn {
   }
 }
 
-.spin-anim {
-  -webkit-animation: reel-spin 10s ease-in-out forwards;
-  animation: reel-spin 10s ease-in-out forwards;
+
+@keyframes reel-spin-6 {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    // filter: blur(0); // todo this is buggy in IOS
+  }
+  50% {
+    // filter: blur(2px);
+  }
+  100% {
+    transform: translate3d(0, -5030px, 0);
+    -ms-transform: translate3d(0, -5030px, 0);
+    -webkit-transform: translate3d(0, -5030px, 0);
+    -moz-transform: translate3d(0, -5030px, 0);
+    -o-transform: translate3d(0, -5030px, 0);
+  }
+}
+
+.spin-anim-0 {
+  -webkit-animation: reel-spin-0 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-0 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+}
+
+.spin-anim-1 {
+  -webkit-animation: reel-spin-1 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-1 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+}
+
+.spin-anim-2 {
+  -webkit-animation: reel-spin-2 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-2 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+}
+
+.spin-anim-3 {
+  -webkit-animation: reel-spin-3 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-3 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+}
+
+.spin-anim-4 {
+  -webkit-animation: reel-spin-4 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-4 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+}
+
+.spin-anim-5 {
+  -webkit-animation: reel-spin-5 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-5 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+}
+
+.spin-anim-6 {
+  -webkit-animation: reel-spin-6 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
+  animation: reel-spin-6 8s cubic-bezier(0.32, 0.64, 0.45, 1) forwards;
 }
 
 .close-scratch {
@@ -1498,6 +1680,7 @@ i.share-icn {
 
   .modal {
     &.wide {
+      border-radius: 10px;
       padding: 0;
       width: 600px!important;
       left: calc(50% - 300px)!important;
@@ -1581,6 +1764,40 @@ i.share-icn {
       border: 1px solid #586F9166;
       background-color: #FFFFFFCC!important;
       color: #425472;
+
+      .title-p {
+        padding-left: 14px;
+        &.wallpaper {
+          font-size: 11px;
+          margin-top: 1px;
+        }
+      }
+
+      .smalldot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: black;
+      position: absolute;
+      top: 7px;
+      left: 14px;
+      &.two {
+        left: 8px;
+      }
+      &.six {
+        top: 7px;
+        left: 5px;
+      }
+      &.rare {
+        background-color: #6C43EE;
+      }
+      &.common {
+        background-color: #2FA9EE;
+      }
+      &.epic {
+        background-color: #EE3772;
+      }
+      }
     }
     position: absolute;
     top: 45px;
