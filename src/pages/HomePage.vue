@@ -891,33 +891,32 @@ export default {
           <div class="animation">
             <ul>
 
-                <li class="moving A" style="background-color: #AC92EB">A</li>
-                <li class="moving B" style="background-color: #4FC1E8">B</li>
-                <li class="moving C" style="background-color: #A0D568">C</li>
-                <li class="moving D" style="background-color: #FFCE54">D</li>
-                <li class="moving E" style="background-color: #ED5564">E</li>
+                <li class="moving A" style="background-color: #AC92EB"></li>
+                <li class="moving B" style="background-color: #AC92EB"></li>
+                <li class="moving C" style="background-color: #AC92EB"></li>
+                <li class="moving D" style="background-color: #AC92EB"></li>
+                <li class="moving E" style="background-color: #AC92EB"></li>
 
-                <li class="moving A" style="background-color: #AC92EB">A</li>
-                <li class="moving B" style="background-color: #4FC1E8">B</li>
-                <li class="moving C" style="background-color: #A0D568">C</li>
-                <li class="moving D" style="background-color: #FFCE54">D</li>
-                <li class="moving E" style="background-color: #ED5564">E</li>
+                <li class="moving A" style="background-color: #AC92EB"></li>
+                <li class="moving B" style="background-color: #AC92EB"></li>
+                <li class="moving C" style="background-color: #AC92EB"></li>
+                <li class="moving D" style="background-color: #AC92EB"></li>
+                <li class="moving E" style="background-color: #AC92EB"></li>
 
             </ul>
             <ul>
 
-                <li class="moving F" style="background-color: #ED5564">F</li>
-                <li class="moving G" style="background-color: #FFCE54">G</li>
-                <li class="moving H" style="background-color: #A0D568">H</li>
-                <li class="moving I" style="background-color: #4FC1E8">I</li>
-                <li class="moving J" style="background-color: #AC92EB">J</li>
+                <li class="moving F" style="background-color: #AC92EB"></li>
+                <li class="moving G" style="background-color: #AC92EB"></li>
+                <li class="moving H" style="background-color: #AC92EB"></li>
+                <li class="moving I" style="background-color: #AC92EB"></li>
+                <li class="moving J" style="background-color: #AC92EB"></li>
 
-                <li class="moving F" style="background-color: #ED5564">F</li>
-                <li class="moving G" style="background-color: #FFCE54">G</li>
-                <li class="moving H" style="background-color: #A0D568">H</li>
-                <li class="moving I" style="background-color: #4FC1E8">I</li>
-                <li class="moving J" style="background-color: #AC92EB">J</li>
-                
+                <li class="moving F" style="background-color: #ED5564"></li>
+                <li class="moving G" style="background-color: #FFCE54"></li>
+                <li class="moving H" style="background-color: #A0D568"></li>
+                <li class="moving I" style="background-color: #4FC1E8"></li>
+                <li class="moving J" style="background-color: #AC92EB"></li>
             </ul>
         </div>
         </div>
