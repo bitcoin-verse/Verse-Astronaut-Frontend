@@ -246,7 +246,7 @@ export default {
       txHash.value = ""
       let approvalAmount = 30000000000000000000000000000
       if (singleTransactionApproval.value == true) {
-        approvalAmount = rerollCost.value
+        approvalAmount = rerollCost.value * Math.pow(10,18)
       }
 
       rerollLoadingMessage.value = 'waiting for wallet approval..'
@@ -262,11 +262,14 @@ export default {
 
       rerollLoadingMessage.value = 'waiting for wallet approval..'
       await waitForTransaction({ hash })
-      rerollLoadingMessage.value =
-        'approval done, approve reroll transaction in wallet'
-      // need to send them to a submit transaction modal, otherwise they are still on approval modal
-      reroll(traitReroll.value)
-      rerollLoading.value = false
+      setTimeout(async () => {
+        await getAllowance()
+        rerollLoadingMessage.value =
+          'approval done, approve reroll transaction in wallet'
+        rerollStep.value = 1
+        reroll(traitReroll.value)
+        rerollLoading.value = false
+      }, 5000)
     }
 
     async function run (forceLoad) {
@@ -694,8 +697,11 @@ export default {
         <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
       </div>
-      <div class="modal-divider">
+      <div class="modal-divider" v-if="rerollStep == 1">
         <div class="modal-progress p25"></div>
+      </div>
+      <div class="modal-divider" v-if="rerollStep == 4">
+        <div class="modal-progress p75"></div>
       </div>
       <div class="modal-body" style="height: 480px">
       <div class="img-spinner"></div>
@@ -870,9 +876,15 @@ export default {
       </button>
     </div>
     <!--  reroll allowance -->
-    <div class="modal" v-if="rerollStep == 4 && rerollLoading == false">
-      <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
-      <div class="modal-body" style="padding: 0">
+    <div class="modal wide" v-if="rerollStep == 4 && rerollLoading == false">
+      <div class="modal-head">
+        <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
+        <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
+      </div>
+      <div class="modal-divider">
+        <div class="modal-progress p75"></div>
+      </div>
+      <div class="modal-body">
         <div class="img-approve"></div>
         <h3 class="title">Approve the use of VERSE</h3>
         <p class="subtext">
@@ -1118,7 +1130,8 @@ export default {
         >
           Review Traits
         </button>
-        <p style="margin-bottom: 0; font-size: 14px; font-weight: 500; color: #899BB5;" v-if="step < 7">trait <span style="color: white">{{step}}</span> out of 6 </p>
+        <p v-if="!spinLoading && step < 7" style="margin-bottom: 0; font-size: 14px; font-weight: 500; color: #899BB5;" >trait <span style="color: white">{{step}}</span> out of 6 </p>
+        <p class="blink no-border" v-if="spinLoading && step < 7" style="position: relative; margin-left: 20px; margin-bottom: 0; font-size: 14px; font-weight: 500; color: #D43280;"><i class="lock-mini"></i> unlocking trait </p>
       </div>
     </div>
     </div>
@@ -1126,6 +1139,17 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+i.lock-mini {
+  background-image: url('../assets/lock-mini.png');
+  width: 11.10px;
+  background-size: cover;
+  height: 16px;
+  position: absolute;
+  left: 95px;
+  @media(max-width: 880px) {
+    left: 60px;
+  }
+}
 .center-div {
   margin-left: calc(50% - 410px);
   @media(max-width: 880px) {
@@ -1856,6 +1880,9 @@ i.share-icn {
 .blink {
   border: 2px solid #ff0486 !important;
   animation: blinker 2s linear infinite;
+  &.no-border {
+    border: none!important
+  }
 }
 </style>
 <style lang="scss" scoped>

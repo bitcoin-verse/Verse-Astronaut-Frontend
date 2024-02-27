@@ -334,7 +334,7 @@ export default {
 
     <div class="tickets" v-if="accountActive && !loading">
       <div v-if="nfts.length == 0">
-        <h3 style="font-size: 18px">No characters in your connected wallet.</h3>
+        <h3 class="no-char-found">No Voyagers found in your connected wallet.</h3>
       </div>
       <div class="ticket" v-for="(item, index) in characterList()">
         <h3 class="title">Voyager #{{ item.id }}</h3>
@@ -389,6 +389,13 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.no-char-found {
+  font-size: 15px; 
+  padding-left: 0;
+  @media(max-width: 880px) {
+  padding-left: 15px;
+  }
+}
 .wrongNetworkWarning {
   @media (max-width: 880px) {
     font-size: 13px;

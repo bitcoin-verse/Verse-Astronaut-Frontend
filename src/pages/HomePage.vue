@@ -888,7 +888,38 @@ export default {
     <div class="float-holder clearfix">
       <div class="card-info" v-if="!modalActive">
         <div class="left">
+          <div class="animation">
+            <ul>
 
+                <li style="background-color: #AC92EB">A</li>
+                <li style="background-color: #4FC1E8">B</li>
+                <li style="background-color: #A0D568">C</li>
+                <li style="background-color: #FFCE54">D</li>
+                <li style="background-color: #ED5564">E</li>
+
+                <li style="background-color: #AC92EB">A</li>
+                <li style="background-color: #4FC1E8">B</li>
+                <li style="background-color: #A0D568">C</li>
+                <li style="background-color: #FFCE54">D</li>
+                <li style="background-color: #ED5564">E</li>
+
+            </ul>
+            <ul>
+
+                <li style="background-color: #ED5564">F</li>
+                <li style="background-color: #FFCE54">G</li>
+                <li style="background-color: #A0D568">H</li>
+                <li style="background-color: #4FC1E8">I</li>
+                <li style="background-color: #AC92EB">J</li>
+
+                <li style="background-color: #ED5564">F</li>
+                <li style="background-color: #FFCE54">G</li>
+                <li style="background-color: #A0D568">H</li>
+                <li style="background-color: #4FC1E8">I</li>
+                <li style="background-color: #AC92EB">J</li>
+                
+            </ul>
+        </div>
         </div>
         <div class="right">
         <div class="bubble">ON-CHAIN NFT BUILDER</div>
@@ -928,10 +959,10 @@ export default {
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
-          View Voyagers
+          Connect Wallet
         </button>
         <a v-if="!authenticated && accountActive" @click="authChallenge()"
-          ><button class="btn verse-wide half secondary" style="margin-top: 10px; width: 270px;">
+          ><button class="btn verse-wide half secondary adjust" style="margin-top: 10px; ">
             Login with Wallet
             {{ recognizableWalletFormat(getAccount().address) }}
           </button></a
@@ -943,6 +974,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.adjust {
+  width: 270px;
+  @media(max-width: 880px) {
+    width: 100%;
+  }
+}
 .jumbo-mob {
   width: 100%;
   height: 500px;
@@ -1195,14 +1232,15 @@ iframe {
   }
   backdrop-filter: blur(5px);
   .left {
-    background-image: url('../assets/home-cover.png');
     background-size: cover;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
-    height: 510px;
+    height: 288px;
     background-repeat: no-repeat;
     @media(max-width: 880px) {
-      display: none;
+      height: 400px;
+      width: 100%;
+      left: 0;
     }
     width: 35%;
     left: 30px;
@@ -1211,14 +1249,21 @@ iframe {
   }
   .right {
     @media(max-width: 880px) {
-      width: 100%;
+      width: 100%!important;
       position: unset;
-      top: 40vh;
+      margin-top: 320px;
+    }
+    @media(max-width: 1135px) {
+      left: calc(25% + 70px)!important;
+      width: 60%;
+    }
+    @media(max-width: 1270px) {
+      left: calc(39% + 70px);
     }
     text-align: left;
-    width: 65%;
+    width: 50%;
     position: absolute;
-    left: calc(35% + 70px);
+    left: calc(30% + 70px);
     top: 0;
     
     .bubble {
@@ -1242,6 +1287,9 @@ iframe {
     h2 {
       text-align: left;
       font-weight: 800;
+      @media(max-width: 880px) {
+        text-align: center;
+      }
     }
   }
   width: 70%;
@@ -1266,6 +1314,12 @@ iframe {
     padding: 20px;
   }
 
+  a {
+    button {
+      // margin-left: calc(50% - 135px);
+    }
+  }
+
   h2 {
     margin: 0;
     font-size: 40px;
@@ -1275,6 +1329,9 @@ iframe {
   }
   p {
     font-weight: 500;
+    @media(max-width: 880px) {
+        text-align: center;
+      }
   }
 }
 .page {
@@ -1310,5 +1367,120 @@ h2 {
 
 .fa-check {
   color: rgb(35, 226, 35);
+}
+
+// animation
+
+@keyframes slideLeft {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(-680px); }
+}
+
+@keyframes slideRight {
+  0% { transform: translateX(-680px); }
+  100% { transform: translateX(0px); }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-780px); }
+}
+
+@keyframes slideDown {
+  0% { transform: translateY(-780px); }
+  100% { transform: translateY(0px); }
+}
+
+.animation {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  // background-color: rgba(0,0,0,0.1);
+}
+
+.animation ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  padding: 12px 0;
+  width: 1360px;
+}
+
+.animation ul:first-child {
+  animation-name: slideLeft;
+  animation-duration: 16s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.animation ul:last-child {
+  animation-name: slideRight;
+  animation-duration: 16s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.animation ul li {
+  list-style: none;
+  display: inline-block;
+  width: 120px;
+  height: 120px;
+  background-color: gray;
+  border-radius: 12px;
+  margin-left: 16px;
+
+  font-size: 60px;
+  line-height: 120px;
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: rgba(0,0,0,0.2);
+}
+
+@media screen and (max-width: 1135px) {
+  .animation ul:last-child {
+      display: none;
+    }
+}
+
+@media screen and (max-width: 879px) {
+  .animation ul:last-child {
+      display: block;
+    }
+}
+
+@media screen and (min-width: 880px) {
+
+    .animation {
+      position: absolute;
+      width: 296px;
+      height: 510px;
+      padding: 0 16px;
+    }
+
+    .animation ul:first-child {
+      animation-name: slideUp;
+    }
+
+    .animation ul:last-child {
+      animation-name: slideDown;
+      position: absolute;
+      right: 16px; top: 0px;
+    }
+
+    .animation ul {
+      flex-direction: column;
+      width: 140px;
+    }
+
+    .animation ul li {
+      width: 140px;
+      height: 140px;
+      margin-left: 0px;
+      margin-bottom: 16px;
+      line-height: 140px;
+    }
+
 }
 </style>
