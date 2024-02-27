@@ -891,32 +891,32 @@ export default {
           <div class="animation">
             <ul>
 
-                <li style="background-color: #AC92EB">A</li>
-                <li style="background-color: #4FC1E8">B</li>
-                <li style="background-color: #A0D568">C</li>
-                <li style="background-color: #FFCE54">D</li>
-                <li style="background-color: #ED5564">E</li>
+                <li class="moving A" style="background-color: #AC92EB">A</li>
+                <li class="moving B" style="background-color: #4FC1E8">B</li>
+                <li class="moving C" style="background-color: #A0D568">C</li>
+                <li class="moving D" style="background-color: #FFCE54">D</li>
+                <li class="moving E" style="background-color: #ED5564">E</li>
 
-                <li style="background-color: #AC92EB">A</li>
-                <li style="background-color: #4FC1E8">B</li>
-                <li style="background-color: #A0D568">C</li>
-                <li style="background-color: #FFCE54">D</li>
-                <li style="background-color: #ED5564">E</li>
+                <li class="moving A" style="background-color: #AC92EB">A</li>
+                <li class="moving B" style="background-color: #4FC1E8">B</li>
+                <li class="moving C" style="background-color: #A0D568">C</li>
+                <li class="moving D" style="background-color: #FFCE54">D</li>
+                <li class="moving E" style="background-color: #ED5564">E</li>
 
             </ul>
             <ul>
 
-                <li style="background-color: #ED5564">F</li>
-                <li style="background-color: #FFCE54">G</li>
-                <li style="background-color: #A0D568">H</li>
-                <li style="background-color: #4FC1E8">I</li>
-                <li style="background-color: #AC92EB">J</li>
+                <li class="moving F" style="background-color: #ED5564">F</li>
+                <li class="moving G" style="background-color: #FFCE54">G</li>
+                <li class="moving H" style="background-color: #A0D568">H</li>
+                <li class="moving I" style="background-color: #4FC1E8">I</li>
+                <li class="moving J" style="background-color: #AC92EB">J</li>
 
-                <li style="background-color: #ED5564">F</li>
-                <li style="background-color: #FFCE54">G</li>
-                <li style="background-color: #A0D568">H</li>
-                <li style="background-color: #4FC1E8">I</li>
-                <li style="background-color: #AC92EB">J</li>
+                <li class="moving F" style="background-color: #ED5564">F</li>
+                <li class="moving G" style="background-color: #FFCE54">G</li>
+                <li class="moving H" style="background-color: #A0D568">H</li>
+                <li class="moving I" style="background-color: #4FC1E8">I</li>
+                <li class="moving J" style="background-color: #AC92EB">J</li>
                 
             </ul>
         </div>
@@ -1241,6 +1241,7 @@ iframe {
       height: 400px;
       width: 100%;
       left: 0;
+      top: 20px;
     }
     width: 35%;
     left: 30px;
@@ -1251,7 +1252,7 @@ iframe {
     @media(max-width: 880px) {
       width: 100%!important;
       position: unset;
-      margin-top: 320px;
+      margin-top: 315px;
     }
     @media(max-width: 1135px) {
       left: calc(25% + 70px)!important;
@@ -1482,5 +1483,42 @@ h2 {
       line-height: 140px;
     }
 
+
 }
+
+
+.moving {
+      background-size: cover;
+      background-color: none;
+      &.A {
+        background-image: url('../assets/home/A.png');
+      }
+      &.B {
+        background-image: url('../assets/home/B.png');
+      }
+      &.C {
+        background-image: url('../assets/home/C.png');
+      }
+      &.D {
+        background-image: url('../assets/home/D.png');
+      }
+      &.E {
+        background-image: url('../assets/home/E.png');
+      }
+      &.F {
+        background-image: url('../assets/home/F.png');
+      }
+      &.G {
+        background-image: url('../assets/home/G.png');
+      }
+      &.H {
+        background-image: url('../assets/home/H.png');
+      }
+      &.I {
+        background-image: url('../assets/home/I.png');
+      }
+      &.J {
+        background-image: url('../assets/home/J.png');
+      }
+    }
 </style>
