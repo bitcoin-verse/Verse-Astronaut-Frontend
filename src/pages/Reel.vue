@@ -7,7 +7,7 @@ import ERC20ABI from '../abi/ERC20.json'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
 import SlotHolder from '../components/SlotHolder.vue'
-import { getRealTrait, getImageUrl, getTraitName, getTraitRarity } from '../helper/traitFinder'
+import { getRealTrait, getImageUrl, getImageUrlLarge, getTraitName, getTraitRarity } from '../helper/traitFinder'
 
 export default {
   components: {
@@ -511,6 +511,7 @@ export default {
       currentRespinValue,
       rerollLoading,
       getImageUrl,
+      getImageUrlLarge,
       getTraitRarity,
       capitalize,
       rerollCost,
@@ -936,27 +937,27 @@ export default {
       <h2>VOYAGER #{{ nftId }}</h2>
       <div class="char">
         <img
-          :src="getImageUrl('background', resultItems[5])"
+          :src="getImageUrlLarge('background', resultItems[5])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrl('back', resultItems[4])"
+          :src="getImageUrlLarge('back', resultItems[4])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrl('body', resultItems[0])"
+          :src="getImageUrlLarge('body', resultItems[0])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrl('helmets', resultItems[1])"
+          :src="getImageUrlLarge('helmets', resultItems[1])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrl('gear', resultItems[2])"
+          :src="getImageUrlLarge('gear', resultItems[2])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrl('extra', resultItems[3])"
+          :src="getImageUrlLarge('extra', resultItems[3])"
           style="width: 100%; position: absolute; left: 0"
         />
       </div>

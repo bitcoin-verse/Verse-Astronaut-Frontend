@@ -16,7 +16,11 @@ const findItemById = (items, id) => {
 }
 
 export const getImageUrl = (collection, trait) => {
-    return `/traits/all/${traitJSON[collection][trait].Filename}`
+    return `/traits/small/${traitJSON[collection][trait].Filename}`
+}
+
+export const getImageUrlLarge = (collection, trait) => {
+    return `/traits/large/${traitJSON[collection][trait].Filename}`
 }
 
 export const getTraitName = (collection, trait) => {
