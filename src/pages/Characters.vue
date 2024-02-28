@@ -367,6 +367,10 @@ export default {
             :src="getImageUrl('extra', item.traits[3])"
             style="position: absolute; left: 0"
           />
+          <img v-if="item.traits.length == 7"
+            :src="getImageUrl('badge', item.traits[6])"
+            style="position: absolute; left: 0"
+          />
         </div>
 
         <button

@@ -778,5 +778,19 @@
           "Name": "Antarctic Glow",
           "Range": "977-1000"
         }
+      ],
+      "badge": [
+        {
+          "Filename": "extra_17.png",
+          "Type": "Epic",
+          "Name": "Star Unit Pin",
+          "Range": "1-1"
+        },
+        {
+          "Filename": "extra_18.png",
+          "Type": "Epic",
+          "Name": "Burn Unit Pin",
+          "Range": "2-2"
+        }
       ]
 }

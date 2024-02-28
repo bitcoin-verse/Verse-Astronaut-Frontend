@@ -39,7 +39,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 )
 
 const metadata = {
-  name: 'VERSE Voyager',
+  name: 'VERSE Voyagers',
   description:
     'Embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations, the possibilities are endless!',
   url: 'https://nft.verse.bitcoin.com',

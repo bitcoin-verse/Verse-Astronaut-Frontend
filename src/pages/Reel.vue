@@ -7,7 +7,7 @@ import ERC20ABI from '../abi/ERC20.json'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
 import SlotHolder from '../components/SlotHolder.vue'
-import { getRealTrait, getImageUrl, getImageUrlLarge, getTraitName, getTraitRarity } from '../helper/traitFinder'
+import { getRealTrait, getImageUrl, getThumb, getImageUrlLarge, getTraitName, getTraitRarity } from '../helper/traitFinder'
 
 export default {
   components: {
@@ -274,6 +274,7 @@ export default {
 
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
+      updateMetaData(nftId.value)
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false
@@ -301,10 +302,12 @@ export default {
         })
         if (data) {
           let traits = getRealTrait(data)
+          let realTraits = []
           traits.forEach(dp => {
-            traits.push(parseInt(dp))
+            realTraits.push(parseInt(dp))
           })
-          return traits
+          console.log(realTraits)
+          return realTraits
         }
       } catch (e) {
         console.log(e)
@@ -459,9 +462,9 @@ export default {
 
       if (stepNumber > 10) {
         let realStep = stepNumber - 11
-        url = getImageUrl(collections.value[realStep], [result])
+        url = getThumb(collections.value[realStep], [result])
       } else {
-        url = getImageUrl(
+        url = getThumb(
           collections.value[stepNumber - 1],
           resultItems.value[stepNumber - 1]
         )
@@ -514,6 +517,7 @@ export default {
       getImageUrlLarge,
       getTraitRarity,
       capitalize,
+      getThumb,
       rerollCost,
       rerollStep,
       approve,
@@ -580,6 +584,10 @@ export default {
               :src="getImageUrl('extra', currentRespinValue)"
               style="width: 100%; position: absolute; left: 0"
             />
+            <img v-if="resultItems.length == 7"
+              :src="getImageUrl('badge', resultItems[6])"
+              style="width: 100%; position: absolute; left: 0"
+            />
          </div>
          <h2>You have received a new trait</h2>
          <div class="trait-list">
@@ -643,6 +651,10 @@ export default {
               :src="getImageUrl('extra', resultItems[3])"
               style="width: 100%; position: absolute; left: 0"
             />
+            <img v-if="resultItems.length == 7"
+              :src="getImageUrl('badge', resultItems[6])"
+              style="width: 100%; position: absolute; left: 0"
+            />
          </div>
          <h2>Your Voyager #{{ nftId }} has been assembled</h2>
          <div class="trait-list">
@@ -670,6 +682,10 @@ export default {
               <tr>
                 <td class="key">Backdrop</td>
                 <td class="value">{{ getTraitName('background', resultItems[5])}} <div :class="'dot ' + getTraitRarity('background', resultItems[5])"></div></td>
+              </tr>
+              <tr v-if="resultItems.length == 7">
+                <td class="key">Badge</td>
+                <td class="value">{{ getTraitName('badge', resultItems[6])}} <div :class="'dot ' + getTraitRarity('badge', resultItems[6])"></div></td>
               </tr>
           </table>
          </div>
@@ -756,64 +772,58 @@ export default {
         </div>
         <div class="right-respin">
           <div class="tile" :class="traitReroll == 2 ? 'active' : '' ">
-            <img
-              :src="getImageUrl('body', resultItems[0])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 2 ? '' : 'greyscale' "
+            <div
+              :style="`background-image: url(${getThumb('body', resultItems[0])})`"
+              :class="traitReroll == 2 ? 'reroll-small' : 'reroll-small greyscale' "
               @click="traitReroll = 2"
-            />
+            ></div>
             <div class="trait">Body</div>
           </div>
           <div class="tile" :class="traitReroll == 4 ? 'active' : '' ">
-            <img
-              :src="getImageUrl('helmets', resultItems[1])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 4 ? '' : 'greyscale' "
+            <div
+              :style="`background-image: url(${getThumb('helmets', resultItems[1])})`"
+              :class="traitReroll == 4 ? 'reroll-small' : 'reroll-small greyscale' "
               @click="traitReroll = 4"
-            />
+            ></div>
             <div class="trait">Helmet</div>
           </div>
           <div class="tile" :class="traitReroll == 3 ? 'active' : '' ">
-            <img
-              :src="getImageUrl('gear', resultItems[2])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 3 ? '' : 'greyscale' "
+            <div
+            :style="`background-image: url(${getThumb('gear', resultItems[2])})`"  
+             :class="traitReroll == 3 ? 'reroll-small' : 'reroll-small greyscale' "
               @click="traitReroll = 3"
-            />
+            ></div>
             <div class="trait">Gear</div>
           </div>
           <div class="tile" :class="traitReroll == 5 ? 'active' : '' ">
-            <img
-              :src="getImageUrl('extra', resultItems[3])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 5 ? '' : 'greyscale' "
+            <div
+            :style="`background-image: url(${getThumb('extra', resultItems[3])})`"  
+             :class="traitReroll == 5 ? 'reroll-small' : 'reroll-small greyscale' "
               @click="traitReroll = 5"
-            />
+            ></div>
             <div class="trait">Extra</div>
           </div>
           <div class="tile" :class="traitReroll == 1 ? 'active' : '' ">
-            <img
-              :src="getImageUrl('back', resultItems[4])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 1 ? '' : 'greyscale' "
+            <div
+            :style="`background-image: url(${getThumb('back', resultItems[4])})`"  
+             :class="traitReroll == 1 ? 'reroll-small' : 'reroll-small greyscale' "
               @click="traitReroll = 1"
-            />
+            ></div>
             <div class="trait">Back</div>
           </div>
           <div class="tile" :class="traitReroll == 0 ? 'active' : '' ">
-            <img
-              :src="getImageUrl('background', resultItems[5])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 0 ? '' : 'greyscale' "
+            <div
+            :style="`background-image: url(${getThumb('background', resultItems[5])})`"  
+             :class="traitReroll == 0 ? 'reroll-small' : 'reroll-small greyscale' "
               @click="traitReroll = 0"
-            />
+            ></div>
             <div class="trait">Wallpaper</div>
           </div>
         </div>
         <div>
           
         </div>
-        <div class="clearfix" style="margin-top: 340px;">
+        <div class="clearfix" style="margin-top: 325px;">
           <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white; margin-top: 0;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
           <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white; margin-top: 0;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
           <button
@@ -960,6 +970,10 @@ export default {
           :src="getImageUrlLarge('extra', resultItems[3])"
           style="width: 100%; position: absolute; left: 0"
         />
+        <img v-if="resultItems.length == 7"
+          :src="getImageUrlLarge('badge', resultItems[6])"
+          style="width: 100%; position: absolute; left: 0"
+        />
       </div>
 
       <div class="social-holder">
@@ -980,6 +994,12 @@ export default {
       </div>
       <h2>VOYAGER #{{ nftId }}</h2>
       <h3>Traits</h3>
+
+      <div class="trait large" v-if="resultItems.length == 7">
+          <h3 class="trait-title">Badge</h3>
+          <h4 :class="getTraitName('badge', resultItems[6]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('badge', resultItems[6]) }} - Exclusive VIP Trait</h4>
+          <h4 style="width: 60px; margin-left: calc(50% - 30px)"  :class="'trait-rarity ' + getTraitRarity('badge', resultItems[6]) " ><div class="spot"></div> <p>{{capitalize(getTraitRarity('badge', resultItems[6]))}}</p></h4>
+      </div>
       <div class="trait">
           <h3 class="trait-title">BODY</h3>
           <h4 :class="getTraitName('body', resultItems[0]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('body', resultItems[0]) }}</h4>
@@ -1158,6 +1178,15 @@ i.lock-mini {
   }
 }
 
+.reroll-small {
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+}
+
 .title-p {
   margin: 0;
 }
@@ -1309,6 +1338,12 @@ i.share-icn {
     font-size: 14px;
   }
   .trait {
+    &.large {
+      width: 100%;
+      @media(max-width: 880px) {
+        width: calc(100% - 10px);
+      }
+    }
     &.no-margin-right {
       margin-right: 0;
       @media(max-width: 880px) {
@@ -1858,6 +1893,10 @@ i.share-icn {
     border-radius: 10px;
     background-color: #0F1823;
     border: 1px solid #0F1823;
+
+    background-size: contain!important;
+    background-repeat: no-repeat!important;
+    background-position: center center!important;
 
     &.active {
       border: 1px solid #D43280;
