@@ -9,7 +9,7 @@ import { useRoute } from 'vue-router'
 import SlotHolder from '../components/SlotHolder.vue'
 import { getRealTrait, getImageUrl, getThumb, getImageUrlLarge, getTraitName, getTraitRarity } from '../helper/traitFinder'
 import { useSound } from '@vueuse/sound'
-import sfxSpin from '../assets/spin.mp3'
+import sfxSpin from '../assets/chest.wav'
 import sfxTada from '../assets/tada.wav'
 
 export default {
@@ -430,6 +430,7 @@ export default {
       // Clean up after the animation is complete
       startAnimation.value = true
       setTimeout(() => {
+        stopSfxSpin();
         // Update the result element after the animation
         updateResultElement(step.value, result)
 
@@ -438,7 +439,7 @@ export default {
           winSlot.classList.add('blink')
         }
         spinLoading.value = false
-        stopSfxSpin();
+
         playSfxTada();
       }, 8000 + 300)
     }
@@ -494,7 +495,7 @@ export default {
       }
     }
 
-    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin);
+    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin, {playbackRate: 1.25});
     const { play: playSfxTada } = useSound(sfxTada);
 
     return {
