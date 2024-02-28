@@ -9,7 +9,7 @@ import { useRoute } from 'vue-router'
 import SlotHolder from '../components/SlotHolder.vue'
 import { getRealTrait, getImageUrl, getThumb, getImageUrlLarge, getTraitName, getTraitRarity } from '../helper/traitFinder'
 import { useSound } from '@vueuse/sound'
-import sfxSpin from '../assets/chest.wav'
+import sfxSpin from '../assets/spin.wav'
 import sfxTada from '../assets/tada.wav'
 
 export default {
@@ -495,9 +495,7 @@ export default {
       }
     }
 
-    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin, {
-      playbackRate: 1.5,
-    });
+    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin);
     const { play: playSfxTada } = useSound(sfxTada);
 
     return {
