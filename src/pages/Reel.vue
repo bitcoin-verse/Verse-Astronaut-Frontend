@@ -495,7 +495,9 @@ export default {
       }
     }
 
-    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin, {playbackRate: 1.25});
+    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin, {
+      playbackRate: 1.5,
+    });
     const { play: playSfxTada } = useSound(sfxTada);
 
     return {
