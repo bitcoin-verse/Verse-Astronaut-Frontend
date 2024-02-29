@@ -8,11 +8,15 @@ import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
 import SlotHolder from '../components/SlotHolder.vue'
 import { getRealTrait, getImageUrl, getThumb, getImageUrlLarge, getTraitName, getTraitRarity } from '../helper/traitFinder'
+import { useSound } from '@vueuse/sound'
+import sfxSpin from '../assets/spin.wav'
+import sfxTada from '../assets/tada.wav'
 
 export default {
   components: {
     SlotHolder
   },
+
   setup () {
     let traitReroll = ref(2)
     let initialSlots = ref([])
@@ -400,6 +404,8 @@ export default {
     }
 
     function spinReels (collectionName, result) {
+
+      playSfxSpin();
       // generate new animation
       const randomNumber = Math.floor(Math.random() * 7); 
       animationClass.value = `spin-anim-${randomNumber}`;
@@ -424,6 +430,7 @@ export default {
       // Clean up after the animation is complete
       startAnimation.value = true
       setTimeout(() => {
+        stopSfxSpin();
         // Update the result element after the animation
         updateResultElement(step.value, result)
 
@@ -432,6 +439,8 @@ export default {
           winSlot.classList.add('blink')
         }
         spinLoading.value = false
+
+        playSfxTada();
       }, 8000 + 300)
     }
 
@@ -486,7 +495,13 @@ export default {
       }
     }
 
+    const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin);
+    const { play: playSfxTada } = useSound(sfxTada);
+
     return {
+      playSfxSpin,
+      playSfxTada,
+      stopSfxSpin,
       resultItems,
       collections,
       loadNextFrame,
