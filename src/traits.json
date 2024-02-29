@@ -466,7 +466,7 @@
     "back": [
         {
           "Filename": "1px.png",
-          "Type": "None",
+          "Type": "Common",
           "Name": "None",
           "Range": "1-400"
         },
@@ -593,190 +593,204 @@
     ],
     "background": [
         {
-          "Filename": "basic_01.jpg",
+          "Filename": "basic_01.png",
           "Type": "Common",
           "Name": "Pitch Black Void",
           "Range": "1-50"
         },
         {
-          "Filename": "basic_02.jpg",
+          "Filename": "basic_02.png",
           "Type": "Common",
           "Name": "Pure White Expanse",
           "Range": "51-100"
         },
         {
-          "Filename": "basic_03.jpg",
+          "Filename": "basic_03.png",
           "Type": "Common",
           "Name": "Azure Sky",
           "Range": "101-150"
         },
         {
-          "Filename": "basic_04.jpg",
+          "Filename": "basic_04.png",
           "Type": "Common",
           "Name": "Mint Freshness",
           "Range": "151-200"
         },
         {
-          "Filename": "basic_05.jpg",
+          "Filename": "basic_05.png",
           "Type": "Common",
           "Name": "Deep Space Purple",
           "Range": "201-250"
         },
         {
-          "Filename": "basic_06.jpg",
+          "Filename": "basic_06.png",
           "Type": "Common",
           "Name": "Oceanic Blue",
           "Range": "251-300"
         },
         {
-          "Filename": "basic_07.jpg",
+          "Filename": "basic_07.png",
           "Type": "Common",
           "Name": "Sunset Purple",
           "Range": "301-350"
         },
         {
-          "Filename": "basic_08.jpg",
+          "Filename": "basic_08.png",
           "Type": "Common",
           "Name": "Coral Radiance",
           "Range": "351-400"
         },
         {
-          "Filename": "basic_09.jpg",
+          "Filename": "basic_09.png",
           "Type": "Common",
           "Name": "Vibrant Magenta",
           "Range": "401-450"
         },
         {
-          "Filename": "basic_10.jpg",
+          "Filename": "basic_10.png",
           "Type": "Common",
           "Name": "Saffron Sunrise",
           "Range": "451-500"
         },
         {
-          "Filename": "duotone_11.jpg",
+          "Filename": "duotone_11.png",
           "Type": "Rare",
           "Name": "Pastel Dream",
           "Range": "501-526"
         },
         {
-          "Filename": "duotone_12.jpg",
+          "Filename": "duotone_12.png",
           "Type": "Rare",
           "Name": "Twilight Serenity",
           "Range": "527-552"
         },
         {
-          "Filename": "duotone_13.jpg",
+          "Filename": "duotone_13.png",
           "Type": "Rare",
           "Name": "Arctic Chill",
           "Range": "553-578"
         },
         {
-          "Filename": "duotone_14.jpg",
+          "Filename": "duotone_14.png",
           "Type": "Rare",
           "Name": "Midnight Velvet",
           "Range": "579-604"
         },
         {
-          "Filename": "duotone_15.jpg",
+          "Filename": "duotone_15.png",
           "Type": "Rare",
           "Name": "Blazing Horizon",
           "Range": "605-630"
         },
         {
-          "Filename": "duotone_16.jpg",
+          "Filename": "duotone_16.png",
           "Type": "Rare",
           "Name": "Neon Spring",
           "Range": "631-656"
         },
         {
-          "Filename": "duotone_17.jpg",
+          "Filename": "duotone_17.png",
           "Type": "Rare",
           "Name": "Golden Shine",
           "Range": "657-682"
         },
         {
-          "Filename": "duotone_18.jpg",
+          "Filename": "duotone_18.png",
           "Type": "Rare",
           "Name": "Spring Meadow",
           "Range": "683-708"
         },
         {
-          "Filename": "duotone_19.jpg",
+          "Filename": "duotone_19.png",
           "Type": "Rare",
           "Name": "Lavender Dream",
           "Range": "709-734"
         },
         {
-          "Filename": "duotone_20.jpg",
+          "Filename": "duotone_20.png",
           "Type": "Rare",
           "Name": "Ocean Horizon",
           "Range": "735-760"
         },
         {
-          "Filename": "rare_21.jpg",
+          "Filename": "rare_21.png",
           "Type": "Rare",
           "Name": "Starry Night",
           "Range": "761-786"
         },
         {
-          "Filename": "rare_22.jpg",
+          "Filename": "rare_22.png",
           "Type": "Rare",
           "Name": "Solar Eclipse",
           "Range": "787-812"
         },
         {
-          "Filename": "rare_23.jpg",
+          "Filename": "rare_23.png",
           "Type": "Rare",
           "Name": "Star Trails",
           "Range": "813-850"
         },
         {
-          "Filename": "Location_Indonesia.jpg",
+          "Filename": "Location_Indonesia.png",
           "Type": "Epic",
           "Name": "Indonesian Pagoda",
           "Range": "851-868"
         },
         {
-          "Filename": "Location_MARS.jpg",
+          "Filename": "Location_MARS.png",
           "Type": "Epic",
           "Name": "Martian Dome",
           "Range": "869-886"
         },
         {
-          "Filename": "Location_NewYork.jpg",
+          "Filename": "Location_NewYork.png",
           "Type": "Epic",
           "Name": "New York Dusk",
           "Range": "887-904"
         },
         {
-          "Filename": "Location_Nigeria.jpg",
+          "Filename": "Location_Nigeria.png",
           "Type": "Epic",
           "Name": "Nigerian Abuja Gate",
           "Range": "905-922"
         },
         {
-          "Filename": "Location_Singapore.jpg",
+          "Filename": "Location_Singapore.png",
           "Type": "Epic",
           "Name": "Singapore Neon",
           "Range": "923-940"
         },
         {
-          "Filename": "Location_Tokyo.jpg",
+          "Filename": "Location_Tokyo.png",
           "Type": "Epic",
           "Name": "Tokyo Twilight",
           "Range": "941-958"
         },
         {
-          "Filename": "Location_Vietnam.jpg",
+          "Filename": "Location_Vietnam.png",
           "Type": "Epic",
           "Name": "Vietnam Visitor",
           "Range": "959-976"
         },
         {
-          "Filename": "rare_24.jpg",
+          "Filename": "rare_24.png",
           "Type": "Epic",
           "Name": "Antarctic Glow",
           "Range": "977-1000"
+        }
+      ],
+      "badge": [
+        {
+          "Filename": "extra_17.png",
+          "Type": "Epic",
+          "Name": "Star Unit Pin",
+          "Range": "1-1"
+        },
+        {
+          "Filename": "extra_18.png",
+          "Type": "Epic",
+          "Name": "Burn Unit Pin",
+          "Range": "2-2"
         }
       ]
 }

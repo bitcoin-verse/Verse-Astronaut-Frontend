@@ -36,7 +36,7 @@ export default {
     let accountActive = ref(false)
     let txHash = ref("")
     let correctNetwork = ref(true)
-    let modalActive = ref(false) 
+    let modalActive = ref(false)  
     let ensLoaded = ref('')
     let verseBalance = ref(0)
     let verseAllowance = ref(0)
@@ -127,7 +127,7 @@ export default {
         approvalAmount = 3000000000000000000000
       }
 
-      loadingMessage.value = 'waiting for wallet approval..'
+      loadingMessage.value = 'Please confirm the approval in your connected wallet'
       modalLoading.value = true
       const { hash } = await writeContract({
         address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
@@ -138,7 +138,7 @@ export default {
       })
       txHash.value = hash
 
-      loadingMessage.value = 'waiting for transaction to finish..'
+      loadingMessage.value = 'Processing the confirmation. Please wait a moment.'
       await waitForTransaction({ hash })
       getAllowance()
     }
@@ -162,7 +162,7 @@ export default {
         } else {
           giftTicket.value = false
         }
-        loadingMessage.value = 'waiting for wallet approval..'
+        loadingMessage.value = 'Please confirm the purchase in your connected wallet'
         modalLoading.value = true
         let receiver = getAccount().address
         if (_giftAddress && _giftAddress.length > 0) {
@@ -178,7 +178,7 @@ export default {
             args: [receiver]
           })
           txHash.value = hash
-          loadingMessage.value = 'waiting for tx confirmation..'
+          loadingMessage.value = 'Processing the confirmation. Please wait a moment.'
           await waitForTransaction({ hash })
         } else {
           const { hash } = await writeContract({
@@ -190,11 +190,11 @@ export default {
             args: []
           })
           txHash.value = hash
-          loadingMessage.value = 'waiting for tx confirmation..'
+          loadingMessage.value = 'Processing the confirmation. Please wait a moment.'
           await waitForTransaction({ hash })
         }
 
-        loadingMessage.value = 'waiting for tx confirmation'
+        loadingMessage.value = 'Processing the confirmation. Please wait a moment.'
         let timer = 20
         // Create an interval to decrement the timer every second
         const countdown = setInterval(() => {
@@ -410,7 +410,7 @@ export default {
     })
 
     function copyText () {
-      let text = `https://voyager.verse.bitcoin.com/characters?gift=1&address=${giftAddress.value}`
+      let text = `https://voyager.verse.bitcoin.com/voyagers?gift=1&address=${giftAddress.value}`
       navigator.clipboard.writeText(text)
       copyDone.value = true
 
@@ -489,7 +489,7 @@ export default {
     <!-- modal for loading -->
     <div class="modal" v-if="modalLoading">
       <div class="modal-head">
-        <h3 class="title">Loading..</h3>
+        <h3 class="title">Create New Voyager</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
       </div>
       <div class="modal-divider" v-if="buyStep < 3">
@@ -505,10 +505,10 @@ export default {
         <h3 v-if="showTimer" class="title">Payment Successful</h3>
         <a target="_blank" style="color: #0085FF; font-weight: 600;" :href="`https://polygonscan.com/tx/${txHash}`" v-if="txHash && !showTimer">View blockchain transaction</a>
         <p v-if="showTimer && !giftTicket" class="subtext short">
-          Issuing character to your wallet and awaiting final confirmation
+          Assigning Voyager to your wallet and awaiting final confirmation
         </p>
         <p v-if="showTimer && giftTicket" class="subtext short">
-          Issuing character to the chosen wallet and awaiting final confirmation
+          Assigning Voyager to the chosen wallet and awaiting final confirmation
         </p>
 
         <div v-if="showTimer" class="attention-footer">
@@ -586,11 +586,11 @@ export default {
           <h3 class="title">Sign in Success</h3>
           <p class="subtext short">Successfully signed in using Web3!</p>
           <a class="" @click="buyStep = 1"
-            ><button class="btn verse-wide">Create New Character</button></a
+            ><button class="btn verse-wide">Create New Voyager</button></a
           >
-          <a class="" href="/characters"
+          <a class="" href="/voyagers"
             ><button class="btn verse-wide secondary" style="margin-top: 10px">
-              View Characters
+              View Voyagers
             </button></a
           >
         </div>
@@ -601,7 +601,7 @@ export default {
     <div class="modal" v-if="buyStep == 0 && !modalLoading && correctNetwork">
       <div>
         <div class="modal-head">
-          <h3 class="title">Buy Character</h3>
+          <h3 class="title">Create New Voyager</h3>
           <p class="iholder">
             <i @click="toggleModal()" class="close-btn"></i>
           </p>
@@ -633,7 +633,7 @@ export default {
     <div class="modal" v-if="buyStep == 1 && !modalLoading && correctNetwork">
       <div>
         <div class="modal-head">
-          <h3 class="title">Buy Character</h3>
+          <h3 class="title">Create New Voyager</h3>
           <p class="iholder">
             <i @click="toggleModal()" class="close-btn"></i>
           </p>
@@ -645,8 +645,7 @@ export default {
           <div class="img-verse"></div>
           <h3 class="title">Not Enough Verse</h3>
           <p class="subtext short">
-            You need <span>3000 VERSE</span> on Polygon in order to purchase a
-            character
+            You need <span>3000 VERSE</span> on Polygon in order to create a Voyager
           </p>
 
           <div class="wallet-balance">
@@ -656,7 +655,7 @@ export default {
             </p>
           </div>
 
-          <a class="" target="_blank" @click="openBuy"
+          <a class="" target="_blank" href="https://app.1inch.io/#/1/advanced/swap/VERSE"
             ><button class="btn verse-wide half">Buy VERSE</button></a
           >
           <a
@@ -688,7 +687,7 @@ export default {
         <h3 class="title">Approve the use of VERSE</h3>
         <p class="subtext">
           You need to enable the use of at least <span>3000 VERSE</span>. This
-          is used to pay for your ticket.
+          is used to create a new Voyager for you.
         </p>
         <div class="gift-toggle-holder">
           <h3 class="title">Allow for one transaction only</h3>
@@ -714,7 +713,7 @@ export default {
     <!-- purchase modal -->
     <div class="modal" v-if="buyStep == 3 && !modalLoading && correctNetwork">
       <div class="modal-head">
-        <h3 class="title">Buy Character</h3>
+        <h3 class="title">Create New Voyager</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
       </div>
       <div class="modal-divider">
@@ -722,7 +721,7 @@ export default {
       </div>
       <div class="modal-body">
         <div class="img-purchase"></div>
-        <h3 class="title">Buy Character</h3>
+        <h3 class="title">Create New Voyager</h3>
         <p class="subtext">
           It seems you have <span>3000 VERSE</span> in your wallet and contract
           approval has been set!
@@ -820,7 +819,7 @@ export default {
     <!-- normal finish -->
     <div class="modal" v-if="buyStep == 4 && !modalLoading && correctNetwork">
       <div class="modal-head">
-        <h3 class="title">Buy Character</h3>
+        <h3 class="title">Create New Voyager</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
       </div>
       <div class="modal-divider">
@@ -830,7 +829,7 @@ export default {
         <div>
           <div class="img-success"></div>
           <div v-if="giftTicket">
-            <h3 class="title">Character Bought & Gifted!</h3>
+            <h3 class="title">Voyager Gifted!</h3>
             <p class="subtext">
               We have sent the ticket to your specified wallet! Share this link
               with the recipient to let them know:
@@ -839,7 +838,7 @@ export default {
             <input
               class="ticketlink"
               type="text"
-              :value="`https://voyager.verse.bitcoin.com/characters?gift=1&address=${giftAddress}`"
+              :value="`https://voyager.verse.bitcoin.com/voyagers?gift=1&address=${giftAddress}`"
             />
             <button
               style="cursor: pointer"
@@ -863,19 +862,19 @@ export default {
                 Buy Another Character
               </button></a
             >
-            <a class="" href="/characters"
+            <a class="" href="/voyagers"
               ><button class="btn verse-wide half secondary extraTop">
                 View your Characters
               </button></a
             >
           </div>
           <div v-if="!giftTicket">
-            <h3 class="title">Character Bought!</h3>
+            <h3 class="title">Voyager Created!</h3>
             <p class="subtext short" style="margin-bottom: 0">
-              Time to spin the reel and create your Voyager!
+              Time to spin the wheel and build your Verse Voyager
             </p>
             <!-- change this text for gifted tickets -->
-            <a class="" href="/characters"
+            <a class="" href="/voyagers"
               ><button class="btn verse-wide">View your Characters!</button></a
             >
           </div>
@@ -887,63 +886,100 @@ export default {
     <div class="jumbo-mob"></div>
 
     <div class="float-holder clearfix">
-      <div class="card-info">
-        <h2>Verse Voyagers</h2>
-        <h3 class="tit" style="margin-top: 10px; margin-bottom: 20px">
-          On-Chain NFT Builder
-        </h3>
+      <div class="card-info" v-if="!modalActive">
+        <div class="left">
+          <div class="animation">
+            <ul>
+
+                <li class="moving A" style="background-color: #AC92EB"></li>
+                <li class="moving B" style="background-color: #AC92EB"></li>
+                <li class="moving C" style="background-color: #AC92EB"></li>
+                <li class="moving D" style="background-color: #AC92EB"></li>
+                <li class="moving E" style="background-color: #AC92EB"></li>
+
+                <li class="moving A" style="background-color: #AC92EB"></li>
+                <li class="moving B" style="background-color: #AC92EB"></li>
+                <li class="moving C" style="background-color: #AC92EB"></li>
+                <li class="moving D" style="background-color: #AC92EB"></li>
+                <li class="moving E" style="background-color: #AC92EB"></li>
+
+            </ul>
+            <ul>
+
+                <li class="moving F" style="background-color: #AC92EB"></li>
+                <li class="moving G" style="background-color: #AC92EB"></li>
+                <li class="moving H" style="background-color: #AC92EB"></li>
+                <li class="moving I" style="background-color: #AC92EB"></li>
+                <li class="moving J" style="background-color: #AC92EB"></li>
+
+                <li class="moving F" style="background-color: #ED5564"></li>
+                <li class="moving G" style="background-color: #FFCE54"></li>
+                <li class="moving H" style="background-color: #A0D568"></li>
+                <li class="moving I" style="background-color: #4FC1E8"></li>
+                <li class="moving J" style="background-color: #AC92EB"></li>
+            </ul>
+        </div>
+        </div>
+        <div class="right">
+        <div class="bubble">ON-CHAIN NFT BUILDER</div>
+        <h2>VERSE VOYAGERS</h2>
 
         <p
           class="subtitle"
-          style="font-weight: 300; margin-bottom: 20px; padding-left: 0"
+          style="font-weight: 300; color: white;margin-bottom: 20px; padding-left: 0"
         >
-          Are you ready to embark on an exciting journey of creativity and
-          chance? Spin the virtual slot machine to craft your unique character.
-          With over 240 million possible combinations!
+        Spin the virtual slot machine to craft your unique Voyager.
+<br>With more than 240 million combinations available, the <br> possibilities are endless!
         </p>
 
         <button
-          class="btn verse-wide"
+          class="btn verse-wide half"
           v-if="authenticated"
           @click="toggleModal()"
         >
-          Create New Character
+          Create New Voyager
         </button>
-        <a href="/characters" v-if="authenticated"
-          ><button class="btn verse-wide secondary" style="margin-top: 10px">
+        <a href="/voyagers" v-if="authenticated"
+          ><button class="btn verse-wide half secondary" style="margin-top: 10px">
             View Characters
           </button></a
         >
 
         <button
-          class="btn verse-wide"
+          class="btn verse-wide half"
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
-          Create New Character
+          Create New Voyager
         </button>
         <button
-          class="btn verse-wide secondary"
+          class="btn verse-wide half secondary"
           style="margin-top: 10px"
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
-          View Characters
+          Connect Wallet
         </button>
         <a v-if="!authenticated && accountActive" @click="authChallenge()"
-          ><button class="btn verse-wide secondary" style="margin-top: 10px">
+          ><button class="btn verse-wide half secondary adjust" style="margin-top: 10px; ">
             Login with Wallet
             {{ recognizableWalletFormat(getAccount().address) }}
           </button></a
         >
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.adjust {
+  width: 270px;
+  @media(max-width: 880px) {
+    width: 100%;
+  }
+}
 .jumbo-mob {
-  background-image: url('../assets/bg-mobile.png') !important;
   width: 100%;
   height: 500px;
   position: absolute;
@@ -1110,29 +1146,7 @@ iframe {
     position: unset;
   }
 }
-.bubble {
-  @media (max-width: 880px) {
-    width: 41% !important;
-    margin-right: 2% !important;
-  }
-  margin-bottom: 20px;
-  width: 150px;
-  height: 18px;
-  padding: 10px;
-  text-align: center;
-  background-color: #f2f0fe0f;
-  border-radius: 10px;
-  float: left;
-  margin-right: 10px;
-  p {
-    @media (max-width: 880px) {
-      font-size: 11px;
-    }
-    color: white;
-    font-size: 13px;
-    margin: 0;
-  }
-}
+
 .float-holder {
   margin: 0 auto;
   min-height: 100vh; // remove this after
@@ -1209,24 +1223,101 @@ iframe {
     }
   }
 }
+
+
 .card-info {
+  @media(max-width: 880px) {
+    min-height: calc(100vh);
+  }
+  backdrop-filter: blur(5px);
+  .left {
+    background-size: cover;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    height: 288px;
+    background-repeat: no-repeat;
+    @media(max-width: 880px) {
+      height: 400px;
+      width: 100%;
+      left: 0;
+      top: 20px;
+    }
+    width: 35%;
+    left: 30px;
+    top: 0;
+    position: absolute;
+  }
+  .right {
+    @media(max-width: 880px) {
+      width: 100%!important;
+      position: unset;
+      margin-top: 315px;
+    }
+    @media(max-width: 1135px) {
+      left: calc(25% + 70px)!important;
+      width: 60%;
+    }
+    @media(max-width: 1270px) {
+      left: calc(39% + 70px);
+    }
+    text-align: left;
+    width: 50%;
+    position: absolute;
+    left: calc(30% + 70px);
+    top: 0;
+    
+    .bubble {
+      margin-top: 100px;
+      font-weight: 500;
+      width: 200px;
+      border-radius: 20px;
+      font-size: 14px;
+      height: 26px;
+      padding-top: 7px;
+      text-align: center;
+      background: #D43280;
+      color: white;
+      margin-bottom: 20px;
+      @media(max-width: 880px) {
+        margin-left: calc(50% - 90px);
+        
+      }
+    }
+     
+    h2 {
+      text-align: left;
+      font-weight: 800;
+      @media(max-width: 880px) {
+        text-align: center;
+      }
+    }
+  }
+  width: 70%;
+  position: relative;
   padding: 30px;
+  height: 400px;
   z-index: 1;
   padding-top: 80px;
   padding-left: 0;
+  // border: 1px solid grey;
+  background: radial-gradient(260.66% 796.62% at 52.5% 47.5%, #a6112c00 0%, rgba(2, 58, 50, 0) 100%), linear-gradient(0deg, rgba(212, 50, 128, 0.15), rgba(212, 50, 128, 0.15));
+
+  border-radius: 10px;
   float: left;
-  width: 27%;
   margin-left: 15%;
   color: white;
   padding-right: 0;
   @media (max-width: 880px) {
     width: calc(100% - 40px);
+    border: none;
     margin-left: 0;
     padding: 20px;
   }
-  @media (max-width: 500px) {
-    margin-top: 50vh;
-    position: relative;
+
+  a {
+    button {
+      // margin-left: calc(50% - 135px);
+    }
   }
 
   h2 {
@@ -1238,16 +1329,25 @@ iframe {
   }
   p {
     font-weight: 500;
+    @media(max-width: 880px) {
+        text-align: center;
+      }
   }
 }
 .page {
+  margin-top: 70px;
   background-image: url('../assets/bg.png');
   text-align: center;
+  background-size: cover;
+  width: 100%;
+  background-repeat: no-repeat;
   @media (max-width: 880px) {
+    margin-top: 0;
     width: 100%;
-    padding-top: 80px;
-    height: calc(100vh - 50px);
-    height: calc(100dvh - 50px);
+    padding-top: 0px;
+    background-size: cover;
+    height: calc(100vh - 0px);
+    height: calc(100dvh - 0px);
   }
   @media (max-width: 500px) {
     padding-top: 0;
@@ -1256,7 +1356,7 @@ iframe {
   min-height: calc(100vh - 120px);
   min-height: calc(100dvh - 120px);
   width: 100%;
-  padding-top: 150px;
+  padding-top: 120px;
   overflow: unset;
 }
 
@@ -1268,4 +1368,156 @@ h2 {
 .fa-check {
   color: rgb(35, 226, 35);
 }
+
+// animation
+
+@keyframes slideLeft {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(-680px); }
+}
+
+@keyframes slideRight {
+  0% { transform: translateX(-680px); }
+  100% { transform: translateX(0px); }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-780px); }
+}
+
+@keyframes slideDown {
+  0% { transform: translateY(-780px); }
+  100% { transform: translateY(0px); }
+}
+
+.animation {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  // background-color: rgba(0,0,0,0.1);
+}
+
+.animation ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  padding: 12px 0;
+  width: 1360px;
+}
+
+.animation ul:first-child {
+  animation-name: slideLeft;
+  animation-duration: 16s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.animation ul:last-child {
+  animation-name: slideRight;
+  animation-duration: 16s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.animation ul li {
+  list-style: none;
+  display: inline-block;
+  width: 120px;
+  height: 120px;
+  background-color: gray;
+  border-radius: 12px;
+  margin-left: 16px;
+
+  font-size: 60px;
+  line-height: 120px;
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: rgba(0,0,0,0.2);
+}
+
+@media screen and (max-width: 1135px) {
+  .animation ul:last-child {
+      display: none;
+    }
+}
+
+@media screen and (max-width: 879px) {
+  .animation ul:last-child {
+      display: block;
+    }
+}
+
+@media screen and (min-width: 880px) {
+
+    .animation {
+      position: absolute;
+      width: 296px;
+      height: 510px;
+      padding: 0 16px;
+    }
+
+    .animation ul:first-child {
+      animation-name: slideUp;
+    }
+
+    .animation ul:last-child {
+      animation-name: slideDown;
+      position: absolute;
+      right: 16px; top: 0px;
+    }
+
+    .animation ul {
+      flex-direction: column;
+      width: 140px;
+    }
+
+    .animation ul li {
+      width: 140px;
+      height: 140px;
+      margin-left: 0px;
+      margin-bottom: 16px;
+      line-height: 140px;
+    }
+
+
+}
+
+
+.moving {
+      background-size: cover;
+      background-color: none;
+      &.A {
+        background-image: url('../assets/home/A.png');
+      }
+      &.B {
+        background-image: url('../assets/home/B.png');
+      }
+      &.C {
+        background-image: url('../assets/home/C.png');
+      }
+      &.D {
+        background-image: url('../assets/home/D.png');
+      }
+      &.E {
+        background-image: url('../assets/home/E.png');
+      }
+      &.F {
+        background-image: url('../assets/home/F.png');
+      }
+      &.G {
+        background-image: url('../assets/home/G.png');
+      }
+      &.H {
+        background-image: url('../assets/home/H.png');
+      }
+      &.I {
+        background-image: url('../assets/home/I.png');
+      }
+      &.J {
+        background-image: url('../assets/home/J.png');
+      }
+    }
 </style>

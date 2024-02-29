@@ -1,14 +1,17 @@
 <script>
-import { toRefs } from 'vue'
+import { toRefs, computed } from 'vue'
 import {
   getImageUrl,
   getTraitName,
   getTraitRarity
 } from '../helper/traitFinder'
 export default {
-  props: ['slots', 'resultItems', 'step', 'startAnimation'],
+  props: ['slots', 'resultItems', 'step', 'startAnimation', 'animationClass'],
   setup (props) {
-    const { slots, resultItems, step, startAnimation } = toRefs(props)
+    const { slots, resultItems, step, startAnimation, animationClass } = toRefs(props)
+    const spinClass = computed(() => {
+      return startAnimation.value ? {[animationClass.value]: startAnimation.value} : {};
+    })
     return {
       slots,
       resultItems,
@@ -16,14 +19,16 @@ export default {
       startAnimation,
       getImageUrl,
       getTraitRarity,
-      getTraitName
+      getTraitName,
+      spinClass,
+      animationClass,
     }
   }
 }
 </script>
 
 <template>
-  <div id="slot-holder" :class="{ 'spin-anim': startAnimation }">
+  <div id="slot-holder" :class="spinClass">
     <div
       v-for="(slot, index) in slots"
       :key="index"
@@ -36,7 +41,7 @@ export default {
         <div
           :class="'title ' + getTraitRarity(slot.collection, slot.itemIndex)"
         >
-          {{ getTraitName(slot.collection, slot.itemIndex) }}
+        {{ getTraitName(slot.collection, slot.itemIndex) }}
         </div>
       </template>
 
@@ -394,19 +399,21 @@ export default {
 }
 
 .blink {
-  border: 2px solid #13ffb3 !important;
+  border: 4px solid #D43280 !important; 
+  width: 172px!important;
+  border-radius: 3px;
+  height: 172px!important;
   animation: blinker 2s linear infinite;
 }
 
 .slot {
   position: relative;
   z-index: 2;
-  width: 176px;
+  width: 180px;
   flex-shrink: 0;
-  height: 176px;
+  height: 180px;
   background-color: #0f1823;
   margin-bottom: 4px;
-  border: 2px solid #000000;
   float: left;
   // display: inline-block;
   img {
@@ -415,14 +422,16 @@ export default {
   }
 
   .title {
+    // display: none;
     &.common {
-      background-color: rgb(0, 51, 255);
+      background-color: #1e7eb4;
     }
     &.rare {
-      background-color: #a120a8;
+      background-color: #6C43EE;
+;
     }
     &.epic {
-      background-color: #fb0a3e;
+      background-color: #EE3772;
     }
     background-color: rgb(0, 51, 255);
     position: absolute;

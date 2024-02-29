@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "@openzeppelin/merkle-tree": "^1.0.5",
+        "@vueuse/sound": "^2.0.1",
         "@wagmi/core": "^1.4.2",
         "@web3modal/wagmi": "^3.0.0-beta.2",
         "axios": "^1.6.7",

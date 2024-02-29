@@ -308,16 +308,16 @@ export default {
   <div class="page" v-if="!openDetail">
     <div class="head">
       <h2 class="tickhead">
-        My Characters
+        My Voyagers
 
         <a href="/?purchase-intent=true"
           ><button class="btn verse-wide" href="">
-            Create New Character
+            Create New Voyager
           </button></a
         >
       </h2>
       <div class="tickconnect" v-if="!accountActive">
-        Connect your wallet to view your characters.
+        Connect your wallet to view your Voyagers.
       </div>
     </div>
 
@@ -334,7 +334,7 @@ export default {
 
     <div class="tickets" v-if="accountActive && !loading">
       <div v-if="nfts.length == 0">
-        <h3 style="font-size: 18px">No characters in your connected wallet.</h3>
+        <h3 class="no-char-found">No Voyagers found in your connected wallet.</h3>
       </div>
       <div class="ticket" v-for="(item, index) in characterList()">
         <h3 class="title">Voyager #{{ item.id }}</h3>
@@ -367,6 +367,10 @@ export default {
             :src="getImageUrl('extra', item.traits[3])"
             style="position: absolute; left: 0"
           />
+          <img v-if="item.traits.length == 7"
+            :src="getImageUrl('badge', item.traits[6])"
+            style="position: absolute; left: 0"
+          />
         </div>
 
         <button
@@ -388,7 +392,14 @@ export default {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.no-char-found {
+  font-size: 15px; 
+  padding-left: 0;
+  @media(max-width: 880px) {
+  padding-left: 15px;
+  }
+}
 .wrongNetworkWarning {
   @media (max-width: 880px) {
     font-size: 13px;
@@ -411,6 +422,8 @@ export default {
 }
 
 .char {
+  background-color: black;
+  border-radius: 28px;
   width: 260px;
   height: 260px;
   position: relative;
@@ -584,7 +597,10 @@ div.tickets {
   color: white;
 }
 .page {
-  background-image: url('../assets/bg-blur-dark.png');
+  background: rgba(0, 0, 0, .65) url('../assets/bg.png');
+  background-blend-mode: darken;
+  background-position-y: 70px;
+  background-position-x: -300px;
   background-size: cover;
   width: 100%;
   padding-top: 100px;
@@ -593,6 +609,8 @@ div.tickets {
   overflow: hidden;
   @media (max-width: 880px) {
     padding-top: 16px;
+    background-position-x: -762px;
+    background-position-y: 0;
   }
   @media (max-width: 500px) {
     padding-top: 16px;

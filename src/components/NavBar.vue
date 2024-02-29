@@ -40,7 +40,7 @@ export default {
             }
             console.log(window.location.search.indexOf('?tokenId=') != -1)
             if(window.location.search.indexOf('?tokenId=') != -1) {
-                openUrl("/characters")
+                openUrl("/voyagers")
                 return
             }
             else if(window.location.pathname == '/') {
