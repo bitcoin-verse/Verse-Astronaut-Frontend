@@ -1166,8 +1166,8 @@ export default {
         >
           Review Traits
         </button>
-        <p v-if="!spinLoading && step < 7" style="margin-bottom: 0; font-size: 14px; font-weight: 500; color: #899BB5;" >trait <span style="color: white">{{step}}</span> out of 6 </p>
-        <p class="blink no-border" v-if="spinLoading && step < 7" style="position: relative; margin-left: 20px; margin-bottom: 0; font-size: 14px; font-weight: 500; color: #D43280;"><i class="lock-mini"></i> unlocking trait </p>
+        <p v-if="!spinLoading && step < 7" style="margin-bottom: 0; font-size: 14px; font-weight: 500; color: #899BB5;" >Trait <span style="color: white">{{step}}</span> out of 6 </p>
+        <p class="blink no-border" v-if="spinLoading && step < 7" style="position: relative; margin-left: 20px; margin-bottom: 0; font-size: 14px; font-weight: 500; color: #D43280;"><i class="lock-mini"></i> Unlocking Trait </p>
       </div>
     </div>
     </div>

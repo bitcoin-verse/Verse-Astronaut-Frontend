@@ -382,7 +382,7 @@ export default {
         </button>
         <button
           v-if="!item.opened"
-          class="btn-action main"
+          class="btn-action main create"
           @click="openReel(item)"
         >
           Create Character
@@ -470,6 +470,9 @@ export default {
   font-size: 15px;
   padding: 13px 25px;
   font-weight: 600;
+  &.create {
+    background: linear-gradient(180deg, #0ebef0 0%, #0085ff 100%)!important;
+  }
 
   &.main {
     width: 100%;

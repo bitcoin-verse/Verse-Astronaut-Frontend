@@ -121,7 +121,8 @@ export default {
     }
 
     async function approve () {
-      txHash.value = ""
+      try {
+       txHash.value = ""
       let approvalAmount = 30000000000000000000000000000
       if (singleTransactionApproval.value == true) {
         approvalAmount = 3000000000000000000000
@@ -141,6 +142,9 @@ export default {
       loadingMessage.value = 'Processing the confirmation. Please wait a moment.'
       await waitForTransaction({ hash })
       getAllowance()
+      } catch (e) {
+        modalLoading.value = false
+      }
     }
 
     function toggleModal () {
