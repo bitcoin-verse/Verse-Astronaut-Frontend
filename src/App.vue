@@ -19,19 +19,10 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [polygon],
   [
     jsonRpcProvider({
-      rpc: chain => {
-        switch (chain.id) {
-          case 137:
-            return {
+      rpc: () => {
+        return {
               http: 'https://polygon-mainnet.g.alchemy.com/v2/FoEnISGWHrxYu6AJLkkX3IY6nYMkkt2S',
               webSocket: 'wss://polygon-mainnet.g.alchemy.com/v2/FoEnISGWHrxYu6AJLkkX3IY6nYMkkt2S'
-            }
-          case 1:
-          default:
-            return {
-              http: 'https://eth.llamarpc.com',
-              webSocket: 'wss://eth.llamarpc.com'
-            }
         }
       }
     })
