@@ -419,7 +419,7 @@ export default {
     })
 
     function copyText () {
-      let text = `https://voyager.verse.bitcoin.com/voyagers?gift=1&address=${giftAddress.value}`
+      let text = `https://dev.voyager.verse.bitcoin.com/voyagers?gift=1&address=${giftAddress.value}`
       navigator.clipboard.writeText(text)
       copyDone.value = true
 
@@ -855,7 +855,7 @@ export default {
               class="btn-copy"
               @click="() => copyText()"
             >
-              copy
+              Copy Link <i class="fa fa-copy" style="margin-left: 10px;"></i>
             </button>
             <button
               style="cursor: pointer"
@@ -863,7 +863,7 @@ export default {
               class="btn-copy"
               @click="() => copyText()"
             >
-              copied
+              Link Copied!
             </button>
             <!-- change this text for gifted characters -->
             <a class="" href="/"
@@ -1023,18 +1023,20 @@ iframe {
   width: 205% !important;
 }
 .btn-copy {
-  height: 24px;
-  position: absolute;
-
-  width: 55px;
+  width: 100%;
+  height: 48px;
   border: none;
   right: 40px;
-  top: 368px;
-  font-size: 12px;
+  font-size: 15px;
   color: white;
-  background: linear-gradient(180deg, #0ebef0 0%, #0085ff 100%);
   padding: 0px, 12px, 0px, 12px;
-  border-radius: 100px;
+  border-radius: 12px;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
+  margin-top: 0px;
+  color: white;
+  background: none;
+  margin-bottom: 10px;
 }
 .ticketlink {
   height: 46px;

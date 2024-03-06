@@ -125,12 +125,12 @@ const showNavBar = computed(() => route.name !== 'reel');
       bottom: 48px;
     }
   }
-  &.extraTop {
-    margin-top: 120px;
-  }
-  &.extraTopMobile {
-    margin-top: 120px !important;
-  }
+  // &.extraTop {
+  //   margin-top: 120px;
+  // }
+  // &.extraTopMobile {
+  //   margin-top: 120px !important;
+  // }
   &.half {
     width: 222px;
     margin-left: 8px;
