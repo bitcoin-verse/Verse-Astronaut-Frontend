@@ -711,7 +711,7 @@ export default {
           <h4 class='trait-rarity epic'><div class="spot"></div> <p>epic</p></h4>
          </div>
 
-         <div>
+         <div style="margin-bottom: 100px">
           <button id="spinButton" @click="resetRespin()" style="width: 100%; margin-top: 10px; position: relative">
             Re-Spin a Trait
           </button>
@@ -750,7 +750,7 @@ export default {
       <div class="modal-divider">
         <div class="modal-progress p50"></div>
       </div>
-      <div class="modal-body clearfix" style="height: unset;">
+      <div class="modal-body clearfix respinner">
         <div class="left-respin">
           <div class="char respin">
             <img
@@ -1200,6 +1200,13 @@ i.lock-mini {
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center center !important;
+}
+
+.respinner {
+  height: unset;
+  @media(max-width: 880px) {
+    height: calc(100dvh - 180px);
+  }
 }
 
 .title-p {
@@ -1778,11 +1785,11 @@ i.share-icn {
     }
 
     @media (max-height: 800px) {
-      top: 100px;
+      top: 0px;
     }
 
     @media (max-height: 600px) {
-      top: 55px !important;
+      top: 0px!important;
     }
 
     box-shadow: 0 0 20px rgba(17, 17, 29, 0.7);

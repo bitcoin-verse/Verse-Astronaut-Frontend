@@ -379,6 +379,9 @@ i.close-btn {
         width:90%!important;
         z-index: 100!important;
         left: 0!important;
+        overflow: auto;
+        height: 100dvh;
+        height: 100vh;
       }
     }
     @media (max-width: 880px) {
@@ -440,6 +443,9 @@ i.close-btn {
       position: relative;
       @media (max-width: 880px) {
         padding: 24px;
+        height: calc(100vh - 150px);
+        height: calc(100dvh - 150px);
+        overflow: auto;
       }
 
       &.short {
@@ -473,7 +479,7 @@ i.close-btn {
       }
       .modal-footer {
         @media (max-width: 880px) {
-          position: fixed;
+          position: unset;
           padding-left: 24px;
           padding-right: 24px;
           width: calc(100% - 48px);

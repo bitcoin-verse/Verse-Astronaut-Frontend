@@ -311,7 +311,7 @@ export default {
         My Voyagers
 
         <a href="/?purchase-intent=true"
-          ><button class="btn verse-wide" href="">
+          ><button class="btn verse-wide hidden-mobile" href="">
             Create New Voyager
           </button></a
         >
@@ -393,6 +393,11 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.hidden-mobile {
+  @media(max-width: 880px) {
+    display: none;
+  }
+}
 .no-char-found {
   font-size: 15px; 
   padding-left: 0;
@@ -570,6 +575,8 @@ div.tickets {
     width: calc(100% - 10px);
     display: inline-block;
     padding-left: 10px;
+    height: calc(100dvh - 50px);
+    padding-bottom: 50px;
     padding-top: 20px;
     margin-bottom: 200px !important;
   }
@@ -612,6 +619,7 @@ div.tickets {
   overflow: hidden;
   @media (max-width: 880px) {
     padding-top: 16px;
+    overflow: auto;
     background-position-x: -762px;
     background-position-y: 0;
   }

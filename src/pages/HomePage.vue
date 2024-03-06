@@ -1237,6 +1237,7 @@ iframe {
 .card-info {
   @media(max-width: 880px) {
     min-height: calc(100vh);
+    height: unset!important;
   }
   backdrop-filter: blur(5px);
   .left {
@@ -1261,6 +1262,7 @@ iframe {
       width: 100%!important;
       position: unset;
       margin-top: 315px;
+      padding-bottom: 60px;
     }
     @media(max-width: 1135px) {
       left: calc(25% + 70px)!important;
