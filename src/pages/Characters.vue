@@ -315,6 +315,11 @@ export default {
             Create New Voyager
           </button></a
         >
+        <a href="/?purchase-intent=true"
+          ><button class="btn verse-wide hidden-desktop" style="width: 55px;" href="">
+             <i class="fa fa-plus"></i>
+          </button></a
+        >
       </h2>
       <div class="tickconnect" v-if="!accountActive">
         Connect your wallet to view your Voyagers.
@@ -395,6 +400,12 @@ export default {
 <style lang="scss" scoped>
 .hidden-mobile {
   @media(max-width: 880px) {
+    display: none;
+  }
+}
+
+.hidden-desktop {
+  @media(min-width: 879px) {
     display: none;
   }
 }
@@ -516,7 +527,7 @@ export default {
     @media (max-width: 880px) {
       // top: -25px;
       top: 65px;
-      right: 24px;
+      right: 15px;
     }
   }
 }
@@ -575,7 +586,7 @@ div.tickets {
     width: calc(100% - 10px);
     display: inline-block;
     padding-left: 10px;
-    height: calc(100dvh - 50px);
+    height: calc(100dvh - 200px);
     padding-bottom: 50px;
     padding-top: 20px;
     margin-bottom: 200px !important;
@@ -619,7 +630,7 @@ div.tickets {
   overflow: hidden;
   @media (max-width: 880px) {
     padding-top: 16px;
-    overflow: auto;
+    // overflow: auto;
     background-position-x: -762px;
     background-position-y: 0;
   }
