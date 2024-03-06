@@ -1290,7 +1290,7 @@ iframe {
       color: white;
       margin-bottom: 20px;
       @media(max-width: 880px) {
-        margin-left: calc(50% - 90px);
+        margin-left: calc(50% - 100px);
         
       }
     }
