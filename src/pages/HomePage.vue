@@ -260,6 +260,7 @@ export default {
           args: [getAccount().address]
         })
 
+   
         if (data) {
           let dataString = data.toString()
           verseBalance.value = parseFloat(dataString) / Math.pow(10, 18)
@@ -268,6 +269,10 @@ export default {
             getAllowance()
           }
           modalLoading.value = false
+        } else {
+          verseBalance.value = 0;
+          modalLoading.value = false
+
         }
       } catch (e) {
         console.log(e)
