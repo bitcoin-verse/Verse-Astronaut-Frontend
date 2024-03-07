@@ -232,7 +232,6 @@ export default {
           functionName: 'allowance',
           args: [getAccount().address, contractAddress]
         })
-        modalLoading.value = false
 
         /// step 2, check allowance
         if (data) {
@@ -243,6 +242,9 @@ export default {
           if (verseBalance.value >= 3000 && verseAllowance.value >=3000 && buyStep.value < 3) {
             buyStep.value = 3
           }
+          modalLoading.value = false
+        } else {
+          modalLoading.value = false
         }
       } catch (e) {
         console.log(e)
@@ -267,8 +269,9 @@ export default {
           if (verseBalance.value >= 3000 && buyStep.value < 2) {
             buyStep.value = 2
             getAllowance()
+          } else {
+            modalLoading.value = false
           }
-          modalLoading.value = false
         } else {
           verseBalance.value = 0;
           modalLoading.value = false
@@ -738,7 +741,7 @@ export default {
         <div class="gift-toggle-holder" :class="{ opened: giftTicket }">
           <h3 class="title">Send character as gift?</h3>
           <label class="switch">
-            <input type="checkbox" v-on:change="toggleGift" />
+            <input type="checkbox" v-on:change="toggleGift" :checked="giftTicket" />
             <span class="slider round"></span>
           </label>
         </div>

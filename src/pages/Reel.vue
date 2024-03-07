@@ -711,7 +711,7 @@ export default {
           <h4 class='trait-rarity epic'><div class="spot"></div> <p>epic</p></h4>
          </div>
 
-         <div style="margin-bottom: 100px">
+         <div class="mobile-margin-bottom">
           <button id="spinButton" @click="resetRespin()" style="width: 100%; margin-top: 10px; position: relative">
             Re-Spin a Trait
           </button>
@@ -1203,9 +1203,9 @@ i.lock-mini {
 }
 
 .respinner {
-  height: unset;
+  height: 470px!important;
   @media(max-width: 880px) {
-    height: calc(100dvh - 180px);
+    height: calc(100dvh - 180px)!important;
   }
 }
 
@@ -1270,6 +1270,13 @@ i.download-icn {
   position: absolute;
   right: 108px;
   top: 0px;
+}
+
+.mobile-margin-bottom {
+  margin-bottom: 0;
+  @media(max-width: 880px) {
+    margin-bottom: 100px;
+  }
 }
 
 i.share-icn {
@@ -1966,6 +1973,7 @@ i.share-icn {
   }
   &.respin {
     margin: 0;
+    height: 300px;
     width: 300px;
   }
   img {
