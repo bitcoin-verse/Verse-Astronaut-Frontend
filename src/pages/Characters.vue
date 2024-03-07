@@ -285,7 +285,7 @@ export default {
         <h3 class="title">Voyager Gift Received!</h3>
         <p class="subtext">
           Somebody has sent a free voyager spin to you. Use it to roll a unique
-          character <br /><br />No transaction needed to create a character.
+          voyager <br /><br />No transaction needed to create a voyager.
           Connect your account (<span> {{ giftAccount.slice(0, 7) }}..</span>)
           to redeem the ticket.
         </p>
@@ -316,8 +316,8 @@ export default {
           </button></a
         >
         <a href="/?purchase-intent=true"
-          ><button class="btn verse-wide hidden-desktop" style="width: 55px;" href="">
-             <i class="fa fa-plus"></i>
+          ><button class="btn verse-wide hidden-desktop create-intent" href="">
+             <!-- <i class="fa fa-plus"></i> -->Create New Voyager
           </button></a
         >
       </h2>
@@ -325,8 +325,8 @@ export default {
         Connect your wallet to view your Voyagers.
       </div>
     </div>
-
-    <div class="tickets" v-if="accountActive && loading">
+    <div class="ticket-wrapper">
+      <div class="tickets" v-if="accountActive && loading" style="width: 100%">
       <div class="spin">
         <div class="lds-ring">
           <div></div>
@@ -336,7 +336,6 @@ export default {
         </div>
       </div>
     </div>
-
     <div class="tickets" v-if="accountActive && !loading">
       <div v-if="nfts.length == 0">
         <h3 class="no-char-found">No Voyagers found in your connected wallet.</h3>
@@ -345,7 +344,7 @@ export default {
         <h3 class="title">Voyager #{{ item.id }}</h3>
         <!-- <img :src="`src/assets/gift.jpg`" v-if="!item.opened"> -->
         <div v-if="!item.opened" class="char">
-          <img src="../assets/unrevealed.png" />
+          <img src="../assets/unrevealed.png" style="box-shadow: 0px 0px 10px 0px #0085FF"/>
         </div>
         <div v-if="item.opened && item.traits" class="char">
           <img
@@ -383,21 +382,41 @@ export default {
           class="btn-action main secondary"
           @click="openReel(item, true)"
         >
-          View Character
+          View Voyager
         </button>
         <button
           v-if="!item.opened"
           class="btn-action main create"
           @click="openReel(item)"
         >
-          Create Character
+          Create Voyager
         </button>
       </div>
+    </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.ticket-wrapper {
+  @media(max-width: 880px) {
+    overflow: auto;
+    width: 100%;
+    height: 900px;
+  }
+}
+.create-intent {
+  position: static!important;
+  float: right!important;
+  width: 125px!important;
+  font-size: 12px!important;
+  right: 10px!important;
+  top: 70px!important;
+  margin-right: 20px!important;
+  margin-top: 0!important;
+  height: 32px!important;
+  padding: 5px 5px!important;
+}
 .hidden-mobile {
   @media(max-width: 880px) {
     display: none;
@@ -583,23 +602,24 @@ div.tickets {
   height: 75vh;
   padding-top: 20px;
   @media (max-width: 880px) {
-    width: calc(100% - 10px);
+    width: max-content;
     display: inline-block;
-    padding-left: 10px;
-    height: calc(100dvh - 200px);
+    padding-left: 25px;
+    height: 400px!important;
     padding-bottom: 50px;
     padding-top: 20px;
     margin-bottom: 200px !important;
   }
   h3 {
-    font-weight: 400;
+    font-weight: 600;
     color: white;
     margin-bottom: 20px;
   }
   .ticket {
     @media (max-width: 880px) {
-      width: 90%;
-      margin-left: 3%;
+      width: 280px;
+      height: 280px;
+      float: left;
     }
     position: static;
     color: white;
@@ -618,6 +638,10 @@ div.tickets {
   color: white;
 }
 .page {
+  @media(max-width: 880px) {
+    background: linear-gradient(180deg, #152334 0%, #030C14 100%);
+    overflow: auto;
+  }
   background: rgba(0, 0, 0, .65) url('../assets/bg.png');
   background-blend-mode: darken;
   background-position-y: 70px;
