@@ -408,7 +408,7 @@ export default {
 .create-intent {
   position: static!important;
   float: right!important;
-  width: 125px!important;
+  width: 140px!important;
   font-size: 12px!important;
   right: 10px!important;
   top: 70px!important;
