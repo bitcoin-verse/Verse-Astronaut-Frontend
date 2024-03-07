@@ -739,7 +739,7 @@ export default {
           approval has been set!
         </p>
         <div class="gift-toggle-holder" :class="{ opened: giftTicket }">
-          <h3 class="title">Send character as gift?</h3>
+          <h3 class="title">Send voyager as gift?</h3>
           <label class="switch">
             <input type="checkbox" v-on:change="toggleGift" :checked="giftTicket" />
             <span class="slider round"></span>
@@ -785,7 +785,7 @@ export default {
 
         <div v-if="!giftTicket">
           <a class="" target="_blank" @click="purchaseTicket()"
-            ><button class="btn verse-wide">Buy a Character</button></a
+            ><button class="btn verse-wide">Buy a Voyager</button></a
           >
         </div>
 
@@ -805,7 +805,7 @@ export default {
             v-if="
               giftTicket && ticketInputValid && ticketInputAddress.length > 0
             "
-            ><button class="btn verse-wide">Buy a Character</button></a
+            ><button class="btn verse-wide">Buy a Voyager</button></a
           >
           <a
             class=""
@@ -871,12 +871,12 @@ export default {
             <!-- change this text for gifted characters -->
             <a class="" href="/"
               ><button class="btn verse-wide half extraTop extraTopMobile">
-                Buy Another Character
+                Buy Another Voyager
               </button></a
             >
             <a class="" href="/voyagers"
               ><button class="btn verse-wide half secondary extraTop">
-                View your Characters
+                View your Voyagers
               </button></a
             >
           </div>
@@ -887,7 +887,7 @@ export default {
             </p>
             <!-- change this text for gifted tickets -->
             <a class="" href="/voyagers"
-              ><button class="btn verse-wide">View your Characters!</button></a
+              ><button class="btn verse-wide">View your Voyagers!</button></a
             >
           </div>
         </div>

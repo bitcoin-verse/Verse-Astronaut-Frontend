@@ -32,9 +32,9 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 const metadata = {
   name: 'VERSE Voyagers',
   description:
-    'Embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique character. With over 240 million possible combinations, the possibilities are endless!',
-  url: 'https://nft.verse.bitcoin.com',
-  icons: ['https://nft.verse.bitcoin.com/icon.png']
+    'Embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique voyager. With over 240 million possible combinations, the possibilities are endless!',
+  url: 'https://voyager.verse.bitcoin.com',
+  icons: ['https://voyager.verse.bitcoin.com/icon.png']
 }
 
 let isWallet = false
