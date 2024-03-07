@@ -739,7 +739,7 @@ export default {
           approval has been set!
         </p>
         <div class="gift-toggle-holder" :class="{ opened: giftTicket }">
-          <h3 class="title">Send voyager as gift?</h3>
+          <h3 class="title">Send Voyager as gift?</h3>
           <label class="switch">
             <input type="checkbox" v-on:change="toggleGift" :checked="giftTicket" />
             <span class="slider round"></span>
@@ -953,7 +953,7 @@ export default {
         </button>
         <a href="/voyagers" v-if="authenticated"
           ><button class="btn verse-wide half secondary" style="margin-top: 10px">
-            View Characters
+            View Voyagers
           </button></a
         >
 
