@@ -876,7 +876,7 @@ export default {
             >
             <a class="" href="/voyagers"
               ><button class="btn verse-wide half secondary extraTop">
-                View your Voyagers
+                View your Voyager
               </button></a
             >
           </div>
@@ -887,7 +887,7 @@ export default {
             </p>
             <!-- change this text for gifted tickets -->
             <a class="" href="/voyagers"
-              ><button class="btn verse-wide">View your Voyagers!</button></a
+              ><button class="btn verse-wide">View your Voyager!</button></a
             >
           </div>
         </div>

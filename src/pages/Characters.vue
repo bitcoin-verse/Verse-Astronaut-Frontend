@@ -101,6 +101,8 @@ export default {
       }
     })
 
+
+
     function openDetailScreen (id) {
       detailNFT.value = nfts.value.find(obj => obj.id === id)
       openDetail.value = true
@@ -265,7 +267,7 @@ export default {
       openDetailScreen,
       closeDetailScreen,
       detailNFT,
-      openReel
+      openReel,
     }
   }
 }
@@ -273,6 +275,8 @@ export default {
 
 <template>
   <div class="backdrop" v-if="claimActive || giftModal">
+
+    
     <!-- gift-->
     <div class="modal" v-if="giftModal">
       <div class="modal-head">

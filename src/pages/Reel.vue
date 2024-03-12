@@ -20,6 +20,7 @@ export default {
   setup () {
     let traitReroll = ref(2)
     let initialSlots = ref([])
+    let socialModal = ref(true)
     let spinLoading = ref(false)
     let prepNextFrame = ref(false)
     let slots = ref([])
@@ -35,6 +36,7 @@ export default {
     let resultItems = ref([])
     let rerollLoading = ref(false) // false
     let verseAllowance = ref(0)
+    let verseBalance = ref(0)
     let rerollLoadingMessage = ref('')
     let rerollStep = ref(1)
     let accountActive = ref(false)
@@ -125,10 +127,14 @@ export default {
       rerollValue.value = rerollArray[trait]
     }
 
+    function toggleSocial () {
+      socialModal.value = !socialModal.value
+    }
+
     async function getRerollCost (id) {
       try {
         rerollLoading.value = true
-        rerollLoadingMessage.value = 'getting next reroll cost'
+        rerollLoadingMessage.value = 'Retrieving next reroll cost'
         const data = await readContract({
           address: GLOBALS.NFT_ADDRESS,
           abi: contract,
@@ -158,9 +164,36 @@ export default {
       }
     }
 
+    async function getBalance () {
+      try {
+        // step 1, check balance of Verse token
+        rerollLoadingMessage.value = 'Retrieving account balance'
+        rerollLoading.value = true
+        const data = await readContract({
+          address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
+          abi: ERC20ABI,
+          functionName: 'balanceOf',
+          args: [getAccount().address]
+        })
+
+        if (data) {
+          let dataString = data.toString()
+          verseBalance.value = parseFloat(dataString) / Math.pow(10, 18)
+          rerollLoading.value = false
+        } else {
+          verseBalance.value = 0;
+          rerollLoading.value = false
+
+        }
+      } catch (e) {
+        console.log(e)
+        rerollLoading.value = false
+      }
+    }
+
     async function getAllowance () {
       try {
-        rerollLoadingMessage.value = 'getting contract allowance'
+        rerollLoadingMessage.value = 'Retrieving contract allowance'
         rerollLoading.value = true
         const data = await readContract({
           address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
@@ -327,6 +360,7 @@ export default {
     async function toggleModal () {
       modalActive.value = !modalActive.value
       await getAllowance()
+      await getBalance()
       await getRerollCost(nftId.value)
     }
 
@@ -501,6 +535,7 @@ export default {
     return {
       playSfxSpin,
       playSfxTada,
+      verseBalance, 
       stopSfxSpin,
       resultItems,
       collections,
@@ -541,15 +576,37 @@ export default {
       startAnimation,
       txHash,
       resetRespin,
+      socialModal,
+      toggleSocial
     }
   }
 }
 </script>
 
 <template>
+
+  <div class="backdrop" v-if="socialModal">
+    <!-- social -->
+    <div class="modal" style="padding: 0" v-if="socialModal && !modalActive">
+      <div class="modal-head">
+        <h3 class="title" style="text-align: left;">Share your Voyager</h3>
+        <div class="modal-divider">
+        <div class="modal-progress p25"></div>
+        </div>
+        <p class="iholder">
+          <i @click="toggleSocial()" class="close-btn"></i>
+        </p>
+      </div>
+      <div class="modal-body short" style="padding-bottom: 20px!important;"> 
+        <a class="" target="_blank"><button class="btn verse-wide" style="margin-top: 0; background: black; border: 1px solid white;">Share on X</button></a>
+      </div>
+    </div> 
+  </div>
   <div class="backdrop" v-if="modalActive">
+
+
         <!-- reroll overview -->
-      <div class="modal summary" v-if="rerollStep == 71 && rerollLoading == false">
+      <div class="modal summary" v-if="rerollStep == 71 && modalActive &&  rerollLoading == false">
       <div class="char mini">
             <img v-if="currentRespinCollection != 'background'"
               :src="getImageUrl('background', resultItems[5])"
@@ -695,7 +752,7 @@ export default {
                 <td class="value">{{ getTraitName('back', resultItems[4])}} <div :class="'dot ' + getTraitRarity('back', resultItems[4])"></div></td>
               </tr>
               <tr>
-                <td class="key">Backdrop</td>
+                <td class="key">Wallpaper</td>
                 <td class="value">{{ getTraitName('background', resultItems[5])}} <div :class="'dot ' + getTraitRarity('background', resultItems[5])"></div></td>
               </tr>
               <tr v-if="resultItems.length == 7">
@@ -838,11 +895,20 @@ export default {
         <div>
           
         </div>
-        <div class="clearfix" style="margin-top: 325px;">
-          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white; margin-top: 0;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
-          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white; margin-top: 0;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
+
+        <div class="clearfix" style="margin-top: 340px;">
+          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white; margin-top: 15px;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
+          <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white; margin-top: 15px;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
           <button
-          v-if="allowanceRequestNeeded == false"
+          v-if="rerollCost > verseBalance"
+          id="spinButton" class="disabled-bal"
+          style="margin-top: 0px; width: 80%"
+        >
+          Not Enough Verse in Wallet
+        </button>
+          
+          <button
+          v-if="allowanceRequestNeeded == false && rerollCost <= verseBalance"
           id="spinButton"
           @click="reroll(traitReroll)"
           style="margin-top: 0px; width: 80%"
@@ -851,7 +917,7 @@ export default {
         </button>
 
         <button
-          v-if="allowanceRequestNeeded == true"
+          v-if="allowanceRequestNeeded == true && rerollCost <= verseBalance"
           id="spinButton"
           @click="rerollStep = 4"
           style="margin-top: 0px; width: 80%"
@@ -991,8 +1057,8 @@ export default {
         />
       </div>
 
-      <div class="social-holder">
-        <a class="share" href=""><i class="share-icn"></i>Share</a>
+      <div class="social-holder" style="padding-left: 25px;">
+        <!-- <a class="share" style="cursor: pointer;" @click="toggleSocial()"><i class="share-icn"></i>Share</a> -->
         <a class="download" target="_blank" :href="`https://versevoyagers.s3.us-west-1.amazonaws.com/${nftId}/${GLOBALS.NFT_ADDRESS}.jpg`" download><i class="download-icn"></i>Download Image</a>
       </div>
     </div>
@@ -1041,7 +1107,7 @@ export default {
           <h4 :class="'trait-rarity ' + getTraitRarity('back', resultItems[4]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('back', resultItems[4]))}}</p></h4>
       </div>
       <div class="trait no-margin-right">
-          <h3 class="trait-title">BACKDROP</h3>
+          <h3 class="trait-title">WALLPAPER</h3>
           <h4 :class="getTraitName('background', resultItems[5]) == 'None' ? 'trait-name disabled' : 'trait-name' ">{{ getTraitName('background', resultItems[5]) }}</h4>
           <h4 :class="'trait-rarity ' + getTraitRarity('background', resultItems[5]) " ><div class="spot"></div><p>{{capitalize(getTraitRarity('background', resultItems[5]))}}</p></h4>
       </div>
@@ -1175,6 +1241,10 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.disabled-bal {
+  background: grey!important;
+}
+
 i.lock-mini {
   background-image: url('../assets/lock-mini.png');
   width: 11.10px;
