@@ -13,7 +13,7 @@ import { InjectedConnector } from '@wagmi/connectors/injected'
 import { CoinbaseWalletConnector } from '@wagmi/connectors/coinbaseWallet'
 import { createWeb3Modal } from '@web3modal/wagmi/vue'
 
-const projectId = 'b30bc40c0cdef6000cd5066be1febf74'
+const projectId = '25cdcfa92d5dc817ebb3f05d1cccf17b'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [polygon],
