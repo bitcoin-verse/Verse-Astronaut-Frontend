@@ -20,7 +20,7 @@ export default {
   setup () {
     let traitReroll = ref(2)
     let initialSlots = ref([])
-    let socialModal = ref(true)
+    let socialModal = ref(false)
     let spinLoading = ref(false)
     let prepNextFrame = ref(false)
     let slots = ref([])
@@ -311,7 +311,7 @@ export default {
 
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
-      updateMetaData(nftId.value)
+      // updateMetaData(nftId.value)
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false

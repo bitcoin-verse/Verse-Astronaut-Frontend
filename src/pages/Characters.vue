@@ -245,6 +245,7 @@ export default {
     }
 
     return {
+      GLOBALS,
       list,
       nfts,
       account,
@@ -315,11 +316,13 @@ export default {
         My Voyagers
 
         <a href="/?purchase-intent=true"
+          v-if="GLOBALS.SALE_ENABLED == 'TRUE'"
           ><button class="btn verse-wide hidden-mobile" href="">
             Create New Voyager
           </button></a
         >
         <a href="/?purchase-intent=true"
+          v-if="GLOBALS.SALE_ENABLED == 'TRUE'"
           ><button class="btn verse-wide hidden-desktop create-intent" href="">
              <!-- <i class="fa fa-plus"></i> -->Create New Voyager
           </button></a

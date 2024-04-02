@@ -286,6 +286,11 @@ export default {
     const continueWithAccount = () => {
       accountActive.value = true
 
+      if(GLOBALS.SALE_ENABLED == "FALSE") {
+        // sale not yet enabled, hide modal
+        modalActive.value = false
+      }
+
       if (buyStep.value == 100) {
         modalLoading.value = true
         buyStep.value = 1
@@ -444,6 +449,7 @@ export default {
 
     return {
       getBalance,
+      GLOBALS,
       connectAndClose,
       account,
       buyStep,
@@ -597,8 +603,11 @@ export default {
           <div class="img-wallet"></div>
           <h3 class="title">Sign in Success</h3>
           <p class="subtext short">Successfully signed in using Web3!</p>
-          <a class="" @click="buyStep = 1"
+          <a class="" @click="buyStep = 1" v-if="GLOBALS.SALE_ENABLED == 'TRUE'"
             ><button class="btn verse-wide">Create New Voyager</button></a
+          >
+          <a class="" @click="buyStep = 1" v-if="GLOBALS.SALE_ENABLED == 'FALSE'"
+            ><button class="btn verse-wide">Mint Voyager (Phase 2)</button></a
           >
           <a class="" href="/voyagers"
             ><button class="btn verse-wide secondary" style="margin-top: 10px">
@@ -944,15 +953,27 @@ export default {
 <br>With more than 240 million combinations available, the <br> possibilities are endless!
         </p>
 
-        <button
+        <div v-if="GLOBALS.SALE_ENABLED == 'FALSE'">
+          <p style="font-weight: 300"><strong>Phase 1</strong> <button class="btn-active" style="background-color: #0085ff;">Now</button> <br/>Airdrop to Verse Lounge members, pre-sale participants and VIPs</p>
+          <p style="font-weight: 300"><strong>Phase 2</strong><button class="btn-active" style="background-color: #425472;">April 25</button>  <br/>Public Access - Mint Enabled </p>
+        </div>
+
+        <button 
+          class="btn verse-wide half" style="font-size: 15px; margin-left: 0;"
+          v-if="authenticated && GLOBALS.SALE_ENABLED == 'FALSE'"
+        >
+          Mint Voyager (Coming Soon)
+        </button>
+
+        <button 
           class="btn verse-wide half"
-          v-if="authenticated"
+          v-if="authenticated && GLOBALS.SALE_ENABLED == 'TRUE'"
           @click="toggleModal()"
         >
           Create New Voyager
         </button>
         <a href="/voyagers" v-if="authenticated"
-          ><button class="btn verse-wide half secondary" style="margin-top: 10px">
+          ><button class="btn verse-wide half secondary" style="margin-left: 0; margin-top: 10px">
             View Voyagers
           </button></a
         >
@@ -985,6 +1006,16 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.btn-active {
+  border: none;
+  background-color: #3da10d;
+  padding: 3px 8px;
+  color: white;
+  border-radius: 10px;
+  position: relative;
+  left: 5px;
+  top: -1px;
+}
 .adjust {
   width: 270px;
   @media(max-width: 880px) {
@@ -1283,7 +1314,10 @@ iframe {
     top: 0;
     
     .bubble {
-      margin-top: 100px;
+      margin-top: 80px;
+      @media(max-width: 1300px) {
+        margin-top: 30px;
+      }
       font-weight: 500;
       width: 200px;
       border-radius: 20px;
