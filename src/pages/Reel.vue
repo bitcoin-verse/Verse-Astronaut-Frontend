@@ -1059,7 +1059,7 @@ export default {
 
       <div class="social-holder" style="padding-left: 25px;">
         <!-- <a class="share" style="cursor: pointer;" @click="toggleSocial()"><i class="share-icn"></i>Share</a> -->
-        <a class="download" target="_blank" :href="`https://versevoyagers.s3.us-west-1.amazonaws.com/${nftId}/${GLOBALS.NFT_ADDRESS}.jpg`" download><i class="download-icn"></i>Download Image</a>
+        <a class="download" target="_blank" :href="`${GLOBALS.BUCKET_URL}/${nftId}/${GLOBALS.NFT_ADDRESS}.jpg`" download><i class="download-icn"></i>Download Image</a>
       </div>
     </div>
     <div class="trait-holder">

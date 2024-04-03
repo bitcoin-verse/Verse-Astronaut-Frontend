@@ -168,7 +168,7 @@ export default {
 
     async function checkMetaData() {
     let promiseArray = nfts.value.map(nft => {
-    let imageUrl = `https://versevoyagers.s3.us-west-1.amazonaws.com/${nft.id}/${GLOBALS.NFT_ADDRESS}.jpg`;
+    let imageUrl = `${GLOBALS.BUCKET_URL}/${nft.id}/${GLOBALS.NFT_ADDRESS}.jpg`;
     return axios.head(imageUrl)
       .then(response => ({ status: response.status, url: imageUrl, success: true }))
       .catch(error => {
