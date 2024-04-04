@@ -343,7 +343,7 @@ export default {
             expiry: now.getTime() + 28800000 // 8 hours miliseconds
           }
           localStorage.setItem(
-            `token/${getAccount().address}`,
+            `token/prod/${getAccount().address}`,
             JSON.stringify(item)
           )
           authenticated.value = true
@@ -405,7 +405,7 @@ export default {
 
       if (getAccount().address && getAccount().address.length != undefined) {
         accountActive.value = true
-        const itemStr = localStorage.getItem(`token/${getAccount().address}`)
+        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
         if (!itemStr) {
           authenticated.value = false
         } else {
@@ -413,7 +413,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${getAccount().address}`)
             authenticated.value = false
           } else {
             authenticated.value = true

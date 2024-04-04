@@ -52,12 +52,12 @@ export default {
             }
         }
 
-        watchAccount(async (account) => { 
-        if(account.isConnected == true) {
+        const initialize = async () => {
+            let account = getAccount()
+            if(account.isConnected == true) {
 
             accountActive.value = true;
-            let { chain  } = getNetwork()
-            
+
             const publicClient = createPublicClient({ 
                 chain: mainnet,
                 transport: http()
@@ -68,11 +68,17 @@ export default {
             })
             if(ensName) ensUserName.value = ensName
 
-        } else {
+            } else {
             accountActive.value = false
+            }
+            connectedProvider.value = account.connector.name.toLowerCase()
         }
-        connectedProvider.value = account.connector.name.toLowerCase()
-    })
+
+        initialize()
+
+        watchAccount(async () => { 
+            initialize()
+        })
 
         return { account, isWallet, ensUserName, handleHome, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
     }

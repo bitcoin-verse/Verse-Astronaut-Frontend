@@ -18,6 +18,7 @@ export default {
   },
 
   setup () {
+    
     let traitReroll = ref(2)
     let initialSlots = ref([])
     let socialModal = ref(false)
@@ -67,7 +68,7 @@ export default {
 
     watchAccount(async () => {
       if (getAccount().address && getAccount().address.length != undefined) {
-        const itemStr = localStorage.getItem(`token/${getAccount().address}`)
+        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
         if (!itemStr) {
           window.location.replace('/?auth=true')
         } else {
@@ -75,7 +76,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${getAccount().address}`)
             window.location.replace('/?auth=true')
           }
         }
@@ -83,13 +84,14 @@ export default {
         // getTicketIds()
       } else {
         accountActive.value = false
+        console.log("not active")
       }
     })
 
     async function updateMetaData (tokenId) {
       try {
         let url = `${GLOBALS.BACKEND_URL}/metadata/${tokenId}`
-        let auth = localStorage.getItem(`token/${getAccount().address}`)
+        let auth = localStorage.getItem(`token/prod/${getAccount().address}`)
         if (auth) {
           let headerAuth = JSON.parse(auth)
           let res = await axios.post(

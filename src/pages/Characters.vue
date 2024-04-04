@@ -1,6 +1,6 @@
 <script>
-import { getAccount, readContract, disconnect, watchAccount, watchNetwork } from '@wagmi/core'
-import { ref } from 'vue'
+import { getAccount, readContract, disconnect, connect,  watchAccount, watchNetwork } from '@wagmi/core'
+import { ref, onMounted } from 'vue'
 import ERC721ABI from '../abi/ERC721.json'
 import Reel from '../pages/Reel.vue'
 import { useWeb3Modal } from '@web3modal/wagmi/vue'
@@ -16,12 +16,16 @@ export default {
     Reel
   },
   setup () {
+    console.log("BACK")
+    
     const route = useRoute()
     const nftContract = GLOBALS.NFT_ADDRESS
 
     let list = []
     let account = getAccount()
     let accountActive = ref(false)
+
+
     let loading = ref(false)
     let modal = useWeb3Modal()
 
@@ -78,9 +82,27 @@ export default {
       }, 250)
     }
 
-    watchAccount(async () => {
+    const initPage = () => {
+      // Your setup logic here
+      console.log("Page setup or visibility change logic here.");
+    };
+
+
+    // onMounted(() => {
+    //   document.addEventListener('visibilitychange', () => {
+    //     if (document.visibilityState === 'visible') {
+    //       initPage();
+    //     }
+    //   });
+    //   initPage(); // Initialize the page when it's mounted
+    // });
+
+
+
+    const initialize = async () => {
       if (getAccount().address && getAccount().address.length != undefined) {
-        const itemStr = localStorage.getItem(`token/${getAccount().address}`)
+        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
+        
         if (!itemStr) {
           // show warning and have them return to starting screen
           window.location.replace('/?auth=true')
@@ -89,7 +111,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${getAccount().address}`)
             // show warning and have them return to starting screen
             window.location.replace('/?auth=true')
           }
@@ -99,6 +121,11 @@ export default {
       } else {
         accountActive.value = false
       }
+    }
+    initialize()
+
+    watchAccount(async() => {
+      initialize()
     })
 
 
