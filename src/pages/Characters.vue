@@ -197,18 +197,22 @@ export default {
     let promiseArray = nfts.value.map(nft => {
     let imageUrl = `${GLOBALS.BUCKET_URL}/${nft.id}/${GLOBALS.NFT_ADDRESS}.jpg`;
     return axios.head(imageUrl)
-      .then(response => ({ status: response.status, url: imageUrl, success: true }))
+      .then(response => (
+        { status: response.status, url: imageUrl, success: true }
+      ))
       .catch(error => {
-        if (error.response && error.response.status === 403) {
-          return { status: 403, url: imageUrl, success: false, error: 'Forbidden' };
+        if (error.response && error.response.status === 200) {
+          return { status: 200, url: imageUrl, success: true, error: 'cors' };
         } else {
           return { status: error.response ? error.response.status : 'Unknown', url: imageUrl, success: false, error: 'Error occurred' };
         }
       });
-  });
+    });
 
   try {
+    console.log("RESULTS")
     let results = await Promise.all(promiseArray);
+    console.log(results)
     results.forEach((result,index) => {
       if(result.success == true ) {
         nfts.value[index].opened = true

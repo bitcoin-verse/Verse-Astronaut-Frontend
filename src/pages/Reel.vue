@@ -313,7 +313,7 @@ export default {
 
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
-      // updateMetaData(nftId.value)
+      updateMetaData(nftId.value)
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false
@@ -634,20 +634,20 @@ export default {
               :src="getImageUrl('body', currentRespinValue)"
               style="width: 100%; position: absolute; left: 0"
             />
-            <img  v-if="currentRespinCollection != 'helmets'"
-              :src="getImageUrl('helmets', resultItems[1])"
-              style="width: 100%; position: absolute; left: 0"
-            />
-            <img v-if="currentRespinCollection == 'helmets'"
-              :src="getImageUrl('helmets', currentRespinValue)"
-              style="width: 100%; position: absolute; left: 0"
-            />
             <img  v-if="currentRespinCollection != 'gear'"
               :src="getImageUrl('gear', resultItems[2])"
               style="width: 100%; position: absolute; left: 0"
             />
             <img v-if="currentRespinCollection == 'gear'"
               :src="getImageUrl('gear', currentRespinValue)"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img  v-if="currentRespinCollection != 'helmets'"
+              :src="getImageUrl('helmets', resultItems[1])"
+              style="width: 100%; position: absolute; left: 0"
+            />
+            <img v-if="currentRespinCollection == 'helmets'"
+              :src="getImageUrl('helmets', currentRespinValue)"
               style="width: 100%; position: absolute; left: 0"
             />
             <img v-if="currentRespinCollection != 'extra'"
@@ -714,11 +714,11 @@ export default {
               style="width: 100%; position: absolute; left: 0"
             />
             <img
-              :src="getImageUrl('helmets', resultItems[1])"
+              :src="getImageUrl('gear', resultItems[2])"
               style="width: 100%; position: absolute; left: 0"
             />
             <img
-              :src="getImageUrl('gear', resultItems[2])"
+              :src="getImageUrl('helmets', resultItems[1])"
               style="width: 100%; position: absolute; left: 0"
             />
             <img
@@ -828,14 +828,14 @@ export default {
               :class="traitReroll == 2 ? '' : 'greyscale' "
             />
             <img
-              :src="getImageUrl('helmets', resultItems[1])"
-              style="width: 100%; position: absolute; left: 0"
-              :class="traitReroll == 4 ? '' : 'greyscale' "
-            />
-            <img
               :src="getImageUrl('gear', resultItems[2])"
               style="width: 100%; position: absolute; left: 0"
               :class="traitReroll == 3 ? '' : 'greyscale' "
+            />
+            <img
+              :src="getImageUrl('helmets', resultItems[1])"
+              style="width: 100%; position: absolute; left: 0"
+              :class="traitReroll == 4 ? '' : 'greyscale' "
             />
             <img
               :src="getImageUrl('extra', resultItems[3])"
@@ -1042,11 +1042,11 @@ export default {
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrlLarge('helmets', resultItems[1])"
+          :src="getImageUrlLarge('gear', resultItems[2])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
-          :src="getImageUrlLarge('gear', resultItems[2])"
+          :src="getImageUrlLarge('helmets', resultItems[1])"
           style="width: 100%; position: absolute; left: 0"
         />
         <img
