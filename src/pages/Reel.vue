@@ -1,7 +1,7 @@
 <script>
 import { ref } from 'vue'
 import GLOBALS from '../globals.js'
-import { waitForTransaction, readContract, watchAccount, getAccount, writeContract } from '@wagmi/core'
+import { waitForTransaction, readContract, watchAccount, switchNetwork, watchNetwork, getNetwork, getAccount, writeContract } from '@wagmi/core'
 import axios from 'axios'
 import ERC20ABI from '../abi/ERC20.json'
 import contract from '../abi/contract.json'
@@ -21,6 +21,7 @@ export default {
     
     let traitReroll = ref(2)
     let initialSlots = ref([])
+    let correctNetwork = ref(true)
     let socialModal = ref(false)
     let spinLoading = ref(false)
     let prepNextFrame = ref(false)
@@ -65,6 +66,20 @@ export default {
       'background'
     ])
     const route = useRoute()
+
+    let network = getNetwork()
+    if(network.chain.id != 137) {
+      correctNetwork.value = false
+    }
+
+
+    watchNetwork(network => {
+      if (network.chain && network.chain.id != 137) {
+        correctNetwork.value = false
+      } else {
+        correctNetwork.value = true
+      }
+    })
 
     watchAccount(async () => {
       if (getAccount().address && getAccount().address.length != undefined) {
@@ -283,7 +298,7 @@ export default {
 
     async function approve () {
       txHash.value = ""
-      let approvalAmount = 30000000000000000000000000000
+      let approvalAmount = 90000000000000000000000000000
       if (singleTransactionApproval.value == true) {
         approvalAmount = rerollCost.value * Math.pow(10,18)
       }
@@ -534,6 +549,11 @@ export default {
     const { play: playSfxSpin, stop: stopSfxSpin } = useSound(sfxSpin);
     const { play: playSfxTada } = useSound(sfxTada);
 
+
+    async function requestNetworkChange () {
+      await switchNetwork({ chainId: 137 })
+    }
+
     return {
       playSfxSpin,
       playSfxTada,
@@ -541,6 +561,7 @@ export default {
       stopSfxSpin,
       resultItems,
       collections,
+      requestNetworkChange,
       loadNextFrame,
       goOverView,
       prepNextFrame,
@@ -562,6 +583,7 @@ export default {
       traitReroll,
       toggleSingleApproval,
       reroll,
+      correctNetwork,
       currentRespinCollection,
       currentRespinValue,
       rerollLoading,
@@ -781,9 +803,24 @@ export default {
         </div>
       </div>
     </div>
+    <!-- incorrect network -->
+    <div class="modal wide" v-if="!correctNetwork">
+      <div class="modal-head">
+        <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
+        <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
+        <div class="modal-body short">
+          <div class="img-wallet"></div>
+          <h3 style="font-size: 18px; margin-top: 20px; font-family: 'Barlow'">Verse Voyager uses the Polygon network. Please change the network in your connected wallet or click the button below to switch automatically.
+          </h3>
+          <a class="" target="_blank" @click="requestNetworkChange()"
+            ><button class="btn verse-wide">Switch Wallet to Polygon</button></a
+          >
+        </div>
+      </div>
+    </div>
 
     <!-- loading -->
-    <div class="modal wide" v-if="rerollLoading == true">
+    <div class="modal wide" v-if="rerollLoading == true && correctNetwork">
       <div class="modal-head">
         <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
@@ -801,7 +838,7 @@ export default {
       </div>
     </div>
     <!-- step 1 -->
-    <div class="modal wide" v-if="rerollStep == 1 && rerollLoading == false">
+    <div class="modal wide" v-if="rerollStep == 1 && rerollLoading == false && correctNetwork">
       <div class="modal-head">
         <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
@@ -932,7 +969,7 @@ export default {
     </div>
 
     <!-- step 2 -->
-    <div class="modal expandmobile" v-if="rerollStep == 2 && rerollLoading == false" style="border-radius: 10px; padding: 0;">
+    <div class="modal expandmobile" v-if="rerollStep == 2 && rerollLoading == false && correctNetwork" style="border-radius: 10px; padding: 0;">
       <div class="modal-head">
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
       </div>
@@ -957,7 +994,7 @@ export default {
 
 
     <!-- step 3 -->
-    <div class="modal" v-if="rerollStep == 3 && rerollLoading == false">
+    <div class="modal" v-if="rerollStep == 3 && rerollLoading == false && correctNetwork">
       <p class="iholder"><i @click="toggleModal()" class="fa fa-times"></i></p>
       <h3 style="font-size: 18px;">Transaction Completed</h3>
       <p style="margin-bottom: 20px;">You are now ready to re-spin the <strong>{{(collections[step - 11])}}</strong> trait for your character.</p>
@@ -970,7 +1007,7 @@ export default {
       </button>
     </div>
     <!--  reroll allowance -->
-    <div class="modal wide" v-if="rerollStep == 4 && rerollLoading == false">
+    <div class="modal wide" v-if="rerollStep == 4 && rerollLoading == false && correctNetwork">
       <div class="modal-head">
         <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
@@ -982,7 +1019,7 @@ export default {
         <div class="img-approve"></div>
         <h3 class="title">Approve the use of VERSE</h3>
         <p class="subtext">
-          You need to enable the use of at least <span>3000 VERSE</span>. This
+          You need to enable the use of at least <span>9000 VERSE</span>. This
           is used to pay for your ticket.
         </p>
         <div class="gift-toggle-holder">

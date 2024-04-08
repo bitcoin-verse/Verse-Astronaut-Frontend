@@ -123,9 +123,9 @@ export default {
     async function approve () {
       try {
        txHash.value = ""
-      let approvalAmount = 30000000000000000000000000000
+      let approvalAmount = 90000000000000000000000000000
       if (singleTransactionApproval.value == true) {
-        approvalAmount = 3000000000000000000000
+        approvalAmount = 9000000000000000000000
       }
 
       loadingMessage.value = 'Please confirm the approval in your connected wallet'
@@ -239,7 +239,7 @@ export default {
           verseAllowance.value = parseFloat(dataString) / Math.pow(10, 18)
           console.log(verseBalance.value, "verse")
           console.log(verseAllowance.value, "allowance")
-          if (verseBalance.value >= 3000 && verseAllowance.value >=3000 && buyStep.value < 3) {
+          if (verseBalance.value >= 9000 && verseAllowance.value >= 9000 && buyStep.value < 3) {
             buyStep.value = 3
           }
           modalLoading.value = false
@@ -266,7 +266,7 @@ export default {
         if (data) {
           let dataString = data.toString()
           verseBalance.value = parseFloat(dataString) / Math.pow(10, 18)
-          if (verseBalance.value >= 3000 && buyStep.value < 2) {
+          if (verseBalance.value >= 9000 && buyStep.value < 2) {
             buyStep.value = 2
             getAllowance()
           } else {
@@ -666,7 +666,7 @@ export default {
           <div class="img-verse"></div>
           <h3 class="title">Not Enough Verse</h3>
           <p class="subtext short">
-            You need <span>3000 VERSE</span> on Polygon in order to create a Voyager
+            You need <span>9000 VERSE</span> on Polygon in order to create a Voyager
           </p>
 
           <div class="wallet-balance">
@@ -707,7 +707,7 @@ export default {
         <div class="img-approve"></div>
         <h3 class="title">Approve the use of VERSE</h3>
         <p class="subtext">
-          You need to enable the use of at least <span>3000 VERSE</span>. This
+          You need to enable the use of at least <span>9000 VERSE</span>. This
           is used to create a new Voyager for you.
         </p>
         <div class="gift-toggle-holder">
@@ -744,7 +744,7 @@ export default {
         <div class="img-purchase"></div>
         <h3 class="title">Create New Voyager</h3>
         <p class="subtext">
-          It seems you have <span>3000 VERSE</span> in your wallet and contract
+          It seems you have <span>9000 VERSE</span> in your wallet and contract
           approval has been set!
         </p>
         <div class="gift-toggle-holder" :class="{ opened: giftTicket }">

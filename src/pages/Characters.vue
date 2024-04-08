@@ -1,5 +1,5 @@
 <script>
-import { getAccount, readContract, disconnect, connect,  watchAccount, watchNetwork } from '@wagmi/core'
+import { getAccount, readContract, disconnect, connect, watchAccount, watchNetwork } from '@wagmi/core'
 import { ref, onMounted } from 'vue'
 import ERC721ABI from '../abi/ERC721.json'
 import Reel from '../pages/Reel.vue'
@@ -16,7 +16,6 @@ export default {
     Reel
   },
   setup () {
-    console.log("BACK")
     
     const route = useRoute()
     const nftContract = GLOBALS.NFT_ADDRESS
@@ -339,8 +338,9 @@ export default {
     </div>
   </div>
 
+  <!-- <div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div>  -->
+
   <Reel v-if="openDetail" :detailNFT="detailNFT" />
-  <!-- <div class="wrongNetworkWarning" v-if="!correctNetwork">Connected to wrong network. Please switch wallet to Polygon Mainnet</div> -->
   <div class="page" v-if="!openDetail">
     <div class="head">
       <h2 class="tickhead">
