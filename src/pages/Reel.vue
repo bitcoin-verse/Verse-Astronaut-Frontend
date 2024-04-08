@@ -804,7 +804,7 @@ export default {
       </div>
     </div>
     <!-- incorrect network -->
-    <div class="modal wide" v-if="!correctNetwork">
+    <div class="modal wide" v-if="!correctNetwork && rerollStep != 70">
       <div class="modal-head">
         <h3 class="title" style="text-align: left;">Re-Spin a Trait</h3>
         <p class="iholder"><i @click="toggleModal()" class="close-btn"></i></p>
