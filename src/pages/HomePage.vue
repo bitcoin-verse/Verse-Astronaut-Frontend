@@ -955,7 +955,8 @@ export default {
 
         <div v-if="GLOBALS.SALE_ENABLED == 'FALSE'">
           <p style="font-weight: 300"><strong>Phase 1</strong> <button class="btn-active" style="background-color: #0085ff;">Now</button> <br/>Airdrop to Verse Lounge members, pre-sale participants and VIPs</p>
-          <p style="font-weight: 300"><strong>Phase 2</strong><button class="btn-active" style="background-color: #425472;">April 25</button>  <br/>Public Access - Mint Enabled </p>
+          <p style="font-weight: 300"><strong>Phase 2</strong><button class="btn-active" style="background-color: #425472;">April 25</button>  <br/>Task-On Participants -> <a style="color: white;" href="https://taskon.xyz/campaign/detail/36809" target="_blank">Register Now</a></p>
+          <p style="font-weight: 300"><strong>Phase 3</strong><button class="btn-active" style="background-color: #425472;">May 1</button>  <br/>Public Access - Mint Enabled </p>
         </div>
 
         <button 
@@ -1314,7 +1315,7 @@ iframe {
     top: 0;
     
     .bubble {
-      margin-top: 80px;
+      margin-top: 50px;
       @media(max-width: 1300px) {
         margin-top: 30px;
       }
