@@ -37,6 +37,7 @@ export default {
     let loading = ref(true)
     let resultItems = ref([])
     let rerollLoading = ref(false) // false
+    let syncing = ref(false)
     let verseAllowance = ref(0)
     let verseBalance = ref(0)
     let rerollLoadingMessage = ref('')
@@ -105,6 +106,7 @@ export default {
 
     async function updateMetaData (tokenId) {
       try {
+        syncing.value = true;
         let url = `${GLOBALS.BACKEND_URL}/metadata/${tokenId}`
         let auth = localStorage.getItem(`token/prod/${getAccount().address}`)
         if (auth) {
@@ -140,7 +142,6 @@ export default {
 
     async function prepReroll (trait) {
       let rerollArray = await getTraits(route.query.tokenId)
-      updateMetaData(nftId.value)
       rerollValue.value = rerollArray[trait]
     }
 
@@ -328,7 +329,6 @@ export default {
 
     async function run (forceLoad) {
       nftId.value = route.query.tokenId
-      updateMetaData(nftId.value)
       resultItems.value = await getTraits(route.query.tokenId)
       loadInitialSlots()
       loading.value = false
@@ -574,6 +574,7 @@ export default {
       getTraitName,
       updateMetaData,
       spinLoading,
+      syncing,
       spinReels,
       step,
       loading,
@@ -1096,9 +1097,13 @@ export default {
         />
       </div>
 
-      <div class="social-holder" style="padding-left: 25px;">
+      <div class="social-holder" style="padding-left: 14px;">
         <!-- <a class="share" style="cursor: pointer;" @click="toggleSocial()"><i class="share-icn"></i>Share</a> -->
-        <a class="download" target="_blank" :href="`${GLOBALS.BUCKET_URL}/${nftId}/${GLOBALS.NFT_ADDRESS}.jpg`" download><i class="download-icn"></i>Download Image</a>
+        <a style="margin-left: 20px" class="download" target="_blank" :href="`${GLOBALS.BUCKET_URL}/${nftId}/${GLOBALS.NFT_ADDRESS}.jpg`" download><i class="download-icn"></i>Download Image</a>
+        <a v-if="!syncing" @click="updateMetaData(nftId)" class="download" target="_blank" style="margin-left: 20px; cursor: pointer;"><i class="fa fa-refresh" style="margin-right: 10px;"></i>Resync Metadata</a>
+        <p v-if="!syncing" style="margin-top: 5px;"><small style="color: grey;">*OpenSea metadata might be delayed after a reroll. Updates usually resolve within 24 hours </small></p>
+        <p v-if="syncing" style="color: grey; margin-top: 5px;"><small>Metadata update in progress - trait updates might take up to 24 hours to be visible everywhere.</small></p>
+
       </div>
     </div>
     <div class="trait-holder">
