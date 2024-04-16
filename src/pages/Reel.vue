@@ -143,6 +143,7 @@ export default {
     async function prepReroll (trait) {
       let rerollArray = await getTraits(route.query.tokenId)
       rerollValue.value = rerollArray[trait]
+      updateMetaData(nftId.value)
     }
 
     function toggleSocial () {
