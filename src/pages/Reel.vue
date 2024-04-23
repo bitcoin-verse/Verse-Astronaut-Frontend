@@ -300,7 +300,7 @@ export default {
 
     async function approve () {
       txHash.value = ""
-      let approvalAmount = 90000000000000000000000000000
+      let approvalAmount = 100000000000000000000000000000
       if (singleTransactionApproval.value == true) {
         approvalAmount = rerollCost.value * Math.pow(10,18)
       }
@@ -1021,7 +1021,7 @@ export default {
         <div class="img-approve"></div>
         <h3 class="title">Approve the use of VERSE</h3>
         <p class="subtext">
-          You need to enable the use of at least <span>9000 VERSE</span>. This
+          You need to enable the use of at least <span>10,000 VERSE</span>. This
           is used to pay for your ticket.
         </p>
         <div class="gift-toggle-holder">

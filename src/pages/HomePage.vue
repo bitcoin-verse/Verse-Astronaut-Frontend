@@ -34,6 +34,7 @@ export default {
     let copyDone = ref(false)
     let reopenAfterConnection = ref(false)
     let accountActive = ref(false)
+    let publicMintCount = ref(0)
     let txHash = ref("")
     let correctNetwork = ref(true)
     let modalActive = ref(false)  
@@ -52,6 +53,7 @@ export default {
     let ticketInputAddress = ref('')
     let ticketInputValid = ref(true)
     let timeoutId
+    let priceUsd = ref(0)
     let buyModal = ref(false)
 
     function closeBuy () {
@@ -123,9 +125,9 @@ export default {
     async function approve () {
       try {
        txHash.value = ""
-      let approvalAmount = 90000000000000000000000000000
+      let approvalAmount = 100000000000000000000000000000
       if (singleTransactionApproval.value == true) {
-        approvalAmount = 9000000000000000000000
+        approvalAmount = 10000000000000000000000
       }
 
       loadingMessage.value = 'Please confirm the approval in your connected wallet'
@@ -239,7 +241,7 @@ export default {
           verseAllowance.value = parseFloat(dataString) / Math.pow(10, 18)
           console.log(verseBalance.value, "verse")
           console.log(verseAllowance.value, "allowance")
-          if (verseBalance.value >= 9000 && verseAllowance.value >= 9000 && buyStep.value < 3) {
+          if (verseBalance.value >= 10000 && verseAllowance.value >= 10000 && buyStep.value < 3) {
             buyStep.value = 3
           }
           modalLoading.value = false
@@ -251,6 +253,29 @@ export default {
         modalLoading.value = false
       }
     }
+    async function getPublicMintCount() {
+      try {
+
+        const data = await readContract({
+          address: '0x1B66671260509026e0d19237B7F32f54F13C756A',
+          abi: ContractABI,
+          functionName: 'publicMintCount',
+        })
+
+        if (data) {
+          console.log(data)
+          let dataString = data.toString()
+          publicMintCount.value = parseInt(dataString)
+
+        } else {
+          publicMintCount.value = 0;
+        }
+      } catch (e) {
+        console.log(e)
+        publicMintCount.value = 0;
+      }
+    }
+
     async function getBalance () {
       try {
         // step 1, check balance of Verse token
@@ -266,7 +291,7 @@ export default {
         if (data) {
           let dataString = data.toString()
           verseBalance.value = parseFloat(dataString) / Math.pow(10, 18)
-          if (verseBalance.value >= 9000 && buyStep.value < 2) {
+          if (verseBalance.value >= 10000 && buyStep.value < 2) {
             buyStep.value = 2
             getAllowance()
           } else {
@@ -307,6 +332,10 @@ export default {
         reopenAfterConnection.value = false
         toggleModal()
       }
+    }
+
+    const numberWithCommas = (x) => {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     // deal with user authentication
@@ -368,6 +397,9 @@ export default {
     }
     window.history.replaceState({}, '', `${window.location.pathname}`)
 
+    getPublicMintCount()
+    getVersePrice()
+
     const recognizableWalletFormat = inputString => {
       if (inputString.length < 6) {
         // Handle strings with less than 6 characters (3 + 3 + 3 dots)
@@ -426,6 +458,19 @@ export default {
       }
     })
 
+    async function getVersePrice () {
+      try {
+        let res = await axios.get(
+          'https://markets.api.bitcoin.com/coin/data?c=VERSE'
+        )
+        if (res.data.priceUsd) {
+          priceUsd.value = res.data.priceUsd
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
     function copyText () {
       let text = `https://dev.voyager.verse.bitcoin.com/voyagers?gift=1&address=${giftAddress.value}`
       navigator.clipboard.writeText(text)
@@ -467,9 +512,11 @@ export default {
       modalActive,
       toggleModal,
       modalLoading,
+      priceUsd,
       giftAddress,
       copyDone,
       verseBalance,
+      publicMintCount,
       getAccount,
       showTimer,
       verseAllowance,
@@ -484,6 +531,7 @@ export default {
       ticketInputValid,
       requestNetworkChange,
       ensLoaded,
+      numberWithCommas,
       singleTransactionApproval,
       txHash,
       giftInputLoad
@@ -666,7 +714,7 @@ export default {
           <div class="img-verse"></div>
           <h3 class="title">Not Enough Verse</h3>
           <p class="subtext short">
-            You need <span>9000 VERSE</span> on Polygon in order to create a Voyager
+            You need <span>10,000 VERSE</span> on Polygon in order to create a Voyager
           </p>
 
           <div class="wallet-balance">
@@ -707,7 +755,7 @@ export default {
         <div class="img-approve"></div>
         <h3 class="title">Approve the use of VERSE</h3>
         <p class="subtext">
-          You need to enable the use of at least <span>9000 VERSE</span>. This
+          You need to enable the use of at least <span>10,000 VERSE</span>. This
           is used to create a new Voyager for you.
         </p>
         <div class="gift-toggle-holder">
@@ -744,7 +792,7 @@ export default {
         <div class="img-purchase"></div>
         <h3 class="title">Create New Voyager</h3>
         <p class="subtext">
-          It seems you have <span>9000 VERSE</span> in your wallet and contract
+          It seems you have <span>10,000 VERSE</span> in your wallet and contract
           approval has been set!
         </p>
         <div class="gift-toggle-holder" :class="{ opened: giftTicket }">
@@ -953,6 +1001,18 @@ export default {
 <br>With more than 160 million combinations available, the <br> possibilities are endless!
         </p>
 
+        <div v-if="GLOBALS.SALE_ENABLED == 'TRUE'" style="margin-bottom: 0px; border-top: 1px solid #d492b242;">
+          
+          <p style="font-weight: 600; font-size: 17px;">Public Mint Open</p>
+
+          <p style="margin-bottom: 3px;">Price: 10,000 Verse ~ {{ (priceUsd * 10000).toFixed(2) }} USD </p>
+          <p style="margin-top: 3px; font-weight: 600;">Each Voyager comes with 1 free reroll</p>
+          <progress class="progress-bar" id="file" max="10000" :value="2000 + publicMintCount"></progress>
+          <p style="margin-top: 15px; margin-bottom: 0;">{{numberWithCommas(2000 + publicMintCount)}}/10,000 Minted</p>
+
+        </div>
+        
+
         <div v-if="GLOBALS.SALE_ENABLED == 'FALSE'">
           <p style="font-weight: 300"><strong>Phase 1</strong> <button class="btn-active" style="background-color: #0085ff;">Now</button> <br/>Airdrop to Verse Lounge members, pre-sale participants and VIPs</p>
           <p style="font-weight: 300"><strong>Phase 2</strong><button class="btn-active" style="background-color: #425472;">April 24</button>  <br/>Public Access - Mint Enabled </p>
@@ -979,15 +1039,15 @@ export default {
         >
 
         <button
-          class="btn verse-wide half"
+          class="btn verse-wide half" style="margin-left: 0; margin-right: 20px;"
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
           Create New Voyager
         </button>
         <button
-          class="btn verse-wide half secondary"
-          style="margin-top: 10px"
+          class="btn verse-wide half secondary" 
+          style="margin-top: 10px; margin-left: 0;"
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
@@ -1006,6 +1066,29 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+
+.progress-bar::-webkit-progress-value {
+  background-image:
+	   -webkit-linear-gradient(-45deg, 
+	                           transparent 33%, rgba(0, 0, 0, .1) 33%, 
+	                           rgba(0,0, 0, .1) 66%, transparent 66%),
+	   -webkit-linear-gradient(top, 
+	                           rgba(255, 255, 255, .25), 
+	                           rgba(0, 0, 0, .25)),
+	   -webkit-linear-gradient(left, #09c, #ee3772);
+}
+
+.progress-bar::-webkit-progress-bar {
+  background-color: white;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+  
+}
+.progress-bar {
+  -webkit-appearance: none;
+  appearance: none; 
+  width: 100%;
+}
 .btn-active {
   border: none;
   background-color: #3da10d;
@@ -1314,7 +1397,7 @@ iframe {
     top: 0;
     
     .bubble {
-      margin-top: 70px;
+      margin-top: 40px;
       @media(max-width: 1300px) {
         margin-top: 30px;
       }

@@ -4,5 +4,5 @@ export default {
     // BACKEND_URL: 'http://localhost:3000',
     BACKEND_URL: 'https://voyager.api.bitcoin.com',
     BUCKET_URL: 'https://bcom-verse-voyager.s3.us-east-1.amazonaws.com',
-    SALE_ENABLED: 'FALSE'
+    SALE_ENABLED: 'TRUE'
 }
