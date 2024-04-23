@@ -1054,7 +1054,7 @@ export default {
           Connect Wallet
         </button>
         <a v-if="!authenticated && accountActive" @click="authChallenge()"
-          ><button class="btn verse-wide half secondary adjust" style="margin-top: 10px; ">
+          ><button class="btn verse-wide half secondary adjust" style="margin-top: 30px; margin-left: 0; ">
             Login with Wallet
             {{ recognizableWalletFormat(getAccount().address) }}
           </button></a
