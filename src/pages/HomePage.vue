@@ -1014,16 +1014,17 @@ export default {
         
 
         <div v-if="GLOBALS.SALE_ENABLED == 'FALSE'">
-          <p style="font-weight: 300"><strong>Phase 1</strong> <button class="btn-active" style="background-color: #0085ff;">Now</button> <br/>Airdrop to Verse Lounge members, pre-sale participants and VIPs</p>
-          <p style="font-weight: 300"><strong>Phase 2</strong><button class="btn-active" style="background-color: #425472;">April 24</button>  <br/>Public Access - Mint Enabled </p>
+          <p>Verse Voyagers are sold out but you can still purchase a Voyager on a secondary market such as OpenSea. Purchased Voyagers can be re-rolled to change their traits.</p>
+          <progress class="progress-bar" id="file" max="10000" :value="10000"></progress>
+          <p style="margin-top: 15px; margin-bottom: 0;">{{numberWithCommas(10000)}}/10,000 Minted</p>
         </div>
 
-        <button 
+        <a href="https://opensea.io/collection/versevoyagers" target="_blank"><button 
           class="btn verse-wide half" style="font-size: 15px; margin-left: 0;"
           v-if="authenticated && GLOBALS.SALE_ENABLED == 'FALSE'"
         >
-          Mint Voyager (Coming Soon)
-        </button>
+          Purchase on OpenSea
+        </button></a>
 
         <button 
           class="btn verse-wide half"
