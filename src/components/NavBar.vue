@@ -117,6 +117,7 @@ export default {
             </div>
         </a>
         <h3 class="title-nav-desk">Verse Voyagers</h3>
+        <a href="https://t.me/GetVerse" target="_blank"><button class="btn verse-nav" style="float: right; background: #315ddc; margin-top: 15px; margin-right: 10px; padding-right: 9px!important;">Join Telegram <i style="margin-left: 5px;" class="fa-brands fa-telegram"></i></button></a>
 
         <div class="wallet">
             <button class="btn verse-nav" v-if="!accountActive" @click="openWalletModal(true)">Connect Wallet</button>
@@ -128,6 +129,7 @@ export default {
                 <button class="btn verse-nav connected" v-if="accountActive && !isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo ' + connectedProvider"></div></button>
                  <button class="btn verse-nav connected" v-if="accountActive && isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo bitcoin'"></div></button>
             </div>
+            
         </div>
     </div>
 </template>
