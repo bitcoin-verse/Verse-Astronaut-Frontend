@@ -21,8 +21,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     jsonRpcProvider({
       rpc: () => {
         return {
-              http: 'https://polygon-mainnet.g.alchemy.com/v2/FoEnISGWHrxYu6AJLkkX3IY6nYMkkt2S',
-              webSocket: 'wss://polygon-mainnet.g.alchemy.com/v2/FoEnISGWHrxYu6AJLkkX3IY6nYMkkt2S'
+              http: 'https://floral-empty-gas.matic.quiknode.pro',
+              webSocket: 'wss://floral-empty-gas.matic.quiknode.pro'
         }
       }
     })
