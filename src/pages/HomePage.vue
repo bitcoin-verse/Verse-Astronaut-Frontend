@@ -724,7 +724,7 @@ export default {
             </p>
           </div>
 
-          <a class="" target="_blank" href="https://app.1inch.io/#/1/advanced/swap/VERSE"
+          <a class="" target="_blank" href="https://app.1inch.io/#/137/advanced/swap/MATIC/fxVERSE"
             ><button class="btn verse-wide half">Buy VERSE</button></a
           >
           <a
