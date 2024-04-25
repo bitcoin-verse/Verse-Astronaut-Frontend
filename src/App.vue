@@ -102,7 +102,7 @@ const showNavBar = computed(() => route.name !== 'reel');
 </script>
 
 <template >
-  <body >
+  <body @contextmenu.prevent>
     <NavBar v-if="showNavBar" />
     <RouterView />
   </body>

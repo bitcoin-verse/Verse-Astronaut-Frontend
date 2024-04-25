@@ -388,7 +388,11 @@ export default {
 
     const search = new URLSearchParams(window.location.search)
     if (search.get('auth') == 'true') {
-      authChallenge()
+      // authChallenge()
+
+      buyStep.value = 0
+      modalActive.value = true
+      console.log(buyStep.value)
       search.delete('auth')
     }
     if (search.get('purchase-intent') == 'true') {
