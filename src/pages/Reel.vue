@@ -965,7 +965,7 @@ export default {
         </div>
 
         <div class="clearfix" style="margin-top: 340px;">
-          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white; margin-top: 15px;">Re-Spin Cost <strong>{{ rerollCost }} VERSE </strong></p>
+          <p v-if="rerollCost > 0" style="text-align: center; margin-left: 0; color: white; margin-top: 15px;">Re-Spin Cost <strong>{{ parseInt(rerollCost) }} VERSE </strong></p>
           <p v-if="rerollCost == 0" style="text-align: center; margin-left: 0; color: white; margin-top: 15px;"><br/>Re-Spin Cost <strong>0 VERSE </strong></p>
           <button
           v-if="rerollCost > verseBalance"
