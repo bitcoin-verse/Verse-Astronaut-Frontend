@@ -1027,7 +1027,7 @@ export default {
           class="btn verse-wide half" style="font-size: 15px; margin-left: 0;"
           v-if="authenticated && GLOBALS.SALE_ENABLED == 'FALSE'"
         >
-          Purchase on OpenSea
+          View on OpenSea
         </button></a>
 
         <button 
@@ -1046,7 +1046,7 @@ export default {
         <a           href="https://opensea.io/collection/versevoyagers"
           target="_blank">
         <button
-          class="btn verse-wide half" style="margin-left: 0; margin-right: 20px;"
+          class="btn verse-wide half" style="margin-left: 0; margin-top: 30px; margin-right: 20px;"
           v-if="!authenticated && !accountActive"
         >
           View on OpenSea
@@ -1054,7 +1054,7 @@ export default {
         </a>
         <button
           class="btn verse-wide half secondary" 
-          style="margin-top: 30px; margin-left: 0;"
+          style="margin-left: 0;"
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
