@@ -1043,16 +1043,18 @@ export default {
           </button></a
         >
 
+        <a           href="https://opensea.io/collection/versevoyagers"
+          target="_blank">
         <button
           class="btn verse-wide half" style="margin-left: 0; margin-right: 20px;"
           v-if="!authenticated && !accountActive"
-          @click="toggleModal()"
         >
-          Create New Voyager
+          View on OpenSea
         </button>
+        </a>
         <button
           class="btn verse-wide half secondary" 
-          style="margin-top: 10px; margin-left: 0;"
+          style="margin-top: 30px; margin-left: 0;"
           v-if="!authenticated && !accountActive"
           @click="toggleModal()"
         >
