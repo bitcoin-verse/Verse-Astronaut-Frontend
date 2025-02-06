@@ -1,7 +1,7 @@
 <script>
 import { ref } from 'vue'
 import GLOBALS from '../globals.js'
-import { waitForTransactionReceipt, readContract, watchAccount, switchChain, getNetwork, getAccount, writeContract } from '@wagmi/core'
+import { waitForTransactionReceipt, readContract, watchAccount, switchChain, getChainId, getAccount, writeContract } from '@wagmi/core'
 import axios from 'axios'
 import ERC20ABI from '../abi/ERC20.json'
 import contract from '../abi/contract.json'
@@ -96,10 +96,7 @@ export default {
     }
     initialize()
 
-    let network = getNetwork(core.wagmiConfig)
-    if(network.chain.id != 137) {
-      correctNetwork.value = false
-    }
+    correctNetwork.value = getChainId(core.wagmiConfig) === 137;
 
     watchAccount(core.wagmiConfig, { async onChange(account) {
       correctNetwork.value = account.chainId === 137
