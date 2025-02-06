@@ -3,7 +3,7 @@ import { getAccount, readContract, disconnect, watchAccount } from '@wagmi/core'
 import { ref } from 'vue'
 import ERC721ABI from '../abi/ERC721.json'
 import Reel from '../pages/Reel.vue'
-import { useWeb3Modal } from '@web3modal/wagmi/vue'
+import { useAppKit } from '@reown/appkit/vue'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
 import router from '@/router'
@@ -27,7 +27,7 @@ export default {
 
 
     let loading = ref(false)
-    let modal = useWeb3Modal()
+    let modal = useAppKit()
 
     let giftModal = ref(false)
     let giftAccount = ref('')
