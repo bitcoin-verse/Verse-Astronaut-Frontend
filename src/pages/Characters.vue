@@ -1,6 +1,6 @@
 <script>
-import { getAccount, readContract, disconnect, connect, watchAccount, watchNetwork } from '@wagmi/core'
-import { ref, onMounted } from 'vue'
+import { getAccount, readContract, disconnect, watchAccount } from '@wagmi/core'
+import { ref } from 'vue'
 import ERC721ABI from '../abi/ERC721.json'
 import Reel from '../pages/Reel.vue'
 import { useWeb3Modal } from '@web3modal/wagmi/vue'
@@ -10,6 +10,7 @@ import router from '@/router'
 import GLOBALS from '../globals.js'
 import { getRealTrait, getImageUrl } from '../helper/traitFinder.js'
 import axios from 'axios'
+import core from '../core.js'
 
 export default {
   components: {
@@ -21,7 +22,7 @@ export default {
     const nftContract = GLOBALS.NFT_ADDRESS
 
     let list = []
-    let account = getAccount()
+    let account = getAccount(core.wagmiConfig)
     let accountActive = ref(false)
 
 
@@ -46,7 +47,7 @@ export default {
       route.query.gift.length > 0 &&
       route.query.address.length > 0
     ) {
-      disconnect()
+      disconnect(core.wagmiConfig)
       giftModal.value = true
       giftAccount.value = route.query.address
       const duration = 3 * 1000,
@@ -99,8 +100,8 @@ export default {
 
 
     const initialize = async () => {
-      if (getAccount().address && getAccount().address.length != undefined) {
-        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
+      if (getAccount(core.wagmiConfig).address && getAccount(core.wagmiConfig).address.length != undefined) {
+        const itemStr = localStorage.getItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
         
         if (!itemStr) {
           // show warning and have them return to starting screen
@@ -110,7 +111,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/prod/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
             // show warning and have them return to starting screen
             window.location.replace('/?auth=true')
           }
@@ -121,10 +122,13 @@ export default {
         accountActive.value = false
       }
     }
-    initialize()
 
-    watchAccount(async() => {
-      initialize()
+    initialize()
+    watchAccount(core.wagmiConfig, { 
+      onChange(account) {
+        correctNetwork.value = account.chainId === 137
+        initialize()
+      } 
     })
 
 
@@ -143,7 +147,7 @@ export default {
 
     async function getTraits (id) {
       try {
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: GLOBALS.NFT_ADDRESS,
           abi: contract,
           functionName: 'getTraitIds',
@@ -166,14 +170,6 @@ export default {
         console.log(e)
       }
     }
-
-    watchNetwork(network => {
-      if (network.chain && network.chain.id != 137) {
-        correctNetwork.value = false
-      } else {
-        correctNetwork.value = true
-      }
-    })
 
     function openReel (item, finished) {
       if (finished) {
@@ -237,11 +233,11 @@ export default {
       try {
         // step 1, check balance
         loading.value = true
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: nftContract,
           abi: ERC721ABI,
           functionName: 'ownedByAddress',
-          args: [getAccount().address]
+          args: [getAccount(core.wagmiConfig).address]
         })
 
         /// step 2, check allowance

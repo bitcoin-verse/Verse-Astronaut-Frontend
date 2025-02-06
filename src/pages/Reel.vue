@@ -1,7 +1,7 @@
 <script>
 import { ref } from 'vue'
 import GLOBALS from '../globals.js'
-import { waitForTransaction, readContract, watchAccount, switchNetwork, watchNetwork, getNetwork, getAccount, writeContract } from '@wagmi/core'
+import { waitForTransactionReceipt, readContract, watchAccount, switchChain, getNetwork, getAccount, writeContract } from '@wagmi/core'
 import axios from 'axios'
 import ERC20ABI from '../abi/ERC20.json'
 import contract from '../abi/contract.json'
@@ -11,6 +11,7 @@ import { getRealTrait, getImageUrl, getThumb, getImageUrlLarge, getTraitName, ge
 import { useSound } from '@vueuse/sound'
 import sfxSpin from '../assets/spin.wav'
 import sfxTada from '../assets/tada.wav'
+import core from '../core.js'
 
 export default {
   components: {
@@ -70,9 +71,9 @@ export default {
 
 
     const initialize = async () => {
-      console.log(getAccount().address, "initializing")
-      if (getAccount().address && getAccount().address.length != undefined) {
-        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
+      console.log(getAccount(core.wagmiConfig).address, "initializing")
+      if (getAccount(core.wagmiConfig).address && getAccount(core.wagmiConfig).address.length != undefined) {
+        const itemStr = localStorage.getItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
         
         if (!itemStr) {
           // show warning and have them return to starting screen
@@ -82,7 +83,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/prod/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
             // show warning and have them return to starting screen
             window.location.replace('/?auth=true')
           }
@@ -95,23 +96,16 @@ export default {
     }
     initialize()
 
-    let network = getNetwork()
+    let network = getNetwork(core.wagmiConfig)
     if(network.chain.id != 137) {
       correctNetwork.value = false
     }
 
+    watchAccount(core.wagmiConfig, { async onChange(account) {
+      correctNetwork.value = account.chainId === 137
 
-    watchNetwork(network => {
-      if (network.chain && network.chain.id != 137) {
-        correctNetwork.value = false
-      } else {
-        correctNetwork.value = true
-      }
-    })
-
-    watchAccount(async () => {
-      if (getAccount().address && getAccount().address.length != undefined) {
-        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
+      if (getAccount(core.wagmiConfig).address && getAccount(core.wagmiConfig).address.length != undefined) {
+        const itemStr = localStorage.getItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
         if (!itemStr) {
           window.location.replace('/?auth=true')
         } else {
@@ -119,7 +113,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/prod/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
             window.location.replace('/?auth=true')
           }
         }
@@ -129,13 +123,13 @@ export default {
         accountActive.value = false
         console.log("not active")
       }
-    })
+    }})
 
     async function updateMetaData (tokenId) {
       try {
         syncing.value = true;
         let url = `${GLOBALS.BACKEND_URL}/metadata/${tokenId}`
-        let auth = localStorage.getItem(`token/prod/${getAccount().address}`)
+        let auth = localStorage.getItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
         if (auth) {
           let headerAuth = JSON.parse(auth)
           let res = await axios.post(
@@ -181,7 +175,7 @@ export default {
       try {
         rerollLoading.value = true
         rerollLoadingMessage.value = 'Retrieving next reroll cost'
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: GLOBALS.NFT_ADDRESS,
           abi: contract,
           functionName: 'getNextRerollPrice',
@@ -215,11 +209,11 @@ export default {
         // step 1, check balance of Verse token
         rerollLoadingMessage.value = 'Retrieving account balance'
         rerollLoading.value = true
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
           abi: ERC20ABI,
           functionName: 'balanceOf',
-          args: [getAccount().address]
+          args: [getAccount(core.wagmiConfig).address]
         })
 
         if (data) {
@@ -241,11 +235,11 @@ export default {
       try {
         rerollLoadingMessage.value = 'Retrieving contract allowance'
         rerollLoading.value = true
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
           abi: ERC20ABI,
           functionName: 'allowance',
-          args: [getAccount().address, GLOBALS.NFT_ADDRESS]
+          args: [getAccount(core.wagmiConfig).address, GLOBALS.NFT_ADDRESS]
         })
 
         if (data) {
@@ -265,7 +259,7 @@ export default {
       txHash.value = ""
       rerollLoadingMessage.value = ''
       rerollLoadingMessage.value = "Confirm transaction in your wallet"
-      const { hash } = await writeContract({
+      const hash = await writeContract(core.wagmiConfig, {
         address: GLOBALS.NFT_ADDRESS,
         abi: contract,
         functionName: 'rerollTrait',
@@ -275,7 +269,7 @@ export default {
       txHash.value = hash
       rerollLoading.value = true
       rerollLoadingMessage.value = "Waiting for transaction to confirm"
-      await waitForTransaction({ hash })
+      await waitForTransactionReceipt(core.wagmiConfig, { hash })
 
       rerollLoading.value = false
       rerollStep.value = 2
@@ -334,7 +328,7 @@ export default {
 
       rerollLoadingMessage.value = 'waiting for wallet approval..'
       rerollLoading.value = true
-      const { hash } = await writeContract({
+      const hash = await writeContract(core.wagmiConfig, {
         address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
         abi: ERC20ABI,
         functionName: 'approve',
@@ -344,7 +338,7 @@ export default {
       txHash.value = hash
 
       rerollLoadingMessage.value = 'waiting for wallet approval..'
-      await waitForTransaction({ hash })
+      await waitForTransactionReceipt(core.wagmiConfig, { hash })
       setTimeout(async () => {
         await getAllowance()
         rerollLoadingMessage.value =
@@ -376,7 +370,7 @@ export default {
     }
     async function getTraits (id) {
       try {
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: GLOBALS.NFT_ADDRESS,
           abi: contract,
           functionName: 'getTraitIds',
@@ -579,7 +573,7 @@ export default {
 
 
     async function requestNetworkChange () {
-      await switchNetwork({ chainId: 137 })
+      await switchChain(core.wagmiConfig, { chainId: 137 })
     }
 
     return {

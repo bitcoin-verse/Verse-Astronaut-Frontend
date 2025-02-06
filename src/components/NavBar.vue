@@ -1,15 +1,16 @@
 <script>
-import { getAccount, watchAccount, disconnect, getNetwork } from '@wagmi/core'
-import { useWeb3Modal } from '@web3modal/wagmi/vue'
+import { getAccount, watchAccount, disconnect } from '@wagmi/core'
+import { useAppKit } from '@reown/appkit/vue'
 import { ref } from 'vue';
 import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 
+import core from "../core"
 
 export default {
     setup() {
-        let account = getAccount()
-        let modal = useWeb3Modal()
+        let account = getAccount(core.wagmiConfig)
+        let modal = useAppKit()
         let isWallet = ref(false)
         let accountActive = ref(false)
         let connectedProvider = ref("")
@@ -18,7 +19,7 @@ export default {
         sessionStorage.getItem('isWallet') === "true" ? isWallet.value = true : isWallet.value = false
         
         function openWalletModal(refresh) {            
-            if(refresh) disconnect()
+            if(refresh) disconnect(core.wagmiConfig)
             modal.open()
         }
 
@@ -53,34 +54,29 @@ export default {
         }
 
         const initialize = async () => {
-            let account = getAccount()
+            let account = getAccount(core.wagmiConfig)
             if(account.isConnected == true) {
+                accountActive.value = true;
 
-            accountActive.value = true;
+                const publicClient = createPublicClient({ 
+                    chain: mainnet,
+                    transport: http()
+                })
 
-            const publicClient = createPublicClient({ 
-                chain: mainnet,
-                transport: http()
-            })
-
-            const ensName = await publicClient.getEnsName({
-                address: getAccount().address
-            })
-            if(ensName) ensUserName.value = ensName
-
+                const ensName = await publicClient.getEnsName({
+                    address: getAccount(core.wagmiConfig).address
+                })
+                if(ensName) ensUserName.value = ensName
             } else {
-            accountActive.value = false
+                accountActive.value = false
             }
-            connectedProvider.value = account.connector.name.toLowerCase()
+            connectedProvider.value = account.connector?.name.toLowerCase()
         }
 
         initialize()
+        watchAccount(core.wagmiConfig, { onChange: initialize })
 
-        watchAccount(async () => { 
-            initialize()
-        })
-
-        return { account, isWallet, ensUserName, handleHome, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider} 
+        return { account, isWallet, ensUserName, handleHome, openWalletModal, accountActive, truncateEthAddress, getAccount, connectedProvider, core} 
     }
     
 }
@@ -126,8 +122,8 @@ export default {
                  <button class="btn verse-nav connected" v-if="accountActive && isWallet" @click="openWalletModal(false)">{{ ensUserName }} <div :class="'provider-logo bitcoin'"></div></button>
             </div>
             <div v-if="!ensUserName">
-                <button class="btn verse-nav connected" v-if="accountActive && !isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo ' + connectedProvider"></div></button>
-                 <button class="btn verse-nav connected" v-if="accountActive && isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount().address || "")}} <div :class="'provider-logo bitcoin'"></div></button>
+                <button class="btn verse-nav connected" v-if="accountActive && !isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount(core.wagmiConfig).address || "")}} <div :class="'provider-logo ' + connectedProvider"></div></button>
+                 <button class="btn verse-nav connected" v-if="accountActive && isWallet" @click="openWalletModal(false)">{{truncateEthAddress(getAccount(core.wagmiConfig).address || "")}} <div :class="'provider-logo bitcoin'"></div></button>
             </div>
             
         </div>
