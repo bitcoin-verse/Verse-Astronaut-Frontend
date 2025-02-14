@@ -9,7 +9,7 @@ import {
   watchAccount,
 } from '@wagmi/core'
 import { useAppKit } from '@reown/appkit/vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import ERC20ABI from '../abi/ERC20.json'
 import ContractABI from '../abi/contract.json'
 import axios from 'axios'
@@ -28,15 +28,16 @@ const contractAddress = GLOBALS.CONTRACT_ADDRESS
 
 export default {
   setup () {
-    let account = getAccount(core.wagmiConfig)
+    let accountRef = ref(getAccount(core.wagmiConfig))
+    let truncatedAddress = computed(() => recognizableWalletFormat(accountRef.value.address))
     let currentAccountAddress = ref('')
     let modal = useAppKit()
     let copyDone = ref(false)
     let reopenAfterConnection = ref(false)
-    let accountActive = ref(false)
+    let accountActive = computed(() => accountRef.value.address !== undefined)
     let publicMintCount = ref(0)
     let txHash = ref("")
-    let correctNetwork = ref(true)
+    let correctNetwork = computed(() => accountRef.value.chainId === 137)
     let modalActive = ref(false)  
     let ensLoaded = ref('')
     let verseBalance = ref(0)
@@ -170,7 +171,7 @@ export default {
         }
         loadingMessage.value = 'Please confirm the purchase in your connected wallet'
         modalLoading.value = true
-        let receiver = getAccount(core.wagmiConfig).address
+        let receiver = accountRef.value.address
         if (_giftAddress && _giftAddress.length > 0) {
           receiver = _giftAddress
         }
@@ -232,7 +233,7 @@ export default {
           address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
           abi: ERC20ABI,
           functionName: 'allowance',
-          args: [getAccount(core.wagmiConfig).address, contractAddress]
+          args: [accountRef.value.address, contractAddress]
         })
 
         /// step 2, check allowance
@@ -284,7 +285,7 @@ export default {
           address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
           abi: ERC20ABI,
           functionName: 'balanceOf',
-          args: [getAccount(core.wagmiConfig).address]
+          args: [accountRef.value.address]
         })
 
    
@@ -309,8 +310,6 @@ export default {
     }
 
     const continueWithAccount = () => {
-      accountActive.value = true
-
       if(GLOBALS.SALE_ENABLED == "FALSE") {
         // sale not yet enabled, hide modal
         modalActive.value = false
@@ -341,7 +340,7 @@ export default {
     // deal with user authentication
     const authChallenge = async () => {
       let resChallenge = await axios.get(
-        `${GLOBALS.BACKEND_URL}/challenge/request/${getAccount(core.wagmiConfig).address}`
+        `${GLOBALS.BACKEND_URL}/challenge/request/${accountRef.value.address}`
       )
 
       if (buyStep.value != 99) {
@@ -362,7 +361,7 @@ export default {
         }
 
         let resComplete = await axios.post(
-          `${GLOBALS.BACKEND_URL}/challenge/complete/${getAccount(core.wagmiConfig).address}`,
+          `${GLOBALS.BACKEND_URL}/challenge/complete/${accountRef.value.address}`,
           payload
         )
         if (resComplete.data.token && resComplete.data.token.length > 1) {
@@ -372,7 +371,7 @@ export default {
             expiry: now.getTime() + 28800000 // 8 hours miliseconds
           }
           localStorage.setItem(
-            `token/prod/${getAccount(core.wagmiConfig).address}`,
+            `token/prod/${accountRef.value.address}`,
             JSON.stringify(item)
           )
           authenticated.value = true
@@ -423,20 +422,19 @@ export default {
     }
 
     watchAccount(core.wagmiConfig, { async onChange(account) {
-      correctNetwork.value = account.chainId === 137
+      accountRef.value = account
 
       if (!currentAccountAddress.value) {
-        currentAccountAddress.value = getAccount(core.wagmiConfig).address
+        currentAccountAddress.value = account.address
       } else {
-        if (currentAccountAddress.value != getAccount(core.wagmiConfig).address) {
+        if (currentAccountAddress.value != account.address) {
           // new account detected, reload page
           location.reload()
         }
       }
 
-      if (getAccount(core.wagmiConfig).address && getAccount(core.wagmiConfig).address.length != undefined) {
-        accountActive.value = true
-        const itemStr = localStorage.getItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
+      if (account.address !== undefined) {
+        const itemStr = localStorage.getItem(`token/prod/${account.address}`)
         if (!itemStr) {
           authenticated.value = false
         } else {
@@ -444,7 +442,7 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/prod/${getAccount(core.wagmiConfig).address}`)
+            localStorage.removeItem(`token/prod/${account.address}`)
             authenticated.value = false
           } else {
             authenticated.value = true
@@ -452,7 +450,6 @@ export default {
           }
         }
       } else {
-        accountActive.value = false
         buyStep.value = 0
       }
     }})
@@ -495,7 +492,6 @@ export default {
       getBalance,
       GLOBALS,
       connectAndClose,
-      account,
       buyStep,
       authenticated,
       modal,
@@ -516,7 +512,6 @@ export default {
       copyDone,
       verseBalance,
       publicMintCount,
-      getAccount,
       showTimer,
       verseAllowance,
       loadingMessage,
@@ -534,7 +529,7 @@ export default {
       singleTransactionApproval,
       txHash,
       giftInputLoad,
-      core
+      truncatedAddress
     }
   }
 }
@@ -585,7 +580,7 @@ export default {
       </div>
     </div>
     <!-- modal for switching network -->
-    <div class="modal" v-if="correctNetwork == false && !modalLoading">
+    <div class="modal" v-if="accountActive && !correctNetwork && !modalLoading">
       <div>
         <div class="modal-head">
           <h3 class="title">Switch Network</h3>
@@ -1059,7 +1054,7 @@ export default {
         <a v-if="!authenticated && accountActive" @click="authChallenge()"
           ><button class="btn verse-wide half secondary adjust" style="margin-top: 30px; margin-left: 0; ">
             Login with Wallet
-            {{ recognizableWalletFormat(getAccount(core.wagmiConfig).address) }}
+            {{ truncatedAddress }}
           </button></a
         >
         </div>
