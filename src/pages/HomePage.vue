@@ -662,7 +662,7 @@ export default {
     </div>
 
     <!-- modal for connecting account -->
-    <div class="modal" v-if="buyStep == 0 && !modalLoading && correctNetwork">
+    <div class="modal" v-if="buyStep == 0 && !modalLoading">
       <div>
         <div class="modal-head">
           <h3 class="title">Create New Voyager</h3>
