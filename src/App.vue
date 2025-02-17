@@ -1,100 +1,36 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router'
 import { computed } from 'vue'
-import { polygon } from '@wagmi/core/chains'
 import NavBar from './components/NavBar.vue'
-import {
-  configureChains,
-  createConfig,
-} from '@wagmi/core'
-import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
-import { WalletConnectConnector } from '@wagmi/connectors/walletConnect'
-import { InjectedConnector } from '@wagmi/connectors/injected'
-import { CoinbaseWalletConnector } from '@wagmi/connectors/coinbaseWallet'
-import { createWeb3Modal } from '@web3modal/wagmi/vue'
+import { reconnect } from '@wagmi/core'
+import { createAppKit } from "@reown/appkit/vue"
 
-const projectId = '25cdcfa92d5dc817ebb3f05d1cccf17b'
+import core from "./core"
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [polygon],
-  [
-    jsonRpcProvider({
-      rpc: () => {
-        return {
-              http: 'https://floral-empty-gas.matic.quiknode.pro',
-              webSocket: 'wss://floral-empty-gas.matic.quiknode.pro'
-        }
-      }
-    })
-  ]
-)
+reconnect(core.wagmiConfig)
 
-const metadata = {
-  name: 'VERSE Voyagers',
-  description:
-    'Embark on an exciting journey of creativity and chance? Spin the virtual slot machine to craft your unique voyager. With over 160 million possible combinations, the possibilities are endless!',
-  url: 'https://voyager.verse.bitcoin.com',
-  icons: ['https://voyager.verse.bitcoin.com/icon.png']
-}
-
-let isWallet = false
-
-// dont have anything in session storage yet
-if (!sessionStorage.getItem('isWallet')) {
-  const search = new URLSearchParams(window.location.search)
-  isWallet = search.get('origin') === 'wallet'
-  sessionStorage.setItem('isWallet', isWallet)
-} else {
-  if (sessionStorage.getItem('isWallet') == 'true') {
-    isWallet = true
-  } else {
-    isWallet = false
-  }
-}
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: [
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId,
-        showQrModal: false,
-        metadata
-      }
-    }),
-    ...(isWallet === true
-      ? []
-      : [
-          new InjectedConnector({
-            chains,
-            options: { shimDisconnect: true }
-          }),
-          new CoinbaseWalletConnector({
-            chains,
-            options: { appName: metadata.name }
-          })
-        ])
-  ],
-  publicClient,
-  webSocketPublicClient
-})
-
-createWeb3Modal({
+createAppKit({
+  adapters: [core.wagmiAdapter],
+  networks: core.networks,
   tokens: {
     137: {
       address: '0xc708d6f2153933daa50b2d0758955be0a93a8fec',
-      image:
-        'https://assets.coingecko.com/coins/images/28424/small/verselogo.png?1670461811'
+      image: 'https://assets.coingecko.com/coins/images/28424/small/verselogo.png'
     }
   },
   featuredWalletIds: [
     '107bb20463699c4e614d3a2fb7b961e66f48774cb8f6d6c1aee789853280972c'
   ],
   includeWalletIds: [],
-  wagmiConfig,
-  projectId,
-  chains
+  projectId: core.projectId,
+  features: {
+    analytics: true,
+    email: false,
+    socials: false,
+    onramp: false,
+    swaps: false,
+    send: false,
+  },
 })
 
 const route = useRoute()

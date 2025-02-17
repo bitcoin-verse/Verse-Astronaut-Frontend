@@ -1,15 +1,16 @@
 <script>
-import { getAccount, readContract, disconnect, connect, watchAccount, watchNetwork } from '@wagmi/core'
-import { ref, onMounted } from 'vue'
+import { getAccount, readContract, disconnect, watchAccount } from '@wagmi/core'
+import { computed, ref } from 'vue'
 import ERC721ABI from '../abi/ERC721.json'
 import Reel from '../pages/Reel.vue'
-import { useWeb3Modal } from '@web3modal/wagmi/vue'
+import { useAppKit } from '@reown/appkit/vue'
 import contract from '../abi/contract.json'
 import { useRoute } from 'vue-router'
 import router from '@/router'
 import GLOBALS from '../globals.js'
 import { getRealTrait, getImageUrl } from '../helper/traitFinder.js'
 import axios from 'axios'
+import core from '../core.js'
 
 export default {
   components: {
@@ -21,19 +22,18 @@ export default {
     const nftContract = GLOBALS.NFT_ADDRESS
 
     let list = []
-    let account = getAccount()
-    let accountActive = ref(false)
-
+    let accountRef = ref(getAccount(core.wagmiConfig))
+    let accountActive = computed(() => accountRef.value.address !== undefined)
 
     let loading = ref(false)
-    let modal = useWeb3Modal()
+    let modal = useAppKit()
 
     let giftModal = ref(false)
     let giftAccount = ref('')
     let claimNFT = ref(0)
     let step = ref(0)
     let nfts = ref([])
-    let correctNetwork = ref(true)
+    let correctNetwork = computed(() => accountRef.value.chainId === 137)
     let claimActive = ref(false)
     let modalLoading = ref(false)
 
@@ -46,7 +46,7 @@ export default {
       route.query.gift.length > 0 &&
       route.query.address.length > 0
     ) {
-      disconnect()
+      disconnect(core.wagmiConfig)
       giftModal.value = true
       giftAccount.value = route.query.address
       const duration = 3 * 1000,
@@ -99,8 +99,8 @@ export default {
 
 
     const initialize = async () => {
-      if (getAccount().address && getAccount().address.length != undefined) {
-        const itemStr = localStorage.getItem(`token/prod/${getAccount().address}`)
+      if (accountRef.value.address !== undefined) {
+        const itemStr = localStorage.getItem(`token/prod/${accountRef.value.address}`)
         
         if (!itemStr) {
           // show warning and have them return to starting screen
@@ -110,21 +110,21 @@ export default {
           const now = new Date()
           if (now.getTime() + 1200000 > item.expiry) {
             // add 20 minute buffer
-            localStorage.removeItem(`token/prod/${getAccount().address}`)
+            localStorage.removeItem(`token/prod/${accountRef.value.address}`)
             // show warning and have them return to starting screen
             window.location.replace('/?auth=true')
           }
         }
-        accountActive.value = true
         getTicketIds()
-      } else {
-        accountActive.value = false
       }
     }
-    initialize()
 
-    watchAccount(async() => {
-      initialize()
+    initialize()
+    watchAccount(core.wagmiConfig, { 
+      onChange(account) {
+        accountRef.value = account
+        initialize()
+      } 
     })
 
 
@@ -143,7 +143,7 @@ export default {
 
     async function getTraits (id) {
       try {
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: GLOBALS.NFT_ADDRESS,
           abi: contract,
           functionName: 'getTraitIds',
@@ -166,14 +166,6 @@ export default {
         console.log(e)
       }
     }
-
-    watchNetwork(network => {
-      if (network.chain && network.chain.id != 137) {
-        correctNetwork.value = false
-      } else {
-        correctNetwork.value = true
-      }
-    })
 
     function openReel (item, finished) {
       if (finished) {
@@ -237,11 +229,11 @@ export default {
       try {
         // step 1, check balance
         loading.value = true
-        const data = await readContract({
+        const data = await readContract(core.wagmiConfig, {
           address: nftContract,
           abi: ERC721ABI,
           functionName: 'ownedByAddress',
-          args: [getAccount().address]
+          args: [accountRef.value.address]
         })
 
         /// step 2, check allowance
@@ -278,7 +270,6 @@ export default {
       GLOBALS,
       list,
       nfts,
-      account,
       nftContract,
       correctNetwork,
       getImageUrl,
@@ -325,12 +316,12 @@ export default {
           to redeem the ticket.
         </p>
 
-        <a @click="closeGiftModal(true)" v-if="accountActive == false"
+        <a @click="closeGiftModal(true)" v-if="!accountActive"
           ><button class="btn verse-wide fixBottomMobile">
             Connect and Redeem
           </button></a
         >
-        <a @click="closeGiftModal(false)" v-if="accountActive == true"
+        <a @click="closeGiftModal(false)" v-if="accountActive"
           ><button class="btn verse-wide fixBottomMobile">Redeem</button></a
         >
         <img url="/gift.png" />
