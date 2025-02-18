@@ -26,4 +26,10 @@ const router = createRouter({
   ]
 })
 
+router.afterEach((to) => {
+  if (to.query.origin === "wallet") {
+    sessionStorage.setItem("isWallet", "true");
+  }
+});
+
 export default router
