@@ -264,7 +264,7 @@ export default {
         })
 
         if (data) {
-          console.log(data)
+          // console.log(data)
           let dataString = data.toString()
           publicMintCount.value = parseInt(dataString)
 
