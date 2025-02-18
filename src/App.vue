@@ -22,6 +22,7 @@ createAppKit({
     '107bb20463699c4e614d3a2fb7b961e66f48774cb8f6d6c1aee789853280972c'
   ],
   includeWalletIds: [],
+  allWallets: core.isWallet === true ? 'HIDE' : 'SHOW',
   projectId: core.projectId,
   features: {
     analytics: true,
