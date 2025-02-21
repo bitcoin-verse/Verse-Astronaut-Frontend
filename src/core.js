@@ -29,7 +29,7 @@ const wagmiAdapter = new WagmiAdapter({
   connectors: [
     walletConnect({
       projectId,
-      showQrModal: true,
+      showQrModal: false,
       metadata,
     }),
     ...(isWallet === true
