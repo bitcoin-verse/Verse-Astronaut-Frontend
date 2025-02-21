@@ -3,7 +3,7 @@ import { fallback, http, webSocket } from "viem";
 import { polygon } from "@reown/appkit/networks";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 
-const projectId = "25cdcfa92d5dc817ebb3f05d1cccf17b";
+const projectId = "96d9e23deb01fd797668d4bf3af4fec9";
 const metadata = {
   name: "VERSE Voyagers",
   description:
