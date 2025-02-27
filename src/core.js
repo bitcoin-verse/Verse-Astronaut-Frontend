@@ -40,17 +40,14 @@ const wagmiAdapter = new WagmiAdapter({
         ]),
   ],
   transports: {
-    [polygon.id]: fallback([
-      http("https://floral-empty-gas.matic.quiknode.pro"),
-      webSocket("wss://floral-empty-gas.matic.quiknode.pro"),
-    ]),
+    [polygon.id]: http(),
   },
 });
 
-export default { 
-  projectId, 
-  isWallet, 
-  networks, 
+export default {
+  projectId,
+  isWallet,
+  networks,
   wagmiAdapter,
-  wagmiConfig: wagmiAdapter.wagmiConfig
+  wagmiConfig: wagmiAdapter.wagmiConfig,
 };
